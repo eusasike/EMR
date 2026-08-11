@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+output   = "../src/generated/client"
+}
+
+// ------------------------------------
+// 1:N Relationship (User -> Order)
+// ------------------------------------
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  orders    Order[]  // One user has many orders
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  total     Float
+  userId    String   // Foreign key
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+// ------------------------------------
+// M:N Relationship (Product <-> Category)
+// Explicit Pivot Table approach
+// ------------------------------------
+model Product {
+  id          String            @id @default(uuid())
+  name        String
+  price       Float
+  categories  CategoriesOnProducts[]
+  createdAt   DateTime          @default(now())
+  updatedAt DateTime @updatedAt 
+}
+
+model Category {
+  id          String            @id @default(uuid())
+  name        String            @unique
+  products    CategoriesOnProducts[]
+}
+
+// Explicit Join Table / Pivot Model
+model CategoriesOnProducts {
+  productId  String
+  categoryId String
+  assignedAt DateTime @default(now())
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId]) // Composite Primary Key
+}
