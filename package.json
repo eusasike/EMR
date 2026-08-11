@@ -2,7 +2,7 @@
   "name": "app-service",
   "version": "1.0.0",
   "description": "TypeScript Microservice with Express, Prisma, Redis, RabbitMQ, and tsoa",
-  "main": "dist/app.js",
+  "main": "src/app.ts",
   "scripts": {
     "build:docs": "tsoa spec-and-routes",
     "dev": "tsoa spec-and-routes && ts-node-dev --respawn --transpile-only src/app.ts",
