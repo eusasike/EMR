@@ -266,4 +266,68 @@ export class MedicalServiceService {
 
     return record;
   }
+
+  // Fetch provided services for a patient using MRN
+  // src/service/clinical/medical-service.service.ts
+
+  async getProvidedServicesByMrn(mrn: string) {
+    // 1. Find the patient by MRN
+    const patient = await prisma.patient.findUnique({
+      where: { mrn },
+      select: { id: true },
+    });
+
+    if (!patient) {
+      throw new NotFoundError(`PATIENT_NOT_FOUND_FOR_MRN: ${mrn}`);
+    }
+
+    // 2. Query provided services across all visits for this patient
+    return await prisma.providedService.findMany({
+      where: {
+        visit: {
+          patientId: patient.id,
+        },
+      },
+      include: {
+        service: {
+          select: {
+            id: true,
+            name: true,
+            price: true, // <-- Removed 'code: true'
+            category: true,
+          },
+        },
+        visit: {
+          select: {
+            id: true,
+            createdAt: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
+  // Fetch the most recent visit by MRN (for testing lab orders)
+  async getLatestVisitByMrn(mrn: string) {
+    const visit = await prisma.patientVisit.findFirst({
+      where: {
+        patient: { mrn },
+      },
+      include: {
+        services: {
+          include: { service: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!visit) {
+      throw new NotFoundError(`NO_VISIT_FOUND_FOR_MRN: ${mrn}`);
+    }
+
+    return visit;
+  }
 }

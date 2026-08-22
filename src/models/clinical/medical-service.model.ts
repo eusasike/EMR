@@ -15,7 +15,7 @@ export type UpdateMedicalServiceInput = Partial<CreateMedicalServiceInput>;
 export interface ProvideServiceInput {
   visitId: string;
   serviceId: string;
-  providedById: string; // <-- Added to match schema
+  providedById: string;
   notes?: string;
 }
 
@@ -45,7 +45,7 @@ export interface ServiceProvidedEvent {
   providedServiceId: string;
   visitId: string;
   serviceId: string;
-  providedById: string; // <-- Added to match schema
+  providedById: string;
   unitPrice: number;
   timestamp: string;
 }

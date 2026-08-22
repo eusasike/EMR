@@ -12,8 +12,19 @@ export const ProductCategoryEnum = z.enum([
 ]);
 
 // ==========================================
-// Product Schemas
+// Product Interfaces (TSOA Compatible)
 // ==========================================
+export interface CreateProductDTO {
+  code?: string;
+  name: string;
+  description?: string;
+  category?: "MEDICINE" | "EQUIPMENT" | "CONSUMABLE" | "SUPPLEMENT";
+  unitPrice: number;
+  reorderLevel?: number;
+}
+
+export type UpdateProductDTO = Partial<CreateProductDTO>;
+
 export const createProductSchema = z.object({
   code: z.string().trim().optional(),
   name: z.string().min(1, "Product name is required").trim(),
@@ -25,12 +36,17 @@ export const createProductSchema = z.object({
 
 export const updateProductSchema = createProductSchema.partial();
 
-export type CreateProductDTO = z.infer<typeof createProductSchema>;
-export type UpdateProductDTO = z.infer<typeof updateProductSchema>;
+// ==========================================
+// ProductBatch Interfaces (TSOA Compatible)
+// ==========================================
+export interface CreateBatchDTO {
+  productId: string;
+  batchNumber: string;
+  quantity: number;
+  costPrice?: number;
+  expiryDate: string;
+}
 
-// ==========================================
-// ProductBatch Schemas
-// ==========================================
 export const createBatchSchema = z.object({
   productId: z.string().uuid("Invalid Product ID"),
   batchNumber: z.string().min(1, "Batch number is required").trim(),
@@ -44,11 +60,24 @@ export const createBatchSchema = z.object({
     .datetime({ message: "Expiry date must be a valid ISO string" }),
 });
 
-export type CreateBatchDTO = z.infer<typeof createBatchSchema>;
+// ==========================================
+// Dispense Interfaces (TSOA Compatible)
+// ==========================================
+export interface DispenseItemInputDTO {
+  productId: string;
+  batchId: string;
+  quantity: number;
+  unitPrice: number;
+}
 
-// ==========================================
-// Dispense Schemas
-// ==========================================
+export interface CreateDispenseRecordDTO {
+  visitId?: string;
+  dispensedById?: string;
+  prescriptionId?: string;
+  notes?: string;
+  items: DispenseItemInputDTO[];
+}
+
 export const dispenseItemInputSchema = z.object({
   productId: z.string().uuid("Invalid Product ID"),
   batchId: z.string().uuid("Invalid Batch ID"),
@@ -58,7 +87,7 @@ export const dispenseItemInputSchema = z.object({
 
 export const createDispenseRecordSchema = z.object({
   visitId: z.string().uuid("Invalid Visit ID").optional(),
-  dispensedById: z.string().uuid("Invalid DispensedBy User ID"),
+  dispensedById: z.string().uuid("Invalid DispensedBy User ID").optional(),
   prescriptionId: z.string().uuid("Invalid Prescription ID").optional(),
   notes: z.string().optional(),
   items: z
@@ -66,14 +95,26 @@ export const createDispenseRecordSchema = z.object({
     .min(1, "At least one item must be dispensed"),
 });
 
-export type DispenseItemInputDTO = z.infer<typeof dispenseItemInputSchema>;
-export type CreateDispenseRecordDTO = z.infer<
-  typeof createDispenseRecordSchema
->;
+// ==========================================
+// Event Schemas & Routing Keys
+// ==========================================
+export interface ProductDispensedEvent {
+  dispenseRecordId: string;
+  visitId?: string | null;
+  dispensedById: string;
+  totalCost: number;
+  itemCount: number;
+  timestamp: string;
+}
 
-// ==========================================
-// RabbitMQ Event Schemas
-// ==========================================
+export interface ReorderLevelReachedEvent {
+  productId: string;
+  productName: string;
+  currentStock: number;
+  reorderLevel: number;
+  timestamp: string;
+}
+
 export const productDispensedEventSchema = z.object({
   dispenseRecordId: z.string().uuid(),
   visitId: z.string().uuid().nullable().optional(),
@@ -91,14 +132,6 @@ export const reorderLevelReachedEventSchema = z.object({
   timestamp: z.string().datetime(),
 });
 
-export type ProductDispensedEvent = z.infer<typeof productDispensedEventSchema>;
-export type ReorderLevelReachedEvent = z.infer<
-  typeof reorderLevelReachedEventSchema
->;
-
-// ==========================================
-// RabbitMQ Routing Keys
-// ==========================================
 export enum PharmacyRoutingKey {
   DISPENSED = "pharmacy.product.dispensed",
   REORDER_LEVEL_REACHED = "pharmacy.product.reorder_level_reached",

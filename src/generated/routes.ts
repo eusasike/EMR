@@ -1,2590 +1,1869 @@
 /* tslint:disable */
 /* eslint-disable */
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import type { TsoaRoute } from "@tsoa/runtime";
-import { fetchMiddlewares, ExpressTemplateService } from "@tsoa/runtime";
+import type { TsoaRoute } from '@tsoa/runtime';
+import {  fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { VitalSignsController } from "./../controllers/vital-sign.controller";
+import { VitalSignsController } from './../controllers/vital-sign.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { VisitController } from "./../controllers/visit.controller";
+import { VisitController } from './../controllers/visit.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { PharmacyController } from "../controllers/inventory.controller";
+import { UserController } from './../controllers/register.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { UserController } from "./../controllers/register.controller";
+import { PrescriptionController } from './../controllers/prescription.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { PaymentController } from "./../controllers/payment.controller";
+import { PatientController } from './../controllers/patient.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { PatientController } from "./../controllers/patient.controller";
+import { MedicalServiceController } from './../controllers/medical-service.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { MedicalServiceController } from "./../controllers/medical-service.controller";
+import { LabController } from './../controllers/lab.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { InvoiceController } from "./../controllers/invoice.controller";
+import { PharmacyController } from './../controllers/inventory.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { HealthController } from "./../controllers/health.controller";
+import { HealthController } from './../controllers/health.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { AuthController } from "./../controllers/auth.controller";
-import { expressAuthentication } from "./../middlewares/authenticate";
+import { BillingController } from './../controllers/billing.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AuthController } from './../controllers/auth.controller';
+import { expressAuthentication } from './../middlewares/authenticate';
 // @ts-ignore - no great way to install types from subpackage
-import type {
-  Request as ExRequest,
-  Response as ExResponse,
-  RequestHandler,
-  Router,
-} from "express";
+import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 
-const expressAuthenticationRecasted = expressAuthentication as (
-  req: ExRequest,
-  securityName: string,
-  scopes?: string[],
-  res?: ExResponse,
-) => Promise<any>;
+const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, securityName: string, scopes?: string[], res?: ExResponse) => Promise<any>;
+
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-  Decimal: {
-    dataType: "refAlias",
-    type: { dataType: "string", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "_36_Enums.TriagePriority": {
-    dataType: "refAlias",
-    type: {
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["RED"] },
-        { dataType: "enum", enums: ["YELLOW"] },
-        { dataType: "enum", enums: ["GREEN"] },
-        { dataType: "enum", enums: ["BLACK"] },
-      ],
-      validators: {},
+    "Decimal": {
+        "dataType": "refAlias",
+        "type": {"dataType":"string","validators":{}},
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "DefaultSelection_Prisma._36_VitalSignsPayload_": {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {
-        updatedAt: { dataType: "datetime", required: true },
-        createdAt: { dataType: "datetime", required: true },
-        recordedById: { dataType: "string", required: true },
-        notes: { dataType: "string", required: true },
-        priority: { ref: "_36_Enums.TriagePriority", required: true },
-        bmi: { ref: "Decimal", required: true },
-        height: { ref: "Decimal", required: true },
-        weight: { ref: "Decimal", required: true },
-        spo2: { dataType: "double", required: true },
-        respiratoryRate: { dataType: "double", required: true },
-        pulseRate: { dataType: "double", required: true },
-        diastolicBP: { dataType: "double", required: true },
-        systolicBP: { dataType: "double", required: true },
-        temperature: { ref: "Decimal", required: true },
-        visitId: { dataType: "string", required: true },
-        id: { dataType: "string", required: true },
-      },
-      validators: {},
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.TriagePriority": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["RED"]},{"dataType":"enum","enums":["YELLOW"]},{"dataType":"enum","enums":["GREEN"]},{"dataType":"enum","enums":["BLACK"]}],"validators":{}},
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  VitalSigns: {
-    dataType: "refAlias",
-    type: {
-      ref: "DefaultSelection_Prisma._36_VitalSignsPayload_",
-      validators: {},
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_VitalSignsPayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"recordedById":{"dataType":"string","required":true},"notes":{"dataType":"string","required":true},"priority":{"ref":"_36_Enums.TriagePriority","required":true},"bmi":{"ref":"Decimal","required":true},"height":{"ref":"Decimal","required":true},"weight":{"ref":"Decimal","required":true},"spo2":{"dataType":"double","required":true},"respiratoryRate":{"dataType":"double","required":true},"pulseRate":{"dataType":"double","required":true},"diastolicBP":{"dataType":"double","required":true},"systolicBP":{"dataType":"double","required":true},"temperature":{"ref":"Decimal","required":true},"visitId":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  TriagePriority: {
-    dataType: "refAlias",
-    type: { ref: "_36_Enums.TriagePriority", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  CreateVitalSignsInput: {
-    dataType: "refObject",
-    properties: {
-      visitId: { dataType: "string", required: true },
-      temperature: { dataType: "double", required: true },
-      systolicBP: { dataType: "double", required: true },
-      diastolicBP: { dataType: "double", required: true },
-      pulseRate: { dataType: "double", required: true },
-      respiratoryRate: { dataType: "double", required: true },
-      spo2: { dataType: "double", required: true },
-      weight: { dataType: "double", required: true },
-      height: { dataType: "double", required: true },
-      priority: { ref: "TriagePriority" },
-      notes: { dataType: "string" },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VitalSigns": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_VitalSignsPayload_","validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "Partial_Omit_CreateVitalSignsInput.visitId__": {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {
-        temperature: { dataType: "double" },
-        systolicBP: { dataType: "double" },
-        diastolicBP: { dataType: "double" },
-        pulseRate: { dataType: "double" },
-        respiratoryRate: { dataType: "double" },
-        spo2: { dataType: "double" },
-        weight: { dataType: "double" },
-        height: { dataType: "double" },
-        priority: { ref: "_36_Enums.TriagePriority" },
-        notes: { dataType: "string" },
-      },
-      validators: {},
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TriagePriority": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.TriagePriority","validators":{}},
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  UpdateVitalSignsInput: {
-    dataType: "refAlias",
-    type: {
-      ref: "Partial_Omit_CreateVitalSignsInput.visitId__",
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "_36_Enums.VisitType": {
-    dataType: "refAlias",
-    type: {
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["OPD"] },
-        { dataType: "enum", enums: ["EMERGENCY"] },
-        { dataType: "enum", enums: ["REFERRAL"] },
-        { dataType: "enum", enums: ["FOLLOW_UP"] },
-      ],
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  VisitType: {
-    dataType: "refAlias",
-    type: { ref: "_36_Enums.VisitType", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "_36_Enums.VisitPriority": {
-    dataType: "refAlias",
-    type: {
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["NORMAL"] },
-        { dataType: "enum", enums: ["URGENT"] },
-        { dataType: "enum", enums: ["CRITICAL"] },
-      ],
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  VisitPriority: {
-    dataType: "refAlias",
-    type: { ref: "_36_Enums.VisitPriority", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  VisitResponseDTO: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string", required: true },
-      data: {
-        dataType: "nestedObjectLiteral",
-        nestedProperties: {
-          attending: {
-            dataType: "nestedObjectLiteral",
-            nestedProperties: {
-              email: { dataType: "string" },
-              lastName: { dataType: "string" },
-              firstName: { dataType: "string" },
-              id: { dataType: "string", required: true },
-            },
-          },
-          createdAt: { dataType: "datetime", required: true },
-          priority: { ref: "VisitPriority", required: true },
-          visitType: { ref: "VisitType", required: true },
-          symptoms: {
-            dataType: "union",
-            subSchemas: [
-              { dataType: "string" },
-              { dataType: "enum", enums: [null] },
-            ],
-          },
-          icdCode: {
-            dataType: "union",
-            subSchemas: [
-              { dataType: "string" },
-              { dataType: "enum", enums: [null] },
-            ],
-          },
-          diagnosis: {
-            dataType: "union",
-            subSchemas: [
-              { dataType: "string" },
-              { dataType: "enum", enums: [null] },
-            ],
-          },
-          attendingId: { dataType: "string", required: true },
-          patientId: { dataType: "string", required: true },
-          id: { dataType: "string", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateVitalSignsInput": {
+        "dataType": "refObject",
+        "properties": {
+            "visitId": {"dataType":"string","required":true},
+            "temperature": {"dataType":"double","required":true},
+            "systolicBP": {"dataType":"double","required":true},
+            "diastolicBP": {"dataType":"double","required":true},
+            "pulseRate": {"dataType":"double","required":true},
+            "respiratoryRate": {"dataType":"double","required":true},
+            "spo2": {"dataType":"double","required":true},
+            "weight": {"dataType":"double","required":true},
+            "height": {"dataType":"double","required":true},
+            "priority": {"ref":"TriagePriority"},
+            "notes": {"dataType":"string"},
         },
-        required: true,
-      },
+        "additionalProperties": false,
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "Record_string.string-Array_": {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {},
-      additionalProperties: {
-        dataType: "array",
-        array: { dataType: "string" },
-      },
-      validators: {},
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Partial_Omit_CreateVitalSignsInput.visitId__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"temperature":{"dataType":"double"},"systolicBP":{"dataType":"double"},"diastolicBP":{"dataType":"double"},"pulseRate":{"dataType":"double"},"respiratoryRate":{"dataType":"double"},"spo2":{"dataType":"double"},"weight":{"dataType":"double"},"height":{"dataType":"double"},"priority":{"ref":"_36_Enums.TriagePriority"},"notes":{"dataType":"string"}},"validators":{}},
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ErrorResponseDTO: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string", required: true },
-      errors: { ref: "Record_string.string-Array_" },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateVitalSignsInput": {
+        "dataType": "refAlias",
+        "type": {"ref":"Partial_Omit_CreateVitalSignsInput.visitId__","validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  CreateVisitDTO: {
-    dataType: "refObject",
-    properties: {
-      patientId: { dataType: "string", required: true },
-      attendingId: { dataType: "string", required: true },
-      symptoms: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-      },
-      diagnosis: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-      },
-      icdCode: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-      },
-      visitType: { ref: "VisitType" },
-      priority: { ref: "VisitPriority" },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.VisitType": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["OPD"]},{"dataType":"enum","enums":["EMERGENCY"]},{"dataType":"enum","enums":["REFERRAL"]},{"dataType":"enum","enums":["FOLLOW_UP"]}],"validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  UpdateVisitDTO: {
-    dataType: "refObject",
-    properties: {
-      diagnosis: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-      },
-      icdCode: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-      },
-      symptoms: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-      },
-      priority: { ref: "VisitPriority" },
-      attendingId: { dataType: "string" },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitType": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.VisitType","validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ProductDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      code: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      name: { dataType: "string", required: true },
-      description: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      category: { dataType: "string", required: true },
-      unitPrice: { dataType: "double", required: true },
-      reorderLevel: { dataType: "double", required: true },
-      totalAvailableStock: { dataType: "double" },
-      createdAt: { dataType: "datetime", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.VisitPriority": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["NORMAL"]},{"dataType":"enum","enums":["URGENT"]},{"dataType":"enum","enums":["CRITICAL"]}],"validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiResponse_ProductDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      data: { ref: "ProductDTO", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitPriority": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.VisitPriority","validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  CreateProductDTO: {
-    dataType: "refObject",
-    properties: {
-      code: { dataType: "string" },
-      name: { dataType: "string", required: true },
-      description: { dataType: "string" },
-      category: { dataType: "string" },
-      unitPrice: { dataType: "double", required: true },
-      reorderLevel: { dataType: "double" },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiListResponse_ProductDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      count: { dataType: "double", required: true },
-      data: {
-        dataType: "array",
-        array: { dataType: "refObject", ref: "ProductDTO" },
-        required: true,
-      },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  BatchDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      productId: { dataType: "string", required: true },
-      batchNumber: { dataType: "string", required: true },
-      quantity: { dataType: "double", required: true },
-      initialQty: { dataType: "double", required: true },
-      costPrice: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "double" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      expiryDate: { dataType: "datetime", required: true },
-      createdAt: { dataType: "datetime", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiResponse_BatchDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      data: { ref: "BatchDTO", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  CreateBatchDTO: {
-    dataType: "refObject",
-    properties: {
-      productId: { dataType: "string", required: true },
-      batchNumber: { dataType: "string", required: true },
-      quantity: { dataType: "double", required: true },
-      costPrice: { dataType: "double" },
-      expiryDate: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  DispensedItemDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      productId: { dataType: "string", required: true },
-      batchId: { dataType: "string", required: true },
-      quantity: { dataType: "double", required: true },
-      unitPrice: { dataType: "double", required: true },
-      productName: { dataType: "string" },
-      batchNumber: { dataType: "string" },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  DispenseRecordDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      visitId: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      dispensedById: { dataType: "string", required: true },
-      totalCost: { dataType: "double", required: true },
-      notes: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      items: {
-        dataType: "array",
-        array: { dataType: "refObject", ref: "DispensedItemDTO" },
-        required: true,
-      },
-      createdAt: { dataType: "datetime", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiResponse_DispenseRecordDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      data: { ref: "DispenseRecordDTO", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  DispenseItemInputDTO: {
-    dataType: "refObject",
-    properties: {
-      productId: { dataType: "string", required: true },
-      quantity: { dataType: "double", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  DispenseMedicationDTO: {
-    dataType: "refObject",
-    properties: {
-      visitId: { dataType: "string" },
-      dispensedById: { dataType: "string", required: true },
-      notes: { dataType: "string" },
-      items: {
-        dataType: "array",
-        array: { dataType: "refObject", ref: "DispenseItemInputDTO" },
-        required: true,
-      },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "_36_Enums.Role": {
-    dataType: "refAlias",
-    type: {
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["ADMIN"] },
-        { dataType: "enum", enums: ["MANAGER"] },
-        { dataType: "enum", enums: ["GUEST"] },
-        { dataType: "enum", enums: ["NURSE"] },
-        { dataType: "enum", enums: ["DOCTOR"] },
-        { dataType: "enum", enums: ["CASHIER"] },
-      ],
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  Role: {
-    dataType: "refAlias",
-    type: { ref: "_36_Enums.Role", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  RegisterUserDTO: {
-    dataType: "refObject",
-    properties: {
-      firstName: { dataType: "string", required: true },
-      lastName: { dataType: "string", required: true },
-      middleName: { dataType: "string" },
-      email: { dataType: "string", required: true },
-      phone: { dataType: "string" },
-      password: { dataType: "string", required: true },
-      role: { ref: "Role", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PaymentMethod: {
-    dataType: "refAlias",
-    type: {
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["CASH"] },
-        { dataType: "enum", enums: ["MOBILE_MONEY"] },
-        { dataType: "enum", enums: ["INSURANCE"] },
-      ],
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PaymentDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      invoiceId: { dataType: "string", required: true },
-      amount: { dataType: "double", required: true },
-      paymentMethod: { ref: "PaymentMethod", required: true },
-      transactionReference: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      processedById: { dataType: "string", required: true },
-      notes: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      createdAt: { dataType: "datetime", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PaymentResponseData: {
-    dataType: "refObject",
-    properties: {
-      payment: { ref: "PaymentDTO", required: true },
-      invoice: {
-        dataType: "nestedObjectLiteral",
-        nestedProperties: {
-          status: {
-            dataType: "union",
-            subSchemas: [
-              { dataType: "enum", enums: ["PENDING"] },
-              { dataType: "enum", enums: ["PARTIALLY_PAID"] },
-              { dataType: "enum", enums: ["PAID"] },
-              { dataType: "enum", enums: ["CANCELLED"] },
-            ],
-            required: true,
-          },
-          balance: { dataType: "double", required: true },
-          amountPaid: { dataType: "double", required: true },
-          grandTotal: { dataType: "double", required: true },
-          invoiceNumber: { dataType: "string", required: true },
-          id: { dataType: "string", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"attending":{"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string"},"lastName":{"dataType":"string"},"firstName":{"dataType":"string"},"id":{"dataType":"string","required":true}}},"createdAt":{"dataType":"datetime","required":true},"priority":{"ref":"VisitPriority","required":true},"visitType":{"ref":"VisitType","required":true},"symptoms":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"icdCode":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"diagnosis":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"attendingId":{"dataType":"string","required":true},"patientId":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"required":true},
         },
-        required: true,
-      },
+        "additionalProperties": false,
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiResponse_PaymentResponseData_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      data: { ref: "PaymentResponseData", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Record_string.string-Array_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"array","array":{"dataType":"string"}},"validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ProcessPaymentDTO: {
-    dataType: "refObject",
-    properties: {
-      invoiceId: { dataType: "string", required: true },
-      amount: { dataType: "double", required: true },
-      paymentMethod: { ref: "PaymentMethod", required: true },
-      transactionReference: { dataType: "string" },
-      processedById: { dataType: "string", required: true },
-      notes: { dataType: "string" },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiListResponse_PaymentDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      count: { dataType: "double", required: true },
-      data: {
-        dataType: "array",
-        array: { dataType: "refObject", ref: "PaymentDTO" },
-        required: true,
-      },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "_36_Enums.Gender": {
-    dataType: "refAlias",
-    type: {
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["MALE"] },
-        { dataType: "enum", enums: ["FEMALE"] },
-        { dataType: "enum", enums: ["OTHER"] },
-      ],
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  Gender: {
-    dataType: "refAlias",
-    type: { ref: "_36_Enums.Gender", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PatientDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      mrn: { dataType: "string", required: true },
-      firstName: { dataType: "string", required: true },
-      lastName: { dataType: "string", required: true },
-      middleName: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      gender: { ref: "Gender", required: true },
-      dateOfBirth: { dataType: "datetime", required: true },
-      phone: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      emergencyContactName: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      emergencyContactPhone: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "string" },
-          { dataType: "enum", enums: [null] },
-        ],
-        required: true,
-      },
-      createdAt: { dataType: "datetime", required: true },
-      updatedAt: { dataType: "datetime", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiResponse_PatientDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      data: { ref: "PatientDTO", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PatientResponseDTO: {
-    dataType: "refAlias",
-    type: { ref: "ApiResponse_PatientDTO_", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  RegisterPatientDTO: {
-    dataType: "refObject",
-    properties: {
-      firstName: { dataType: "string", required: true },
-      lastName: { dataType: "string", required: true },
-      middleName: { dataType: "string" },
-      gender: { ref: "Gender", required: true },
-      dateOfBirth: { dataType: "string", required: true },
-      phone: { dataType: "string" },
-      emergencyContactName: { dataType: "string" },
-      emergencyContactPhone: { dataType: "string" },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "DefaultSelection_Prisma._36_PatientPayload_": {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {
-        emergencyContactPhone: { dataType: "string", required: true },
-        emergencyContactName: { dataType: "string", required: true },
-        dateOfBirth: { dataType: "datetime", required: true },
-        gender: { ref: "_36_Enums.Gender", required: true },
-        mrn: { dataType: "string", required: true },
-        phone: { dataType: "string", required: true },
-        middleName: { dataType: "string", required: true },
-        lastName: { dataType: "string", required: true },
-        firstName: { dataType: "string", required: true },
-        updatedAt: { dataType: "datetime", required: true },
-        createdAt: { dataType: "datetime", required: true },
-        id: { dataType: "string", required: true },
-      },
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  Patient: {
-    dataType: "refAlias",
-    type: {
-      ref: "DefaultSelection_Prisma._36_PatientPayload_",
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PatientListResponse: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      count: { dataType: "double", required: true },
-      data: {
-        dataType: "array",
-        array: { dataType: "refAlias", ref: "Patient" },
-        required: true,
-      },
-      message: { dataType: "string" },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PaginationMeta: {
-    dataType: "refObject",
-    properties: {
-      total: { dataType: "double", required: true },
-      page: { dataType: "double", required: true },
-      limit: { dataType: "double", required: true },
-      totalPages: { dataType: "double", required: true },
-      hasNextPage: { dataType: "boolean", required: true },
-      hasPrevPage: { dataType: "boolean", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PaginatedResponse_PatientDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      data: {
-        dataType: "array",
-        array: { dataType: "refObject", ref: "PatientDTO" },
-        required: true,
-      },
-      pagination: { ref: "PaginationMeta", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  PaginatedPatientsResponseDTO: {
-    dataType: "refAlias",
-    type: { ref: "PaginatedResponse_PatientDTO_", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  CreateMedicalServiceInput: {
-    dataType: "refObject",
-    properties: {
-      name: { dataType: "string", required: true },
-      category: { dataType: "string", required: true },
-      price: { dataType: "double", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  Partial_CreateMedicalServiceInput_: {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {
-        name: { dataType: "string" },
-        category: { dataType: "string" },
-        price: { dataType: "double" },
-      },
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  UpdateMedicalServiceInput: {
-    dataType: "refAlias",
-    type: { ref: "Partial_CreateMedicalServiceInput_", validators: {} },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__": {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {
-        visitId: { dataType: "string", required: true },
-        notes: { dataType: "string" },
-        serviceId: { dataType: "string", required: true },
-      },
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  "Omit_ProvideServiceInput.providedById_": {
-    dataType: "refAlias",
-    type: {
-      ref: "Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__",
-      validators: {},
-    },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  InvoiceItemSummaryDTO: {
-    dataType: "refObject",
-    properties: {
-      type: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "enum", enums: ["SERVICE"] },
-          { dataType: "enum", enums: ["MEDICATION"] },
-        ],
-        required: true,
-      },
-      name: { dataType: "string", required: true },
-      quantity: { dataType: "double", required: true },
-      unitPrice: { dataType: "double", required: true },
-      totalPrice: { dataType: "double", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  InvoiceDTO: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      invoiceNumber: { dataType: "string", required: true },
-      visitId: { dataType: "string", required: true },
-      serviceTotal: { dataType: "double", required: true },
-      medicationTotal: { dataType: "double", required: true },
-      grandTotal: { dataType: "double", required: true },
-      amountPaid: { dataType: "double", required: true },
-      balance: { dataType: "double", required: true },
-      status: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "enum", enums: ["PENDING"] },
-          { dataType: "enum", enums: ["PARTIALLY_PAID"] },
-          { dataType: "enum", enums: ["PAID"] },
-          { dataType: "enum", enums: ["CANCELLED"] },
-        ],
-        required: true,
-      },
-      itemsSummary: {
-        dataType: "array",
-        array: { dataType: "refObject", ref: "InvoiceItemSummaryDTO" },
-        required: true,
-      },
-      createdAt: { dataType: "datetime", required: true },
-      updatedAt: { dataType: "datetime", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ApiResponse_InvoiceDTO_: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string" },
-      data: { ref: "InvoiceDTO", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  GenerateInvoiceDTO: {
-    dataType: "refObject",
-    properties: {
-      visitId: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ComponentStatus: {
-    dataType: "refObject",
-    properties: {
-      status: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "enum", enums: ["UP"] },
-          { dataType: "enum", enums: ["DOWN"] },
-        ],
-        required: true,
-      },
-      latencyMs: { dataType: "double" },
-      error: { dataType: "string" },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  HealthResponseDTO: {
-    dataType: "refObject",
-    properties: {
-      status: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "enum", enums: ["UP"] },
-          { dataType: "enum", enums: ["DOWN"] },
-          { dataType: "enum", enums: ["DEGRADED"] },
-        ],
-        required: true,
-      },
-      timestamp: { dataType: "string", required: true },
-      uptimeSeconds: { dataType: "double", required: true },
-      services: {
-        dataType: "nestedObjectLiteral",
-        nestedProperties: {
-          redis: { ref: "ComponentStatus", required: true },
-          postgres: { ref: "ComponentStatus", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ErrorResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "errors": {"ref":"Record_string.string-Array_"},
         },
-        required: true,
-      },
+        "additionalProperties": false,
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  AuthUserData: {
-    dataType: "refObject",
-    properties: {
-      id: { dataType: "string", required: true },
-      firstName: { dataType: "string", required: true },
-      lastName: { dataType: "string", required: true },
-      email: { dataType: "string", required: true },
-      role: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  LoginResponseDTO: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string", required: true },
-      data: {
-        dataType: "nestedObjectLiteral",
-        nestedProperties: {
-          refreshToken: { dataType: "string", required: true },
-          accessToken: { dataType: "string", required: true },
-          user: { ref: "AuthUserData", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateVisitDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "patientId": {"dataType":"string","required":true},
+            "attendingId": {"dataType":"string","required":true},
+            "symptoms": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "diagnosis": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "icdCode": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "visitType": {"ref":"VisitType"},
+            "priority": {"ref":"VisitPriority"},
         },
-        required: true,
-      },
+        "additionalProperties": false,
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  LoginDTO: {
-    dataType: "refObject",
-    properties: {
-      email: { dataType: "string", required: true },
-      password: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  LogoutResponseDTO: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  LogoutDTO: {
-    dataType: "refObject",
-    properties: {
-      refreshToken: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  RefreshTokenResponseDTO: {
-    dataType: "refObject",
-    properties: {
-      success: { dataType: "boolean", required: true },
-      message: { dataType: "string", required: true },
-      data: {
-        dataType: "nestedObjectLiteral",
-        nestedProperties: {
-          refreshToken: { dataType: "string", required: true },
-          accessToken: { dataType: "string", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateVisitDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "diagnosis": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "icdCode": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "symptoms": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "priority": {"ref":"VisitPriority"},
+            "attendingId": {"dataType":"string"},
         },
-        required: true,
-      },
+        "additionalProperties": false,
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  RefreshTokenDTO: {
-    dataType: "refObject",
-    properties: {
-      refreshToken: { dataType: "string", required: true },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.Role": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["MANAGER"]},{"dataType":"enum","enums":["GUEST"]},{"dataType":"enum","enums":["NURSE"]},{"dataType":"enum","enums":["DOCTOR"]},{"dataType":"enum","enums":["CASHIER"]}],"validators":{}},
     },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Role": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.Role","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RegisterUserDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "firstName": {"dataType":"string","required":true},
+            "lastName": {"dataType":"string","required":true},
+            "middleName": {"dataType":"string"},
+            "email": {"dataType":"string","required":true},
+            "phone": {"dataType":"string"},
+            "password": {"dataType":"string","required":true},
+            "role": {"ref":"Role","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.PrescriptionStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreatePrescriptionItemDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "productId": {"dataType":"string","required":true},
+            "dosage": {"dataType":"string","required":true},
+            "frequency": {"dataType":"string","required":true},
+            "durationDays": {"dataType":"double","required":true},
+            "quantityOrdered": {"dataType":"double","required":true},
+            "route": {"dataType":"string"},
+            "instructions": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreatePrescriptionDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "visitId": {"dataType":"string","required":true},
+            "notes": {"dataType":"string"},
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"CreatePrescriptionItemDTO"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.Gender": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["MALE"]},{"dataType":"enum","enums":["FEMALE"]},{"dataType":"enum","enums":["OTHER"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Gender": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.Gender","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PatientDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "mrn": {"dataType":"string","required":true},
+            "firstName": {"dataType":"string","required":true},
+            "lastName": {"dataType":"string","required":true},
+            "middleName": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "gender": {"ref":"Gender","required":true},
+            "dateOfBirth": {"dataType":"datetime","required":true},
+            "phone": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "emergencyContactName": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "emergencyContactPhone": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ApiResponse_PatientDTO_": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "data": {"ref":"PatientDTO","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PatientResponseDTO": {
+        "dataType": "refAlias",
+        "type": {"ref":"ApiResponse_PatientDTO_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RegisterPatientDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "firstName": {"dataType":"string","required":true},
+            "lastName": {"dataType":"string","required":true},
+            "middleName": {"dataType":"string"},
+            "gender": {"ref":"Gender","required":true},
+            "dateOfBirth": {"dataType":"string","required":true},
+            "phone": {"dataType":"string"},
+            "emergencyContactName": {"dataType":"string"},
+            "emergencyContactPhone": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_PatientPayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"emergencyContactPhone":{"dataType":"string","required":true},"emergencyContactName":{"dataType":"string","required":true},"dateOfBirth":{"dataType":"datetime","required":true},"gender":{"ref":"_36_Enums.Gender","required":true},"mrn":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"middleName":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Patient": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_PatientPayload_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PatientListResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "count": {"dataType":"double","required":true},
+            "data": {"dataType":"array","array":{"dataType":"refAlias","ref":"Patient"},"required":true},
+            "message": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaginationMeta": {
+        "dataType": "refObject",
+        "properties": {
+            "total": {"dataType":"double","required":true},
+            "page": {"dataType":"double","required":true},
+            "limit": {"dataType":"double","required":true},
+            "totalPages": {"dataType":"double","required":true},
+            "hasNextPage": {"dataType":"boolean","required":true},
+            "hasPrevPage": {"dataType":"boolean","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaginatedResponse_PatientDTO_": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"PatientDTO"},"required":true},
+            "pagination": {"ref":"PaginationMeta","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaginatedPatientsResponseDTO": {
+        "dataType": "refAlias",
+        "type": {"ref":"PaginatedResponse_PatientDTO_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateMedicalServiceInput": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "category": {"dataType":"string","required":true},
+            "price": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Partial_CreateMedicalServiceInput_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"category":{"dataType":"string"},"price":{"dataType":"double"}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateMedicalServiceInput": {
+        "dataType": "refAlias",
+        "type": {"ref":"Partial_CreateMedicalServiceInput_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"visitId":{"dataType":"string","required":true},"notes":{"dataType":"string"},"serviceId":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_ProvideServiceInput.providedById_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.LabStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]},{"dataType":"enum","enums":["VERIFIED"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OrderLabServiceDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "providedServiceId": {"dataType":"string","required":true},
+            "visitId": {"dataType":"string","required":true},
+            "specimenType": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LabStatus": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.LabStatus","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RecordLabResultDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "resultValue": {"dataType":"string"},
+            "unit": {"dataType":"string"},
+            "referenceRange": {"dataType":"string"},
+            "findings": {"dataType":"string"},
+            "specimenType": {"dataType":"string"},
+            "status": {"ref":"LabStatus"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateProductDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "code": {"dataType":"string"},
+            "name": {"dataType":"string","required":true},
+            "description": {"dataType":"string"},
+            "category": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["MEDICINE"]},{"dataType":"enum","enums":["EQUIPMENT"]},{"dataType":"enum","enums":["CONSUMABLE"]},{"dataType":"enum","enums":["SUPPLEMENT"]}]},
+            "unitPrice": {"dataType":"double","required":true},
+            "reorderLevel": {"dataType":"double"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Partial_CreateProductDTO_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"code":{"dataType":"string"},"name":{"dataType":"string"},"description":{"dataType":"string"},"category":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["MEDICINE"]},{"dataType":"enum","enums":["EQUIPMENT"]},{"dataType":"enum","enums":["CONSUMABLE"]},{"dataType":"enum","enums":["SUPPLEMENT"]}]},"unitPrice":{"dataType":"double"},"reorderLevel":{"dataType":"double"}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateProductDTO": {
+        "dataType": "refAlias",
+        "type": {"ref":"Partial_CreateProductDTO_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateBatchDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "productId": {"dataType":"string","required":true},
+            "batchNumber": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "costPrice": {"dataType":"double"},
+            "expiryDate": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DispenseItemInputDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "productId": {"dataType":"string","required":true},
+            "batchId": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "unitPrice": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateDispenseRecordDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "visitId": {"dataType":"string"},
+            "dispensedById": {"dataType":"string"},
+            "prescriptionId": {"dataType":"string"},
+            "notes": {"dataType":"string"},
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"DispenseItemInputDTO"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ComponentStatus": {
+        "dataType": "refObject",
+        "properties": {
+            "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["UP"]},{"dataType":"enum","enums":["DOWN"]}],"required":true},
+            "latencyMs": {"dataType":"double"},
+            "error": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HealthResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "status": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["UP"]},{"dataType":"enum","enums":["DOWN"]},{"dataType":"enum","enums":["DEGRADED"]}],"required":true},
+            "timestamp": {"dataType":"string","required":true},
+            "uptimeSeconds": {"dataType":"double","required":true},
+            "services": {"dataType":"nestedObjectLiteral","nestedProperties":{"redis":{"ref":"ComponentStatus","required":true},"postgres":{"ref":"ComponentStatus","required":true}},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.InvoiceType": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["FINAL"]},{"dataType":"enum","enums":["INTERIM"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.PaymentStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "InvoiceType": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.InvoiceType","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "GenerateInvoiceDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "visitId": {"dataType":"string","required":true},
+            "type": {"ref":"InvoiceType"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.PaymentMethod": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CASH"]},{"dataType":"enum","enums":["MOBILE_MONEY"]},{"dataType":"enum","enums":["INSURANCE"]},{"dataType":"enum","enums":["CARD"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaymentMethod": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.PaymentMethod","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RecordPaymentDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "invoiceId": {"dataType":"string","required":true},
+            "amount": {"dataType":"double","required":true},
+            "paymentMethod": {"ref":"PaymentMethod","required":true},
+            "referenceNo": {"dataType":"string"},
+            "notes": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AuthUserData": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "firstName": {"dataType":"string","required":true},
+            "lastName": {"dataType":"string","required":true},
+            "email": {"dataType":"string","required":true},
+            "role": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LoginResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"refreshToken":{"dataType":"string","required":true},"accessToken":{"dataType":"string","required":true},"user":{"ref":"AuthUserData","required":true}},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LoginDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+            "password": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LogoutResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LogoutDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "refreshToken": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RefreshTokenResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"refreshToken":{"dataType":"string","required":true},"accessToken":{"dataType":"string","required":true}},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RefreshTokenDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "refreshToken": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
-const templateService = new ExpressTemplateService(models, {
-  noImplicitAdditionalProperties: "throw-on-extras",
-  bodyCoercion: true,
-});
+const templateService = new ExpressTemplateService(models, {"noImplicitAdditionalProperties":"throw-on-extras","bodyCoercion":true});
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
+
+
+
 export function RegisterRoutes(app: Router) {
-  // ###########################################################################################################
-  //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
-  //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
-  // ###########################################################################################################
 
-  const argsVitalSignsController_create: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    req: { in: "request", name: "req", required: true, dataType: "object" },
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "CreateVitalSignsInput",
-    },
-  };
-  app.post(
-    "/api/v1/vital-signs",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.create),
+    // ###########################################################################################################
+    //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
+    //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
+    // ###########################################################################################################
 
-    async function VitalSignsController_create(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVitalSignsController_create,
-          request,
-          response,
-        });
+    
+        const argsVitalSignsController_create: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateVitalSignsInput"},
+        };
+        app.post('/api/v1/vital-signs',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController)),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.create)),
 
-        const controller = new VitalSignsController();
+            async function VitalSignsController_create(request: ExRequest, response: ExResponse, next: any) {
 
-        await templateService.apiHandler({
-          methodName: "create",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVitalSignsController_getByVisitId: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    visitId: {
-      in: "path",
-      name: "visitId",
-      required: true,
-      dataType: "string",
-    },
-  };
-  app.get(
-    "/api/v1/vital-signs/visit/:visitId",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController),
-    ...fetchMiddlewares<RequestHandler>(
-      VitalSignsController.prototype.getByVisitId,
-    ),
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-    async function VitalSignsController_getByVisitId(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVitalSignsController_create, request, response });
 
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVitalSignsController_getByVisitId,
-          request,
-          response,
-        });
+                const controller = new VitalSignsController();
 
-        const controller = new VitalSignsController();
-
-        await templateService.apiHandler({
-          methodName: "getByVisitId",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVitalSignsController_update: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    id: { in: "path", name: "id", required: true, dataType: "string" },
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "UpdateVitalSignsInput",
-    },
-  };
-  app.put(
-    "/api/v1/vital-signs/:id",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.update),
-
-    async function VitalSignsController_update(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVitalSignsController_update,
-          request,
-          response,
-        });
-
-        const controller = new VitalSignsController();
-
-        await templateService.apiHandler({
-          methodName: "update",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVitalSignsController_getAll: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    page: { default: 1, in: "query", name: "page", dataType: "double" },
-    limit: { default: 20, in: "query", name: "limit", dataType: "double" },
-    patientId: { in: "query", name: "patientId", dataType: "string" },
-    priority: { in: "query", name: "priority", ref: "TriagePriority" },
-    startDate: { in: "query", name: "startDate", dataType: "datetime" },
-    endDate: { in: "query", name: "endDate", dataType: "datetime" },
-  };
-  app.get(
-    "/api/v1/vital-signs",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController),
-    ...fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.getAll),
-
-    async function VitalSignsController_getAll(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVitalSignsController_getAll,
-          request,
-          response,
-        });
-
-        const controller = new VitalSignsController();
-
-        await templateService.apiHandler({
-          methodName: "getAll",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVisitController_createVisit: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "CreateVisitDTO",
-    },
-  };
-  app.post(
-    "/api/v1/visits",
-    authenticateMiddleware([{ jwt: ["NURSE", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(VisitController),
-    ...fetchMiddlewares<RequestHandler>(VisitController.prototype.createVisit),
-
-    async function VisitController_createVisit(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVisitController_createVisit,
-          request,
-          response,
-        });
-
-        const controller = new VisitController();
-
-        await templateService.apiHandler({
-          methodName: "createVisit",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVisitController_updateVisit: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    id: { in: "path", name: "id", required: true, dataType: "string" },
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "UpdateVisitDTO",
-    },
-  };
-  app.put(
-    "/api/v1/visits/:id",
-    authenticateMiddleware([{ jwt: ["NURSE", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(VisitController),
-    ...fetchMiddlewares<RequestHandler>(VisitController.prototype.updateVisit),
-
-    async function VisitController_updateVisit(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVisitController_updateVisit,
-          request,
-          response,
-        });
-
-        const controller = new VisitController();
-
-        await templateService.apiHandler({
-          methodName: "updateVisit",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: undefined,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVisitController_getVisitById: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    id: { in: "path", name: "id", required: true, dataType: "string" },
-  };
-  app.get(
-    "/api/v1/visits/:id",
-    authenticateMiddleware([{ jwt: ["NURSE", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(VisitController),
-    ...fetchMiddlewares<RequestHandler>(VisitController.prototype.getVisitById),
-
-    async function VisitController_getVisitById(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVisitController_getVisitById,
-          request,
-          response,
-        });
-
-        const controller = new VisitController();
-
-        await templateService.apiHandler({
-          methodName: "getVisitById",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: undefined,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsVisitController_getVisitsByPatient: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    mrn: { in: "path", name: "mrn", required: true, dataType: "string" },
-  };
-  app.get(
-    "/api/v1/visits/patient/:mrn",
-    authenticateMiddleware([{ jwt: ["NURSE", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(VisitController),
-    ...fetchMiddlewares<RequestHandler>(
-      VisitController.prototype.getVisitsByPatient,
-    ),
-
-    async function VisitController_getVisitsByPatient(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsVisitController_getVisitsByPatient,
-          request,
-          response,
-        });
-
-        const controller = new VisitController();
-
-        await templateService.apiHandler({
-          methodName: "getVisitsByPatient",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: undefined,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPharmacyController_createProduct: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "CreateProductDTO",
-    },
-  };
-  app.post(
-    "/api/pharmacy/products",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(PharmacyController),
-    ...fetchMiddlewares<RequestHandler>(
-      PharmacyController.prototype.createProduct,
-    ),
-
-    async function PharmacyController_createProduct(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPharmacyController_createProduct,
-          request,
-          response,
-        });
-
-        const controller = new PharmacyController();
-
-        await templateService.apiHandler({
-          methodName: "createProduct",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPharmacyController_getProducts: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {};
-  app.get(
-    "/api/pharmacy/products",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(PharmacyController),
-    ...fetchMiddlewares<RequestHandler>(
-      PharmacyController.prototype.getProducts,
-    ),
-
-    async function PharmacyController_getProducts(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPharmacyController_getProducts,
-          request,
-          response,
-        });
-
-        const controller = new PharmacyController();
-
-        await templateService.apiHandler({
-          methodName: "getProducts",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPharmacyController_addStockBatch: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "CreateBatchDTO",
-    },
-  };
-  app.post(
-    "/api/pharmacy/batches",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(PharmacyController),
-    ...fetchMiddlewares<RequestHandler>(
-      PharmacyController.prototype.addStockBatch,
-    ),
-
-    async function PharmacyController_addStockBatch(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPharmacyController_addStockBatch,
-          request,
-          response,
-        });
-
-        const controller = new PharmacyController();
-
-        await templateService.apiHandler({
-          methodName: "addStockBatch",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPharmacyController_dispenseMedications: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "DispenseMedicationDTO",
-    },
-  };
-  app.post(
-    "/api/pharmacy/dispense",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(PharmacyController),
-    ...fetchMiddlewares<RequestHandler>(
-      PharmacyController.prototype.dispenseMedications,
-    ),
-
-    async function PharmacyController_dispenseMedications(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPharmacyController_dispenseMedications,
-          request,
-          response,
-        });
-
-        const controller = new PharmacyController();
-
-        await templateService.apiHandler({
-          methodName: "dispenseMedications",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsUserController_register: Record<string, TsoaRoute.ParameterSchema> =
-    {
-      requestBody: {
-        in: "body",
-        name: "requestBody",
-        required: true,
-        ref: "RegisterUserDTO",
-      },
-    };
-  app.post(
-    "/api/users/register",
-    authenticateMiddleware([{ jwt: ["ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(UserController),
-    ...fetchMiddlewares<RequestHandler>(UserController.prototype.register),
-
-    async function UserController_register(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsUserController_register,
-          request,
-          response,
-        });
-
-        const controller = new UserController();
-
-        await templateService.apiHandler({
-          methodName: "register",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPaymentController_processPayment: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "ProcessPaymentDTO",
-    },
-  };
-  app.post(
-    "/api/payments",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(PaymentController),
-    ...fetchMiddlewares<RequestHandler>(
-      PaymentController.prototype.processPayment,
-    ),
-
-    async function PaymentController_processPayment(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPaymentController_processPayment,
-          request,
-          response,
-        });
-
-        const controller = new PaymentController();
-
-        await templateService.apiHandler({
-          methodName: "processPayment",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPaymentController_getPaymentsByInvoice: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    invoiceId: {
-      in: "path",
-      name: "invoiceId",
-      required: true,
-      dataType: "string",
-    },
-  };
-  app.get(
-    "/api/payments/invoice/:invoiceId",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(PaymentController),
-    ...fetchMiddlewares<RequestHandler>(
-      PaymentController.prototype.getPaymentsByInvoice,
-    ),
-
-    async function PaymentController_getPaymentsByInvoice(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPaymentController_getPaymentsByInvoice,
-          request,
-          response,
-        });
-
-        const controller = new PaymentController();
-
-        await templateService.apiHandler({
-          methodName: "getPaymentsByInvoice",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPatientController_registerPatient: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "RegisterPatientDTO",
-    },
-    req: { in: "request", name: "req", required: true, dataType: "object" },
-  };
-  app.post(
-    "/api/v1/patients/register",
-    authenticateMiddleware([{ jwt: ["NURSE", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(PatientController),
-    ...fetchMiddlewares<RequestHandler>(
-      PatientController.prototype.registerPatient,
-    ),
-
-    async function PatientController_registerPatient(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPatientController_registerPatient,
-          request,
-          response,
-        });
-
-        const controller = new PatientController();
-
-        await templateService.apiHandler({
-          methodName: "registerPatient",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPatientController_lookupPatients: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    mrn: { in: "query", name: "mrn", dataType: "string" },
-    firstName: { in: "query", name: "firstName", dataType: "string" },
-    lastName: { in: "query", name: "lastName", dataType: "string" },
-  };
-  app.get(
-    "/api/v1/patients/lookup",
-    authenticateMiddleware([{ jwt: ["NURSE", "DOCTOR", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(PatientController),
-    ...fetchMiddlewares<RequestHandler>(
-      PatientController.prototype.lookupPatients,
-    ),
-
-    async function PatientController_lookupPatients(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPatientController_lookupPatients,
-          request,
-          response,
-        });
-
-        const controller = new PatientController();
-
-        await templateService.apiHandler({
-          methodName: "lookupPatients",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsPatientController_getPatients: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    page: { in: "query", name: "page", dataType: "double" },
-    limit: { in: "query", name: "limit", dataType: "double" },
-    search: { in: "query", name: "search", dataType: "string" },
-    gender: {
-      in: "query",
-      name: "gender",
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["MALE"] },
-        { dataType: "enum", enums: ["FEMALE"] },
-        { dataType: "enum", enums: ["OTHER"] },
-      ],
-    },
-    sortBy: {
-      in: "query",
-      name: "sortBy",
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["createdAt"] },
-        { dataType: "enum", enums: ["lastName"] },
-        { dataType: "enum", enums: ["mrn"] },
-      ],
-    },
-    sortOrder: {
-      in: "query",
-      name: "sortOrder",
-      dataType: "union",
-      subSchemas: [
-        { dataType: "enum", enums: ["asc"] },
-        { dataType: "enum", enums: ["desc"] },
-      ],
-    },
-  };
-  app.get(
-    "/api/v1/patients",
-    authenticateMiddleware([{ jwt: ["NURSE", "ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(PatientController),
-    ...fetchMiddlewares<RequestHandler>(
-      PatientController.prototype.getPatients,
-    ),
-
-    async function PatientController_getPatients(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsPatientController_getPatients,
-          request,
-          response,
-        });
-
-        const controller = new PatientController();
-
-        await templateService.apiHandler({
-          methodName: "getPatients",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsMedicalServiceController_createService: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "CreateMedicalServiceInput",
-    },
-  };
-  app.post(
-    "/api/v1/medical-services",
-    authenticateMiddleware([{ jwt: ["ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(MedicalServiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      MedicalServiceController.prototype.createService,
-    ),
-
-    async function MedicalServiceController_createService(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsMedicalServiceController_createService,
-          request,
-          response,
-        });
-
-        const controller = new MedicalServiceController();
-
-        await templateService.apiHandler({
-          methodName: "createService",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsMedicalServiceController_getServices: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    page: { in: "query", name: "page", dataType: "double" },
-    limit: { in: "query", name: "limit", dataType: "double" },
-    category: { in: "query", name: "category", dataType: "string" },
-    search: { in: "query", name: "search", dataType: "string" },
-  };
-  app.get(
-    "/api/v1/medical-services",
-    ...fetchMiddlewares<RequestHandler>(MedicalServiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      MedicalServiceController.prototype.getServices,
-    ),
-
-    async function MedicalServiceController_getServices(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsMedicalServiceController_getServices,
-          request,
-          response,
-        });
-
-        const controller = new MedicalServiceController();
-
-        await templateService.apiHandler({
-          methodName: "getServices",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: undefined,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsMedicalServiceController_getServiceById: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    id: { in: "path", name: "id", required: true, dataType: "string" },
-  };
-  app.get(
-    "/api/v1/medical-services/:id",
-    ...fetchMiddlewares<RequestHandler>(MedicalServiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      MedicalServiceController.prototype.getServiceById,
-    ),
-
-    async function MedicalServiceController_getServiceById(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsMedicalServiceController_getServiceById,
-          request,
-          response,
-        });
-
-        const controller = new MedicalServiceController();
-
-        await templateService.apiHandler({
-          methodName: "getServiceById",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: undefined,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsMedicalServiceController_updateService: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    id: { in: "path", name: "id", required: true, dataType: "string" },
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "UpdateMedicalServiceInput",
-    },
-  };
-  app.put(
-    "/api/v1/medical-services/:id",
-    authenticateMiddleware([{ jwt: ["ADMIN"] }]),
-    ...fetchMiddlewares<RequestHandler>(MedicalServiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      MedicalServiceController.prototype.updateService,
-    ),
-
-    async function MedicalServiceController_updateService(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsMedicalServiceController_updateService,
-          request,
-          response,
-        });
-
-        const controller = new MedicalServiceController();
-
-        await templateService.apiHandler({
-          methodName: "updateService",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: undefined,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsMedicalServiceController_provideService: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    request: {
-      in: "request",
-      name: "request",
-      required: true,
-      dataType: "object",
-    },
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "Omit_ProvideServiceInput.providedById_",
-    },
-  };
-  app.post(
-    "/api/v1/medical-services/provide",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(MedicalServiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      MedicalServiceController.prototype.provideService,
-    ),
-
-    async function MedicalServiceController_provideService(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsMedicalServiceController_provideService,
-          request,
-          response,
-        });
-
-        const controller = new MedicalServiceController();
-
-        await templateService.apiHandler({
-          methodName: "provideService",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsInvoiceController_generateInvoice: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "GenerateInvoiceDTO",
-    },
-  };
-  app.post(
-    "/api/invoices/generate",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(InvoiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      InvoiceController.prototype.generateInvoice,
-    ),
-
-    async function InvoiceController_generateInvoice(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsInvoiceController_generateInvoice,
-          request,
-          response,
-        });
-
-        const controller = new InvoiceController();
-
-        await templateService.apiHandler({
-          methodName: "generateInvoice",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 201,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsInvoiceController_getInvoiceByVisit: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {
-    visitId: {
-      in: "path",
-      name: "visitId",
-      required: true,
-      dataType: "string",
-    },
-  };
-  app.get(
-    "/api/invoices/visit/:visitId",
-    authenticateMiddleware([{ jwt: [] }]),
-    ...fetchMiddlewares<RequestHandler>(InvoiceController),
-    ...fetchMiddlewares<RequestHandler>(
-      InvoiceController.prototype.getInvoiceByVisit,
-    ),
-
-    async function InvoiceController_getInvoiceByVisit(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsInvoiceController_getInvoiceByVisit,
-          request,
-          response,
-        });
-
-        const controller = new InvoiceController();
-
-        await templateService.apiHandler({
-          methodName: "getInvoiceByVisit",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsHealthController_checkHealth: Record<
-    string,
-    TsoaRoute.ParameterSchema
-  > = {};
-  app.get(
-    "/health",
-    ...fetchMiddlewares<RequestHandler>(HealthController),
-    ...fetchMiddlewares<RequestHandler>(HealthController.prototype.checkHealth),
-
-    async function HealthController_checkHealth(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsHealthController_checkHealth,
-          request,
-          response,
-        });
-
-        const controller = new HealthController();
-
-        await templateService.apiHandler({
-          methodName: "checkHealth",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsAuthController_login: Record<string, TsoaRoute.ParameterSchema> = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "LoginDTO",
-    },
-  };
-  app.post(
-    "/api/auth/login",
-    ...fetchMiddlewares<RequestHandler>(AuthController),
-    ...fetchMiddlewares<RequestHandler>(AuthController.prototype.login),
-
-    async function AuthController_login(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsAuthController_login,
-          request,
-          response,
-        });
-
-        const controller = new AuthController();
-
-        await templateService.apiHandler({
-          methodName: "login",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsAuthController_logout: Record<string, TsoaRoute.ParameterSchema> = {
-    requestBody: {
-      in: "body",
-      name: "requestBody",
-      required: true,
-      ref: "LogoutDTO",
-    },
-  };
-  app.post(
-    "/api/auth/logout",
-    ...fetchMiddlewares<RequestHandler>(AuthController),
-    ...fetchMiddlewares<RequestHandler>(AuthController.prototype.logout),
-
-    async function AuthController_logout(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsAuthController_logout,
-          request,
-          response,
-        });
-
-        const controller = new AuthController();
-
-        await templateService.apiHandler({
-          methodName: "logout",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  const argsAuthController_refresh: Record<string, TsoaRoute.ParameterSchema> =
-    {
-      requestBody: {
-        in: "body",
-        name: "requestBody",
-        required: true,
-        ref: "RefreshTokenDTO",
-      },
-    };
-  app.post(
-    "/api/auth/refresh",
-    ...fetchMiddlewares<RequestHandler>(AuthController),
-    ...fetchMiddlewares<RequestHandler>(AuthController.prototype.refresh),
-
-    async function AuthController_refresh(
-      request: ExRequest,
-      response: ExResponse,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = templateService.getValidatedArgs({
-          args: argsAuthController_refresh,
-          request,
-          response,
-        });
-
-        const controller = new AuthController();
-
-        await templateService.apiHandler({
-          methodName: "refresh",
-          controller,
-          response,
-          next,
-          validatedArgs,
-          successStatus: 200,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    },
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-  function authenticateMiddleware(security: TsoaRoute.Security[] = []) {
-    return async function runAuthenticationMiddleware(
-      request: any,
-      response: any,
-      next: any,
-    ) {
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      // keep track of failed auth attempts so we can hand back the most
-      // recent one.  This behavior was previously existing so preserving it
-      // here
-      const failedAttempts: any[] = [];
-      const pushAndRethrow = (error: any) => {
-        failedAttempts.push(error);
-        throw error;
-      };
-
-      const secMethodOrPromises: Promise<any>[] = [];
-      for (const secMethod of security) {
-        if (Object.keys(secMethod).length > 1) {
-          const secMethodAndPromises: Promise<any>[] = [];
-
-          for (const name in secMethod) {
-            secMethodAndPromises.push(
-              expressAuthenticationRecasted(
-                request,
-                name,
-                secMethod[name],
+              await templateService.apiHandler({
+                methodName: 'create',
+                controller,
                 response,
-              ).catch(pushAndRethrow),
-            );
-          }
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVitalSignsController_getByVisitId: Record<string, TsoaRoute.ParameterSchema> = {
+                visitId: {"in":"path","name":"visitId","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/vital-signs/visit/:visitId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController)),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.getByVisitId)),
 
-          // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+            async function VitalSignsController_getByVisitId(request: ExRequest, response: ExResponse, next: any) {
 
-          secMethodOrPromises.push(
-            Promise.all(secMethodAndPromises).then((users) => {
-              return users[0];
-            }),
-          );
-        } else {
-          for (const name in secMethod) {
-            secMethodOrPromises.push(
-              expressAuthenticationRecasted(
-                request,
-                name,
-                secMethod[name],
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVitalSignsController_getByVisitId, request, response });
+
+                const controller = new VitalSignsController();
+
+              await templateService.apiHandler({
+                methodName: 'getByVisitId',
+                controller,
                 response,
-              ).catch(pushAndRethrow),
-            );
-          }
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVitalSignsController_update: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateVitalSignsInput"},
+        };
+        app.put('/api/v1/vital-signs/:id',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController)),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.update)),
+
+            async function VitalSignsController_update(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVitalSignsController_update, request, response });
+
+                const controller = new VitalSignsController();
+
+              await templateService.apiHandler({
+                methodName: 'update',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVitalSignsController_getAll: Record<string, TsoaRoute.ParameterSchema> = {
+                page: {"default":1,"in":"query","name":"page","dataType":"double"},
+                limit: {"default":20,"in":"query","name":"limit","dataType":"double"},
+                patientId: {"in":"query","name":"patientId","dataType":"string"},
+                priority: {"in":"query","name":"priority","ref":"TriagePriority"},
+                startDate: {"in":"query","name":"startDate","dataType":"datetime"},
+                endDate: {"in":"query","name":"endDate","dataType":"datetime"},
+        };
+        app.get('/api/v1/vital-signs',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController)),
+            ...(fetchMiddlewares<RequestHandler>(VitalSignsController.prototype.getAll)),
+
+            async function VitalSignsController_getAll(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVitalSignsController_getAll, request, response });
+
+                const controller = new VitalSignsController();
+
+              await templateService.apiHandler({
+                methodName: 'getAll',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVisitController_createVisit: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateVisitDTO"},
+        };
+        app.post('/api/v1/visits',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VisitController)),
+            ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.createVisit)),
+
+            async function VisitController_createVisit(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVisitController_createVisit, request, response });
+
+                const controller = new VisitController();
+
+              await templateService.apiHandler({
+                methodName: 'createVisit',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVisitController_updateVisit: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateVisitDTO"},
+        };
+        app.put('/api/v1/visits/:id',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VisitController)),
+            ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.updateVisit)),
+
+            async function VisitController_updateVisit(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVisitController_updateVisit, request, response });
+
+                const controller = new VisitController();
+
+              await templateService.apiHandler({
+                methodName: 'updateVisit',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVisitController_getVisitById: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/visits/:id',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VisitController)),
+            ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.getVisitById)),
+
+            async function VisitController_getVisitById(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVisitController_getVisitById, request, response });
+
+                const controller = new VisitController();
+
+              await templateService.apiHandler({
+                methodName: 'getVisitById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVisitController_getVisitsByPatient: Record<string, TsoaRoute.ParameterSchema> = {
+                mrn: {"in":"path","name":"mrn","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/visits/patient/:mrn',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VisitController)),
+            ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.getVisitsByPatient)),
+
+            async function VisitController_getVisitsByPatient(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVisitController_getVisitsByPatient, request, response });
+
+                const controller = new VisitController();
+
+              await templateService.apiHandler({
+                methodName: 'getVisitsByPatient',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_register: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RegisterUserDTO"},
+        };
+        app.post('/api/users/register',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.register)),
+
+            async function UserController_register(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_register, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'register',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPrescriptionController_createPrescription: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreatePrescriptionDTO"},
+        };
+        app.post('/api/prescriptions',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(PrescriptionController)),
+            ...(fetchMiddlewares<RequestHandler>(PrescriptionController.prototype.createPrescription)),
+
+            async function PrescriptionController_createPrescription(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPrescriptionController_createPrescription, request, response });
+
+                const controller = new PrescriptionController();
+
+              await templateService.apiHandler({
+                methodName: 'createPrescription',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPrescriptionController_getPendingPrescriptions: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/api/prescriptions/pending',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(PrescriptionController)),
+            ...(fetchMiddlewares<RequestHandler>(PrescriptionController.prototype.getPendingPrescriptions)),
+
+            async function PrescriptionController_getPendingPrescriptions(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPrescriptionController_getPendingPrescriptions, request, response });
+
+                const controller = new PrescriptionController();
+
+              await templateService.apiHandler({
+                methodName: 'getPendingPrescriptions',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPatientController_registerPatient: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RegisterPatientDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.post('/api/v1/patients/register',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PatientController)),
+            ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.registerPatient)),
+
+            async function PatientController_registerPatient(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPatientController_registerPatient, request, response });
+
+                const controller = new PatientController();
+
+              await templateService.apiHandler({
+                methodName: 'registerPatient',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPatientController_lookupPatients: Record<string, TsoaRoute.ParameterSchema> = {
+                mrn: {"in":"query","name":"mrn","dataType":"string"},
+                firstName: {"in":"query","name":"firstName","dataType":"string"},
+                lastName: {"in":"query","name":"lastName","dataType":"string"},
+        };
+        app.get('/api/v1/patients/lookup',
+            authenticateMiddleware([{"jwt":["NURSE","DOCTOR","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PatientController)),
+            ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.lookupPatients)),
+
+            async function PatientController_lookupPatients(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPatientController_lookupPatients, request, response });
+
+                const controller = new PatientController();
+
+              await templateService.apiHandler({
+                methodName: 'lookupPatients',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPatientController_getPatients: Record<string, TsoaRoute.ParameterSchema> = {
+                page: {"in":"query","name":"page","dataType":"double"},
+                limit: {"in":"query","name":"limit","dataType":"double"},
+                search: {"in":"query","name":"search","dataType":"string"},
+                gender: {"in":"query","name":"gender","dataType":"union","subSchemas":[{"dataType":"enum","enums":["MALE"]},{"dataType":"enum","enums":["FEMALE"]},{"dataType":"enum","enums":["OTHER"]}]},
+                sortBy: {"in":"query","name":"sortBy","dataType":"union","subSchemas":[{"dataType":"enum","enums":["createdAt"]},{"dataType":"enum","enums":["lastName"]},{"dataType":"enum","enums":["mrn"]}]},
+                sortOrder: {"in":"query","name":"sortOrder","dataType":"union","subSchemas":[{"dataType":"enum","enums":["asc"]},{"dataType":"enum","enums":["desc"]}]},
+        };
+        app.get('/api/v1/patients',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PatientController)),
+            ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.getPatients)),
+
+            async function PatientController_getPatients(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPatientController_getPatients, request, response });
+
+                const controller = new PatientController();
+
+              await templateService.apiHandler({
+                methodName: 'getPatients',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_createService: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateMedicalServiceInput"},
+        };
+        app.post('/api/v1/medical-services',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.createService)),
+
+            async function MedicalServiceController_createService(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_createService, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'createService',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_getServices: Record<string, TsoaRoute.ParameterSchema> = {
+                page: {"in":"query","name":"page","dataType":"double"},
+                limit: {"in":"query","name":"limit","dataType":"double"},
+                category: {"in":"query","name":"category","dataType":"string"},
+                search: {"in":"query","name":"search","dataType":"string"},
+        };
+        app.get('/api/v1/medical-services',
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.getServices)),
+
+            async function MedicalServiceController_getServices(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_getServices, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'getServices',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_getServiceById: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/medical-services/:id',
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.getServiceById)),
+
+            async function MedicalServiceController_getServiceById(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_getServiceById, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'getServiceById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_updateService: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateMedicalServiceInput"},
+        };
+        app.put('/api/v1/medical-services/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.updateService)),
+
+            async function MedicalServiceController_updateService(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_updateService, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'updateService',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_provideService: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Omit_ProvideServiceInput.providedById_"},
+        };
+        app.post('/api/v1/medical-services/provide',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.provideService)),
+
+            async function MedicalServiceController_provideService(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_provideService, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'provideService',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_getByMrn: Record<string, TsoaRoute.ParameterSchema> = {
+                mrn: {"in":"path","name":"mrn","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/medical-services/patient/mrn/:mrn',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.getByMrn)),
+
+            async function MedicalServiceController_getByMrn(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_getByMrn, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'getByMrn',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMedicalServiceController_getLatestVisitByMrn: Record<string, TsoaRoute.ParameterSchema> = {
+                mrn: {"in":"path","name":"mrn","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/medical-services/visit/latest/mrn/:mrn',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController)),
+            ...(fetchMiddlewares<RequestHandler>(MedicalServiceController.prototype.getLatestVisitByMrn)),
+
+            async function MedicalServiceController_getLatestVisitByMrn(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsMedicalServiceController_getLatestVisitByMrn, request, response });
+
+                const controller = new MedicalServiceController();
+
+              await templateService.apiHandler({
+                methodName: 'getLatestVisitByMrn',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLabController_orderLab: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"OrderLabServiceDTO"},
+        };
+        app.post('/api/labs/order',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LabController)),
+            ...(fetchMiddlewares<RequestHandler>(LabController.prototype.orderLab)),
+
+            async function LabController_orderLab(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLabController_orderLab, request, response });
+
+                const controller = new LabController();
+
+              await templateService.apiHandler({
+                methodName: 'orderLab',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLabController_recordResult: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RecordLabResultDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.put('/api/labs/:id/results',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LabController)),
+            ...(fetchMiddlewares<RequestHandler>(LabController.prototype.recordResult)),
+
+            async function LabController_recordResult(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLabController_recordResult, request, response });
+
+                const controller = new LabController();
+
+              await templateService.apiHandler({
+                methodName: 'recordResult',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLabController_verifyResult: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"findings":{"dataType":"string"}}},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.put('/api/labs/:id/verify',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LabController)),
+            ...(fetchMiddlewares<RequestHandler>(LabController.prototype.verifyResult)),
+
+            async function LabController_verifyResult(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLabController_verifyResult, request, response });
+
+                const controller = new LabController();
+
+              await templateService.apiHandler({
+                methodName: 'verifyResult',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLabController_getByVisit: Record<string, TsoaRoute.ParameterSchema> = {
+                visitId: {"in":"path","name":"visitId","required":true,"dataType":"string"},
+        };
+        app.get('/api/labs/visit/:visitId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LabController)),
+            ...(fetchMiddlewares<RequestHandler>(LabController.prototype.getByVisit)),
+
+            async function LabController_getByVisit(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLabController_getByVisit, request, response });
+
+                const controller = new LabController();
+
+              await templateService.apiHandler({
+                methodName: 'getByVisit',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_createProduct: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateProductDTO"},
+        };
+        app.post('/api/pharmacy/products',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.createProduct)),
+
+            async function PharmacyController_createProduct(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_createProduct, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'createProduct',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_getAllProducts: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/api/pharmacy/products',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.getAllProducts)),
+
+            async function PharmacyController_getAllProducts(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_getAllProducts, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'getAllProducts',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_getProductById: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.get('/api/pharmacy/products/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.getProductById)),
+
+            async function PharmacyController_getProductById(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_getProductById, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'getProductById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_updateProduct: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateProductDTO"},
+        };
+        app.put('/api/pharmacy/products/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.updateProduct)),
+
+            async function PharmacyController_updateProduct(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_updateProduct, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'updateProduct',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_createBatch: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateBatchDTO"},
+        };
+        app.post('/api/pharmacy/batches',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.createBatch)),
+
+            async function PharmacyController_createBatch(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_createBatch, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'createBatch',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_dispenseProducts: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateDispenseRecordDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.post('/api/pharmacy/dispense',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.dispenseProducts)),
+
+            async function PharmacyController_dispenseProducts(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_dispenseProducts, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'dispenseProducts',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsHealthController_checkHealth: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/health',
+            ...(fetchMiddlewares<RequestHandler>(HealthController)),
+            ...(fetchMiddlewares<RequestHandler>(HealthController.prototype.checkHealth)),
+
+            async function HealthController_checkHealth(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsHealthController_checkHealth, request, response });
+
+                const controller = new HealthController();
+
+              await templateService.apiHandler({
+                methodName: 'checkHealth',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsBillingController_generateInvoice: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"GenerateInvoiceDTO"},
+        };
+        app.post('/api/billing/invoices/generate',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(BillingController)),
+            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.generateInvoice)),
+
+            async function BillingController_generateInvoice(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_generateInvoice, request, response });
+
+                const controller = new BillingController();
+
+              await templateService.apiHandler({
+                methodName: 'generateInvoice',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsBillingController_recordPayment: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RecordPaymentDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.post('/api/billing/payments',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(BillingController)),
+            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.recordPayment)),
+
+            async function BillingController_recordPayment(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_recordPayment, request, response });
+
+                const controller = new BillingController();
+
+              await templateService.apiHandler({
+                methodName: 'recordPayment',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsBillingController_getInvoiceByVisit: Record<string, TsoaRoute.ParameterSchema> = {
+                visitId: {"in":"path","name":"visitId","required":true,"dataType":"string"},
+        };
+        app.get('/api/billing/invoices/visit/:visitId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(BillingController)),
+            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.getInvoiceByVisit)),
+
+            async function BillingController_getInvoiceByVisit(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_getInvoiceByVisit, request, response });
+
+                const controller = new BillingController();
+
+              await templateService.apiHandler({
+                methodName: 'getInvoiceByVisit',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_login: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"LoginDTO"},
+        };
+        app.post('/api/auth/login',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.login)),
+
+            async function AuthController_login(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_login, request, response });
+
+                const controller = new AuthController();
+
+              await templateService.apiHandler({
+                methodName: 'login',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_logout: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"LogoutDTO"},
+        };
+        app.post('/api/auth/logout',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.logout)),
+
+            async function AuthController_logout(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_logout, request, response });
+
+                const controller = new AuthController();
+
+              await templateService.apiHandler({
+                methodName: 'logout',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_refresh: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RefreshTokenDTO"},
+        };
+        app.post('/api/auth/refresh',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.refresh)),
+
+            async function AuthController_refresh(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_refresh, request, response });
+
+                const controller = new AuthController();
+
+              await templateService.apiHandler({
+                methodName: 'refresh',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+    function authenticateMiddleware(security: TsoaRoute.Security[] = []) {
+        return async function runAuthenticationMiddleware(request: any, response: any, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            // keep track of failed auth attempts so we can hand back the most
+            // recent one.  This behavior was previously existing so preserving it
+            // here
+            const failedAttempts: any[] = [];
+            const pushAndRethrow = (error: any) => {
+                failedAttempts.push(error);
+                throw error;
+            };
+
+            const secMethodOrPromises: Promise<any>[] = [];
+            for (const secMethod of security) {
+                if (Object.keys(secMethod).length > 1) {
+                    const secMethodAndPromises: Promise<any>[] = [];
+
+                    for (const name in secMethod) {
+                        secMethodAndPromises.push(
+                            expressAuthenticationRecasted(request, name, secMethod[name], response)
+                                .catch(pushAndRethrow)
+                        );
+                    }
+
+                    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+                    secMethodOrPromises.push(Promise.all(secMethodAndPromises)
+                        .then(users => { return users[0]; }));
+                } else {
+                    for (const name in secMethod) {
+                        secMethodOrPromises.push(
+                            expressAuthenticationRecasted(request, name, secMethod[name], response)
+                                .catch(pushAndRethrow)
+                        );
+                    }
+                }
+            }
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            try {
+                request['user'] = await Promise.any(secMethodOrPromises);
+
+                // Response was sent in middleware, abort
+                if (response.writableEnded) {
+                    return;
+                }
+
+                next();
+            }
+            catch(err) {
+                // Show most recent error as response
+                const error = failedAttempts.pop();
+                error.status = error.status || 401;
+
+                // Response was sent in middleware, abort
+                if (response.writableEnded) {
+                    return;
+                }
+                next(error);
+            }
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         }
-      }
+    }
 
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      try {
-        request["user"] = await Promise.any(secMethodOrPromises);
-
-        // Response was sent in middleware, abort
-        if (response.writableEnded) {
-          return;
-        }
-
-        next();
-      } catch (err) {
-        // Show most recent error as response
-        const error = failedAttempts.pop();
-        error.status = error.status || 401;
-
-        // Response was sent in middleware, abort
-        if (response.writableEnded) {
-          return;
-        }
-        next(error);
-      }
-
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    };
-  }
-
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 }
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

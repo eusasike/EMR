@@ -31,6 +31,7 @@ enum PaymentStatus {
   PARTIALLY_PAID
   PAID
   CANCELLED
+  REFUNDEDInvoiceStatus
 }
 
 enum PaymentMethod {
@@ -38,6 +39,13 @@ enum PaymentMethod {
   MOBILE_MONEY
   INSURANCE
   CARD
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
 }
 
 enum VisitType {
@@ -85,6 +93,7 @@ enum LabStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+  VERIFIED
 }
 
 enum InsuranceStatus {
@@ -133,6 +142,14 @@ enum AdmissionStatus {
   CANCELLED
 }
 
+enum ChargeType {
+  WARD_STAY
+  CONSULTATION
+  LAB_TEST
+  PHARMACY
+  PROCEDURE
+  MISCELLANEOUS
+}
 // ==========================================
 // USER & ACCESS CONTROL
 // ==========================================
@@ -188,6 +205,7 @@ model Patient {
   allergies         PatientAllergy[]
   insurancePolicies PatientInsurance[]
   admissions        AdmissionRecord[]
+  invoices           Invoice[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -366,27 +384,57 @@ model DispensedItem {
 // ==========================================
 
 model Invoice {
-  id            String       @id @default(uuid())
-  invoiceNumber String       @unique @map("invoice_number")
-  visitId       String       @unique @map("visit_id")
-  visit         PatientVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique @map("invoice_number")
+  visitId   String       @unique @map("visit_id") // Add @unique here
+  visit         PatientVisit  @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  patientId     String        @map("patient_id")
+  patient       Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
-  serviceTotal    Decimal       @default(0) @map("service_total") @db.Decimal(10, 2)
-  medicationTotal Decimal       @default(0) @map("medication_total") @db.Decimal(10, 2)
-  grandTotal      Decimal       @map("grand_total") @db.Decimal(10, 2)
-  amountPaid      Decimal       @default(0) @map("amount_paid") @db.Decimal(10, 2)
-  balance         Decimal       @default(0) @db.Decimal(10, 2)
-  status          PaymentStatus @default(PENDING)
-  type            InvoiceType   @default(FINAL)
+  // Billing Totals
+  subtotal      Decimal       @default(0.00) @db.Decimal(12, 2)
+  tax           Decimal       @default(0.00) @db.Decimal(12, 2)
+  discount      Decimal       @default(0.00) @db.Decimal(12, 2)
+  insurancePay  Decimal       @default(0.00) @map("insurance_pay") @db.Decimal(12, 2)
+  patientPay    Decimal       @default(0.00) @map("patient_pay") @db.Decimal(12, 2)
+  totalAmount   Decimal       @default(0.00) @map("total_amount") @db.Decimal(12, 2)
+  amountPaid    Decimal       @default(0.00) @map("amount_paid") @db.Decimal(12, 2)
+  balanceDue    Decimal       @default(0.00) @map("balance_due") @db.Decimal(12, 2)
+  insuranceClaim  InsuranceClaim? 
+  status        InvoiceStatus @default(UNPAID)
+  notes         String?
 
   // Relations
-  insuranceClaim InsuranceClaim?
-  payments       Payment[]
+  items         InvoiceItem[]
+  payments      Payment[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
 
+  @@index([visitId])
+  @@index([patientId])
+  @@index([status])
   @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String     @id @default(uuid())
+  invoiceId   String     @map("invoice_id")
+  invoice     Invoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  chargeType  ChargeType @map("charge_type")
+  referenceId String?    @map("reference_id") // Links to AdmissionRecord ID, Lab Request ID, etc.
+  description String
+  quantity    Int        @default(1)
+  unitPrice   Decimal    @map("unit_price") @db.Decimal(10, 2)
+  totalPrice  Decimal    @map("total_price") @db.Decimal(12, 2)
+
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@index([invoiceId])
+  @@index([chargeType])
+  @@map("invoice_items")
 }
 
 model Payment {

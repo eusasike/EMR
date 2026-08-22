@@ -401,365 +401,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ProductDTO": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"code": {
-						"type": "string",
-						"nullable": true
-					},
-					"name": {
-						"type": "string"
-					},
-					"description": {
-						"type": "string",
-						"nullable": true
-					},
-					"category": {
-						"type": "string"
-					},
-					"unitPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"reorderLevel": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalAvailableStock": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"code",
-					"name",
-					"description",
-					"category",
-					"unitPrice",
-					"reorderLevel",
-					"createdAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiResponse_ProductDTO_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {
-						"$ref": "#/components/schemas/ProductDTO"
-					}
-				},
-				"required": [
-					"success",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CreateProductDTO": {
-				"properties": {
-					"code": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"description": {
-						"type": "string"
-					},
-					"category": {
-						"type": "string"
-					},
-					"unitPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"reorderLevel": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"name",
-					"unitPrice"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiListResponse_ProductDTO_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
-						"type": "string"
-					},
-					"count": {
-						"type": "number",
-						"format": "double"
-					},
-					"data": {
-						"items": {
-							"$ref": "#/components/schemas/ProductDTO"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"success",
-					"count",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"BatchDTO": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"productId": {
-						"type": "string"
-					},
-					"batchNumber": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"initialQty": {
-						"type": "number",
-						"format": "double"
-					},
-					"costPrice": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"expiryDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"productId",
-					"batchNumber",
-					"quantity",
-					"initialQty",
-					"costPrice",
-					"expiryDate",
-					"createdAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiResponse_BatchDTO_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {
-						"$ref": "#/components/schemas/BatchDTO"
-					}
-				},
-				"required": [
-					"success",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CreateBatchDTO": {
-				"properties": {
-					"productId": {
-						"type": "string"
-					},
-					"batchNumber": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"costPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"expiryDate": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"productId",
-					"batchNumber",
-					"quantity",
-					"expiryDate"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DispensedItemDTO": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"productId": {
-						"type": "string"
-					},
-					"batchId": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"unitPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"productName": {
-						"type": "string"
-					},
-					"batchNumber": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"id",
-					"productId",
-					"batchId",
-					"quantity",
-					"unitPrice"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DispenseRecordDTO": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"visitId": {
-						"type": "string",
-						"nullable": true
-					},
-					"dispensedById": {
-						"type": "string"
-					},
-					"totalCost": {
-						"type": "number",
-						"format": "double"
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"items": {
-						"items": {
-							"$ref": "#/components/schemas/DispensedItemDTO"
-						},
-						"type": "array"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"visitId",
-					"dispensedById",
-					"totalCost",
-					"notes",
-					"items",
-					"createdAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiResponse_DispenseRecordDTO_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {
-						"$ref": "#/components/schemas/DispenseRecordDTO"
-					}
-				},
-				"required": [
-					"success",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DispenseItemInputDTO": {
-				"properties": {
-					"productId": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"productId",
-					"quantity"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DispenseMedicationDTO": {
-				"properties": {
-					"visitId": {
-						"type": "string"
-					},
-					"dispensedById": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"items": {
-						"items": {
-							"$ref": "#/components/schemas/DispenseItemInputDTO"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"dispensedById",
-					"items"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"_36_Enums.Role": {
 				"type": "string",
 				"enum": [
@@ -808,184 +449,69 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PaymentMethod": {
+			"_36_Enums.PrescriptionStatus": {
 				"type": "string",
 				"enum": [
-					"CASH",
-					"MOBILE_MONEY",
-					"INSURANCE"
+					"PENDING",
+					"PARTIALLY_DISPENSED",
+					"COMPLETED",
+					"CANCELLED"
 				]
 			},
-			"PaymentDTO": {
+			"CreatePrescriptionItemDTO": {
 				"properties": {
-					"id": {
+					"productId": {
 						"type": "string"
 					},
-					"invoiceId": {
+					"dosage": {
 						"type": "string"
 					},
-					"amount": {
+					"frequency": {
+						"type": "string"
+					},
+					"durationDays": {
 						"type": "number",
 						"format": "double"
 					},
-					"paymentMethod": {
-						"$ref": "#/components/schemas/PaymentMethod"
-					},
-					"transactionReference": {
-						"type": "string",
-						"nullable": true
-					},
-					"processedById": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"invoiceId",
-					"amount",
-					"paymentMethod",
-					"transactionReference",
-					"processedById",
-					"notes",
-					"createdAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"PaymentResponseData": {
-				"properties": {
-					"payment": {
-						"$ref": "#/components/schemas/PaymentDTO"
-					},
-					"invoice": {
-						"properties": {
-							"status": {
-								"type": "string",
-								"enum": [
-									"PENDING",
-									"PARTIALLY_PAID",
-									"PAID",
-									"CANCELLED"
-								]
-							},
-							"balance": {
-								"type": "number",
-								"format": "double"
-							},
-							"amountPaid": {
-								"type": "number",
-								"format": "double"
-							},
-							"grandTotal": {
-								"type": "number",
-								"format": "double"
-							},
-							"invoiceNumber": {
-								"type": "string"
-							},
-							"id": {
-								"type": "string"
-							}
-						},
-						"required": [
-							"status",
-							"balance",
-							"amountPaid",
-							"grandTotal",
-							"invoiceNumber",
-							"id"
-						],
-						"type": "object"
-					}
-				},
-				"required": [
-					"payment",
-					"invoice"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiResponse_PaymentResponseData_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {
-						"$ref": "#/components/schemas/PaymentResponseData"
-					}
-				},
-				"required": [
-					"success",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ProcessPaymentDTO": {
-				"properties": {
-					"invoiceId": {
-						"type": "string"
-					},
-					"amount": {
+					"quantityOrdered": {
 						"type": "number",
 						"format": "double"
 					},
-					"paymentMethod": {
-						"$ref": "#/components/schemas/PaymentMethod"
-					},
-					"transactionReference": {
+					"route": {
 						"type": "string"
 					},
-					"processedById": {
+					"instructions": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"productId",
+					"dosage",
+					"frequency",
+					"durationDays",
+					"quantityOrdered"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePrescriptionDTO": {
+				"properties": {
+					"visitId": {
 						"type": "string"
 					},
 					"notes": {
 						"type": "string"
-					}
-				},
-				"required": [
-					"invoiceId",
-					"amount",
-					"paymentMethod",
-					"processedById"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiListResponse_PaymentDTO_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
 					},
-					"message": {
-						"type": "string"
-					},
-					"count": {
-						"type": "number",
-						"format": "double"
-					},
-					"data": {
+					"items": {
 						"items": {
-							"$ref": "#/components/schemas/PaymentDTO"
+							"$ref": "#/components/schemas/CreatePrescriptionItemDTO"
 						},
 						"type": "array"
 					}
 				},
 				"required": [
-					"success",
-					"count",
-					"data"
+					"visitId",
+					"items"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1337,16 +863,169 @@
 				"$ref": "#/components/schemas/Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
-			"InvoiceItemSummaryDTO": {
+			"_36_Enums.LabStatus": {
+				"type": "string",
+				"enum": [
+					"COMPLETED",
+					"CANCELLED",
+					"ORDERED",
+					"SAMPLE_COLLECTED",
+					"IN_PROGRESS",
+					"VERIFIED"
+				]
+			},
+			"OrderLabServiceDTO": {
 				"properties": {
-					"type": {
-						"type": "string",
-						"enum": [
-							"SERVICE",
-							"MEDICATION"
-						]
+					"providedServiceId": {
+						"type": "string"
+					},
+					"visitId": {
+						"type": "string"
+					},
+					"specimenType": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"providedServiceId",
+					"visitId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LabStatus": {
+				"$ref": "#/components/schemas/_36_Enums.LabStatus"
+			},
+			"RecordLabResultDTO": {
+				"properties": {
+					"resultValue": {
+						"type": "string"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"referenceRange": {
+						"type": "string"
+					},
+					"findings": {
+						"type": "string"
+					},
+					"specimenType": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/LabStatus"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateProductDTO": {
+				"properties": {
+					"code": {
+						"type": "string"
 					},
 					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string",
+						"enum": [
+							"MEDICINE",
+							"EQUIPMENT",
+							"CONSUMABLE",
+							"SUPPLEMENT"
+						]
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"reorderLevel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"unitPrice"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_CreateProductDTO_": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string",
+						"enum": [
+							"MEDICINE",
+							"EQUIPMENT",
+							"CONSUMABLE",
+							"SUPPLEMENT"
+						]
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"reorderLevel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdateProductDTO": {
+				"$ref": "#/components/schemas/Partial_CreateProductDTO_"
+			},
+			"CreateBatchDTO": {
+				"properties": {
+					"productId": {
+						"type": "string"
+					},
+					"batchNumber": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"costPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"expiryDate": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"productId",
+					"batchNumber",
+					"quantity",
+					"expiryDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DispenseItemInputDTO": {
+				"properties": {
+					"productId": {
+						"type": "string"
+					},
+					"batchId": {
 						"type": "string"
 					},
 					"quantity": {
@@ -1356,121 +1035,40 @@
 					"unitPrice": {
 						"type": "number",
 						"format": "double"
-					},
-					"totalPrice": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
-					"type",
-					"name",
+					"productId",
+					"batchId",
 					"quantity",
-					"unitPrice",
-					"totalPrice"
+					"unitPrice"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"InvoiceDTO": {
+			"CreateDispenseRecordDTO": {
 				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"invoiceNumber": {
-						"type": "string"
-					},
 					"visitId": {
 						"type": "string"
 					},
-					"serviceTotal": {
-						"type": "number",
-						"format": "double"
+					"dispensedById": {
+						"type": "string"
 					},
-					"medicationTotal": {
-						"type": "number",
-						"format": "double"
+					"prescriptionId": {
+						"type": "string"
 					},
-					"grandTotal": {
-						"type": "number",
-						"format": "double"
+					"notes": {
+						"type": "string"
 					},
-					"amountPaid": {
-						"type": "number",
-						"format": "double"
-					},
-					"balance": {
-						"type": "number",
-						"format": "double"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"PENDING",
-							"PARTIALLY_PAID",
-							"PAID",
-							"CANCELLED"
-						]
-					},
-					"itemsSummary": {
+					"items": {
 						"items": {
-							"$ref": "#/components/schemas/InvoiceItemSummaryDTO"
+							"$ref": "#/components/schemas/DispenseItemInputDTO"
 						},
 						"type": "array"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
 					}
 				},
 				"required": [
-					"id",
-					"invoiceNumber",
-					"visitId",
-					"serviceTotal",
-					"medicationTotal",
-					"grandTotal",
-					"amountPaid",
-					"balance",
-					"status",
-					"itemsSummary",
-					"createdAt",
-					"updatedAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiResponse_InvoiceDTO_": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {
-						"$ref": "#/components/schemas/InvoiceDTO"
-					}
-				},
-				"required": [
-					"success",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"GenerateInvoiceDTO": {
-				"properties": {
-					"visitId": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"visitId"
+					"items"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1536,6 +1134,79 @@
 					"timestamp",
 					"uptimeSeconds",
 					"services"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.InvoiceType": {
+				"type": "string",
+				"enum": [
+					"FINAL",
+					"INTERIM"
+				]
+			},
+			"_36_Enums.PaymentStatus": {
+				"type": "string",
+				"enum": [
+					"PENDING",
+					"CANCELLED",
+					"PAID",
+					"PARTIALLY_PAID"
+				]
+			},
+			"InvoiceType": {
+				"$ref": "#/components/schemas/_36_Enums.InvoiceType"
+			},
+			"GenerateInvoiceDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/InvoiceType"
+					}
+				},
+				"required": [
+					"visitId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.PaymentMethod": {
+				"type": "string",
+				"enum": [
+					"CASH",
+					"MOBILE_MONEY",
+					"INSURANCE",
+					"CARD"
+				]
+			},
+			"PaymentMethod": {
+				"$ref": "#/components/schemas/_36_Enums.PaymentMethod"
+			},
+			"RecordPaymentDTO": {
+				"properties": {
+					"invoiceId": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"paymentMethod": {
+						"$ref": "#/components/schemas/PaymentMethod"
+					},
+					"referenceNo": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"invoiceId",
+					"amount",
+					"paymentMethod"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2238,160 +1909,6 @@
 				]
 			}
 		},
-		"/api/pharmacy/products": {
-			"post": {
-				"operationId": "CreateProduct",
-				"responses": {
-					"201": {
-						"description": "Product created successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse_ProductDTO_"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Validation failed"
-					},
-					"409": {
-						"description": "Product already exists"
-					}
-				},
-				"description": "Register a new medication / product in catalog",
-				"tags": [
-					"Pharmacy & Inventory"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateProductDTO"
-							}
-						}
-					}
-				}
-			},
-			"get": {
-				"operationId": "GetProducts",
-				"responses": {
-					"200": {
-						"description": "Products retrieved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiListResponse_ProductDTO_"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get all products with current active unexpired stock summary",
-				"tags": [
-					"Pharmacy & Inventory"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/api/pharmacy/batches": {
-			"post": {
-				"operationId": "AddStockBatch",
-				"responses": {
-					"201": {
-						"description": "Stock batch added successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse_BatchDTO_"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Validation failed"
-					},
-					"404": {
-						"description": "Product not found"
-					}
-				},
-				"description": "Receive new incoming inventory stock batch",
-				"tags": [
-					"Pharmacy & Inventory"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateBatchDTO"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/pharmacy/dispense": {
-			"post": {
-				"operationId": "DispenseMedications",
-				"responses": {
-					"201": {
-						"description": "Medications dispensed successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse_DispenseRecordDTO_"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Insufficient stock or duplicate record"
-					},
-					"404": {
-						"description": "User/Product not found"
-					}
-				},
-				"description": "Dispense drugs for a patient visit with automatic FEFO stock allocation",
-				"tags": [
-					"Pharmacy & Inventory"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/DispenseMedicationDTO"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/api/users/register": {
 			"post": {
 				"operationId": "Register",
@@ -2451,30 +1968,203 @@
 				}
 			}
 		},
-		"/api/payments": {
+		"/api/prescriptions": {
 			"post": {
-				"operationId": "ProcessPayment",
+				"operationId": "CreatePrescription",
 				"responses": {
 					"201": {
-						"description": "Payment processed successfully",
+						"description": "Created",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse_PaymentResponseData_"
+									"allOf": [
+										{
+											"properties": {
+												"prescribedBy": {
+													"properties": {
+														"email": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"email",
+														"id"
+													],
+													"type": "object"
+												},
+												"items": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"product": {
+																		"properties": {
+																			"reorderLevel": {
+																				"type": "number",
+																				"format": "double"
+																			},
+																			"description": {
+																				"type": "string"
+																			},
+																			"code": {
+																				"type": "string"
+																			},
+																			"category": {
+																				"type": "string"
+																			},
+																			"unitPrice": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"reorderLevel",
+																			"description",
+																			"code",
+																			"category",
+																			"unitPrice",
+																			"updatedAt",
+																			"createdAt",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"product"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"instructions": {
+																		"type": "string"
+																	},
+																	"route": {
+																		"type": "string"
+																	},
+																	"quantityDispensed": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"quantityOrdered": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"durationDays": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"frequency": {
+																		"type": "string"
+																	},
+																	"dosage": {
+																		"type": "string"
+																	},
+																	"productId": {
+																		"type": "string"
+																	},
+																	"prescriptionId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"instructions",
+																	"route",
+																	"quantityDispensed",
+																	"quantityOrdered",
+																	"durationDays",
+																	"frequency",
+																	"dosage",
+																	"productId",
+																	"prescriptionId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"prescribedBy",
+												"items"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+												},
+												"prescribedById": {
+													"type": "string"
+												},
+												"prescriptionNumber": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"notes": {
+													"type": "string"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"status",
+												"prescribedById",
+												"prescriptionNumber",
+												"updatedAt",
+												"createdAt",
+												"notes",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "Validation failed or amount exceeds balance"
-					},
-					"404": {
-						"description": "Invoice or Cashier not found"
+						"description": "Bad Request - Validation Error"
 					}
 				},
-				"description": "Record a payment (Cash, Mobile Money, Insurance) against an invoice",
 				"tags": [
-					"Payments & Cashier"
+					"Prescriptions"
 				],
 				"security": [
 					{
@@ -2487,47 +2177,35 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ProcessPaymentDTO"
+								"$ref": "#/components/schemas/CreatePrescriptionDTO"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/api/payments/invoice/{invoiceId}": {
+		"/api/prescriptions/pending": {
 			"get": {
-				"operationId": "GetPaymentsByInvoice",
+				"operationId": "GetPendingPrescriptions",
 				"responses": {
 					"200": {
-						"description": "Payments retrieved successfully",
+						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiListResponse_PaymentDTO_"
-								}
+								"schema": {}
 							}
 						}
 					}
 				},
-				"description": "Get payment history for a specific invoice",
 				"tags": [
-					"Payments & Cashier"
+					"Prescriptions"
 				],
 				"security": [
 					{
 						"jwt": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "invoiceId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
+				"parameters": []
 			}
 		},
 		"/api/v1/patients/register": {
@@ -3164,30 +2842,449 @@
 				}
 			}
 		},
-		"/api/invoices/generate": {
-			"post": {
-				"operationId": "GenerateInvoice",
+		"/api/v1/medical-services/patient/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetByMrn",
 				"responses": {
-					"201": {
-						"description": "Invoice generated / updated successfully",
+					"200": {
+						"description": "Provided services retrieved by MRN",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse_InvoiceDTO_"
+									"items": {
+										"allOf": [
+											{
+												"properties": {
+													"service": {
+														"properties": {
+															"price": {
+																"$ref": "#/components/schemas/Decimal"
+															},
+															"category": {
+																"type": "string"
+															},
+															"id": {
+																"type": "string"
+															},
+															"name": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"price",
+															"category",
+															"id",
+															"name"
+														],
+														"type": "object"
+													},
+													"visit": {
+														"properties": {
+															"createdAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"id": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"createdAt",
+															"id"
+														],
+														"type": "object"
+													}
+												},
+												"required": [
+													"service",
+													"visit"
+												],
+												"type": "object"
+											},
+											{
+												"properties": {
+													"unitPrice": {
+														"$ref": "#/components/schemas/Decimal"
+													},
+													"providedById": {
+														"type": "string"
+													},
+													"serviceId": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"createdAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"notes": {
+														"type": "string"
+													},
+													"visitId": {
+														"type": "string"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"unitPrice",
+													"providedById",
+													"serviceId",
+													"updatedAt",
+													"createdAt",
+													"notes",
+													"visitId",
+													"id"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all provided services for a patient using their MRN",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/medical-services/visit/latest/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetLatestVisitByMrn",
+				"responses": {
+					"200": {
+						"description": "Latest visit retrieved by MRN",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"services": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"service": {
+																		"properties": {
+																			"price": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"category": {
+																				"type": "string"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"price",
+																			"category",
+																			"updatedAt",
+																			"createdAt",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"service"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"providedById": {
+																		"type": "string"
+																	},
+																	"serviceId": {
+																		"type": "string"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"notes": {
+																		"type": "string"
+																	},
+																	"visitId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"unitPrice",
+																	"providedById",
+																	"serviceId",
+																	"updatedAt",
+																	"createdAt",
+																	"notes",
+																	"visitId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"services"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"triagePriority": {
+													"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+												},
+												"visitType": {
+													"$ref": "#/components/schemas/_36_Enums.VisitType"
+												},
+												"symptoms": {
+													"type": "string"
+												},
+												"icdCode": {
+													"type": "string"
+												},
+												"diagnosis": {
+													"type": "string"
+												},
+												"attendingId": {
+													"type": "string"
+												},
+												"patientId": {
+													"type": "string"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"priority": {
+													"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"triagePriority",
+												"visitType",
+												"symptoms",
+												"icdCode",
+												"diagnosis",
+												"attendingId",
+												"patientId",
+												"createdAt",
+												"priority",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the latest visit and its provided services by MRN",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/labs/order": {
+			"post": {
+				"operationId": "OrderLab",
+				"responses": {
+					"201": {
+						"description": "Lab Service Ordered",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"providedService": {
+													"properties": {
+														"unitPrice": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"providedById": {
+															"type": "string"
+														},
+														"serviceId": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"unitPrice",
+														"providedById",
+														"serviceId",
+														"updatedAt",
+														"createdAt",
+														"notes",
+														"visitId",
+														"id"
+													],
+													"type": "object"
+												}
+											},
+											"required": [
+												"providedService"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"verifiedById": {
+													"type": "string"
+												},
+												"performedById": {
+													"type": "string"
+												},
+												"findings": {
+													"type": "string"
+												},
+												"referenceRange": {
+													"type": "string"
+												},
+												"unit": {
+													"type": "string"
+												},
+												"resultValue": {
+													"type": "string"
+												},
+												"specimenType": {
+													"type": "string"
+												},
+												"providedServiceId": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.LabStatus"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"verifiedById",
+												"performedById",
+												"findings",
+												"referenceRange",
+												"unit",
+												"resultValue",
+												"specimenType",
+												"providedServiceId",
+												"status",
+												"updatedAt",
+												"createdAt",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "Validation failed"
-					},
-					"404": {
-						"description": "Patient visit not found"
+						"description": "Validation Error or Invalid Input"
 					}
 				},
-				"description": "Consolidate Services & Medications into an Invoice",
+				"description": "Order a new lab service for a patient visit.",
 				"tags": [
-					"Billing & Invoices"
+					"Lab Results"
 				],
 				"security": [
 					{
@@ -3200,34 +3297,251 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GenerateInvoiceDTO"
+								"$ref": "#/components/schemas/OrderLabServiceDTO"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/api/invoices/visit/{visitId}": {
-			"get": {
-				"operationId": "GetInvoiceByVisit",
+		"/api/labs/{id}/results": {
+			"put": {
+				"operationId": "RecordResult",
 				"responses": {
 					"200": {
-						"description": "Invoice retrieved successfully",
+						"description": "Lab Result Recorded Successfully",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse_InvoiceDTO_"
+									"properties": {
+										"verifiedById": {
+											"type": "string"
+										},
+										"performedById": {
+											"type": "string"
+										},
+										"findings": {
+											"type": "string"
+										},
+										"referenceRange": {
+											"type": "string"
+										},
+										"unit": {
+											"type": "string"
+										},
+										"resultValue": {
+											"type": "string"
+										},
+										"specimenType": {
+											"type": "string"
+										},
+										"providedServiceId": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.LabStatus"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"verifiedById",
+										"performedById",
+										"findings",
+										"referenceRange",
+										"unit",
+										"resultValue",
+										"specimenType",
+										"providedServiceId",
+										"status",
+										"updatedAt",
+										"createdAt",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation Error or Invalid Status Transition"
+					},
+					"404": {
+						"description": "Lab Result Not Found"
+					}
+				},
+				"description": "Record findings, result values, and transition status to COMPLETED.",
+				"tags": [
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RecordLabResultDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/labs/{id}/verify": {
+			"put": {
+				"operationId": "VerifyResult",
+				"responses": {
+					"200": {
+						"description": "Lab Result Verified Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"verifiedById": {
+											"type": "string"
+										},
+										"performedById": {
+											"type": "string"
+										},
+										"findings": {
+											"type": "string"
+										},
+										"referenceRange": {
+											"type": "string"
+										},
+										"unit": {
+											"type": "string"
+										},
+										"resultValue": {
+											"type": "string"
+										},
+										"specimenType": {
+											"type": "string"
+										},
+										"providedServiceId": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.LabStatus"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"verifiedById",
+										"performedById",
+										"findings",
+										"referenceRange",
+										"unit",
+										"resultValue",
+										"specimenType",
+										"providedServiceId",
+										"status",
+										"updatedAt",
+										"createdAt",
+										"visitId",
+										"id"
+									],
+									"type": "object"
 								}
 							}
 						}
 					},
 					"404": {
-						"description": "Invoice not found"
+						"description": "Lab Result Not Found"
 					}
 				},
-				"description": "Retrieve compiled Invoice by Visit ID",
+				"description": "Final verification of a lab result by a senior technician or doctor.\nTransitions status to VERIFIED.",
 				"tags": [
-					"Billing & Invoices"
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"findings": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/labs/visit/{visitId}": {
+			"get": {
+				"operationId": "GetByVisit",
+				"responses": {
+					"200": {
+						"description": "Lab Results Retrieved",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Retrieve the complete lab history for a specific patient visit.",
+				"tags": [
+					"Lab Results"
 				],
 				"security": [
 					{
@@ -3244,6 +3558,478 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/pharmacy/products": {
+			"post": {
+				"operationId": "CreateProduct",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"reorderLevel": {
+											"type": "number",
+											"format": "double"
+										},
+										"description": {
+											"type": "string"
+										},
+										"code": {
+											"type": "string"
+										},
+										"category": {
+											"type": "string"
+										},
+										"unitPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"reorderLevel",
+										"description",
+										"code",
+										"category",
+										"unitPrice",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					}
+				},
+				"description": "Create a new pharmacy product with a reorder level threshold.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProductDTO"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllProducts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Get all products along with their active batch inventory (Cached in Redis).",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/pharmacy/products/{id}": {
+			"get": {
+				"operationId": "GetProductById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "Product Not Found"
+					}
+				},
+				"description": "Get a single product by ID (Cached in Redis).",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"reorderLevel": {
+											"type": "number",
+											"format": "double"
+										},
+										"description": {
+											"type": "string"
+										},
+										"code": {
+											"type": "string"
+										},
+										"category": {
+											"type": "string"
+										},
+										"unitPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"reorderLevel",
+										"description",
+										"code",
+										"category",
+										"unitPrice",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					},
+					"404": {
+						"description": "Product Not Found"
+					}
+				},
+				"description": "Update product details or adjust its reorder level.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProductDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/pharmacy/batches": {
+			"post": {
+				"operationId": "CreateBatch",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"costPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"initialQty": {
+											"type": "number",
+											"format": "double"
+										},
+										"batchNumber": {
+											"type": "string"
+										},
+										"quantity": {
+											"type": "number",
+											"format": "double"
+										},
+										"productId": {
+											"type": "string"
+										},
+										"expiryDate": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"costPrice",
+										"initialQty",
+										"batchNumber",
+										"quantity",
+										"productId",
+										"expiryDate",
+										"updatedAt",
+										"createdAt",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					}
+				},
+				"description": "Add a new stock batch to a product and clear low-stock alert locks.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateBatchDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/pharmacy/dispense": {
+			"post": {
+				"operationId": "DispenseProducts",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"allOf": [
+												{
+													"properties": {
+														"items": {
+															"items": {
+																"properties": {
+																	"quantity": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"batchId": {
+																		"type": "string"
+																	},
+																	"productId": {
+																		"type": "string"
+																	},
+																	"dispenseRecordId": {
+																		"type": "string"
+																	},
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"quantity",
+																	"batchId",
+																	"productId",
+																	"dispenseRecordId",
+																	"unitPrice",
+																	"id"
+																],
+																"type": "object"
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"items"
+													],
+													"type": "object"
+												},
+												{
+													"properties": {
+														"prescriptionId": {
+															"type": "string"
+														},
+														"totalCost": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"dispensedById": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"prescriptionId",
+														"totalCost",
+														"dispensedById",
+														"createdAt",
+														"notes",
+														"visitId",
+														"id"
+													],
+													"type": "object"
+												}
+											]
+										},
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Insufficient Stock or Invalid Input"
+					}
+				},
+				"description": "Atomically dispense items, record transactions, emit RabbitMQ events,\nand evaluate reorder levels for low-stock notifications.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateDispenseRecordDTO"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/health": {
@@ -3277,6 +4063,339 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/api/billing/invoices/generate": {
+			"post": {
+				"operationId": "GenerateInvoice",
+				"responses": {
+					"201": {
+						"description": "Invoice Generated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"balance": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"amountPaid": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"grandTotal": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"medicationTotal": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"serviceTotal": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"invoiceNumber": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
+										},
+										"type": {
+											"$ref": "#/components/schemas/_36_Enums.InvoiceType"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"balance",
+										"amountPaid",
+										"grandTotal",
+										"medicationTotal",
+										"serviceTotal",
+										"invoiceNumber",
+										"status",
+										"type",
+										"updatedAt",
+										"createdAt",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid Request Body"
+					}
+				},
+				"description": "Generate an automated invoice summing provided services and pharmacy items for a visit.",
+				"tags": [
+					"Billing & Invoices"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GenerateInvoiceDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/billing/payments": {
+			"post": {
+				"operationId": "RecordPayment",
+				"responses": {
+					"201": {
+						"description": "Payment Recorded",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"payments": {
+													"items": {
+														"properties": {
+															"receivedById": {
+																"type": "string"
+															},
+															"referenceNo": {
+																"type": "string"
+															},
+															"paymentMethod": {
+																"$ref": "#/components/schemas/_36_Enums.PaymentMethod"
+															},
+															"amount": {
+																"$ref": "#/components/schemas/Decimal"
+															},
+															"invoiceId": {
+																"type": "string"
+															},
+															"createdAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"notes": {
+																"type": "string"
+															},
+															"id": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"receivedById",
+															"referenceNo",
+															"paymentMethod",
+															"amount",
+															"invoiceId",
+															"createdAt",
+															"notes",
+															"id"
+														],
+														"type": "object"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"payments"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"balance": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"amountPaid": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"grandTotal": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"medicationTotal": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"serviceTotal": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"invoiceNumber": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
+												},
+												"type": {
+													"$ref": "#/components/schemas/_36_Enums.InvoiceType"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"balance",
+												"amountPaid",
+												"grandTotal",
+												"medicationTotal",
+												"serviceTotal",
+												"invoiceNumber",
+												"status",
+												"type",
+												"updatedAt",
+												"createdAt",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation Error or Exceeded Balance"
+					}
+				},
+				"description": "Record a payment against an outstanding invoice.",
+				"tags": [
+					"Billing & Invoices"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RecordPaymentDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/billing/invoices/visit/{visitId}": {
+			"get": {
+				"operationId": "GetInvoiceByVisit",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"balance": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"amountPaid": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"grandTotal": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"medicationTotal": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"serviceTotal": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"invoiceNumber": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
+										},
+										"type": {
+											"$ref": "#/components/schemas/_36_Enums.InvoiceType"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"balance",
+										"amountPaid",
+										"grandTotal",
+										"medicationTotal",
+										"serviceTotal",
+										"invoiceNumber",
+										"status",
+										"type",
+										"updatedAt",
+										"createdAt",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Fetch invoice breakdown by visit ID.",
+				"tags": [
+					"Billing & Invoices"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "visitId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/auth/login": {

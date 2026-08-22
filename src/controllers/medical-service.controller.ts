@@ -119,4 +119,24 @@ export class MedicalServiceController extends Controller {
       payload,
     );
   }
+
+  /**
+   * Get all provided services for a patient using their MRN
+   */
+  @Get("patient/mrn/{mrn}")
+  @Security("jwt")
+  @SuccessResponse(200, "Provided services retrieved by MRN")
+  public async getByMrn(@Path() mrn: string) {
+    return await this.medicalServiceService.getProvidedServicesByMrn(mrn);
+  }
+
+  /**
+   * Get the latest visit and its provided services by MRN
+   */
+  @Get("visit/latest/mrn/{mrn}")
+  @Security("jwt")
+  @SuccessResponse(200, "Latest visit retrieved by MRN")
+  public async getLatestVisitByMrn(@Path() mrn: string) {
+    return await this.medicalServiceService.getLatestVisitByMrn(mrn);
+  }
 }

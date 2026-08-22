@@ -118,7 +118,7 @@ export class PharmacyService {
   // ----------------------------------------
   // Dispense Operations & Reorder Checks
   // ----------------------------------------
-  async dispenseProducts(data: CreateDispenseRecordDTO) {
+  async dispenseProducts(data: CreateDispenseRecordDTO, userId: string) {
     const totalCost = data.items.reduce(
       (sum, item) => sum + item.unitPrice * item.quantity,
       0,
@@ -154,7 +154,7 @@ export class PharmacyService {
       return await tx.dispenseRecord.create({
         data: {
           visitId: data.visitId,
-          dispensedById: data.dispensedById,
+          dispensedById: userId,
           prescriptionId: data.prescriptionId,
           totalCost: totalCost,
           notes: data.notes,
@@ -175,12 +175,15 @@ export class PharmacyService {
     const productCacheKeys = affectedProductIds.map((id) =>
       CACHE_KEYS.PRODUCT_BY_ID(id),
     );
-    await redisClient.del([...productCacheKeys, CACHE_KEYS.ALL_PRODUCTS]);
+    const keysToInvalidate = [...productCacheKeys, CACHE_KEYS.ALL_PRODUCTS];
+    if (keysToInvalidate.length > 0) {
+      await redisClient.del(keysToInvalidate);
+    }
 
     // 3. Publish Dispense Event to RabbitMQ
     const dispenseEventPayload = productDispensedEventSchema.parse({
       dispenseRecordId: result.id,
-      visitId: result.visitId,
+      visitId: result.visitId ?? undefined,
       dispensedById: result.dispensedById,
       totalCost: Number(result.totalCost),
       itemCount: result.items.length,
@@ -198,7 +201,6 @@ export class PharmacyService {
 
     return result;
   }
-
   // ----------------------------------------
   // Reorder Level Check & Redis Lock Helper
   // ----------------------------------------

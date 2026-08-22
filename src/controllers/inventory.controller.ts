@@ -11,6 +11,7 @@ import {
   Response,
   Tags,
   Security,
+  Request,
 } from "tsoa";
 import { PharmacyService } from "../service/phamarcy/inventory.service";
 import {
@@ -23,10 +24,11 @@ import {
   CreateBatchDTO,
   CreateDispenseRecordDTO,
 } from "../models/phamarcy/inventory.model";
+import { JwtPayload } from "jsonwebtoken";
 
 @Tags("Pharmacy")
 @Route("api/pharmacy")
-@Security("jwt")
+@Security("jwt", ["ADMIN"])
 export class PharmacyController extends Controller {
   private pharmacyService: PharmacyService;
 
@@ -107,11 +109,28 @@ export class PharmacyController extends Controller {
    * and evaluate reorder levels for low-stock notifications.
    */
   @Post("dispense")
+  @Security("jwt") // <-- Required so TSOA runs authentication middleware
   @SuccessResponse("201", "Created")
   @Response(400, "Bad Request - Insufficient Stock or Invalid Input")
-  public async dispenseProducts(@Body() requestBody: CreateDispenseRecordDTO) {
+  public async dispenseProducts(
+    @Body() requestBody: CreateDispenseRecordDTO,
+    @Request() req: any,
+  ) {
+    const currentuser = (req as any).user as JwtPayload;
+    if (!currentuser) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Unauthorized",
+        data: null as any,
+      };
+    }
+
     const validatedData = createDispenseRecordSchema.parse(requestBody);
     this.setStatus(201);
-    return await this.pharmacyService.dispenseProducts(validatedData);
+    return await this.pharmacyService.dispenseProducts(
+      validatedData,
+      currentuser.id,
+    );
   }
 }
