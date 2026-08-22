@@ -20,7 +20,7 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_PASSWORD: secretpassword
           POSTGRES_DB: dev_db
         ports:
           - 5432:5432
@@ -69,7 +69,7 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
         env:
-          DATABASE_URL: "postgresql://postgres:postgrespassword@localhost:5432/dev_db?schema=public"
+          DATABASE_URL: "postgresql://postgres:secretpassword@localhost:5436/dev_db?schema=public"
 
       - name: Generate TSOA Routes & OpenAPI Spec
         run: npx tsoa spec-and-routes
@@ -80,7 +80,7 @@ jobs:
       - name: Run Tests
         run: npm test
         env:
-          DATABASE_URL: "postgresql://postgres:postgrespassword@localhost:5432/dev_db?schema=public"
+          DATABASE_URL: "postgresql://postgres:secretpassword@localhost:5436/dev_db?schema=public"
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           RABBITMQ_URL: "amqp://guest:guest@localhost:5672"

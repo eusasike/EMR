@@ -1,7 +1,7 @@
-// src/config/database.ts
-import { PrismaClient } from "../generated/client";
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 export const prisma =
   globalForPrisma.prisma ||
