@@ -27,7 +27,7 @@ import {
 import { JwtPayload } from "jsonwebtoken";
 
 @Tags("Pharmacy")
-@Route("api/pharmacy")
+@Route("api/v1/pharmacy")
 @Security("jwt", ["ADMIN"])
 export class PharmacyController extends Controller {
   private pharmacyService: PharmacyService;

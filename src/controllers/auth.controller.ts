@@ -21,7 +21,7 @@ import {
 } from "../models/User/auth.model";
 
 @Tags("Authentication")
-@Route("api/auth")
+@Route("api/v1/auth")
 export class AuthController extends Controller {
   private authService: AuthService;
 

@@ -20,7 +20,7 @@ import {
 } from "../models/billing/insuarance.model";
 
 @Tags("Insurance & Claims")
-@Route("api/billing")
+@Route("api/v1/billing")
 export class InsuranceController extends Controller {
   private insuranceService = new InsuranceService();
 

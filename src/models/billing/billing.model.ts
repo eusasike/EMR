@@ -1,4 +1,5 @@
 // src/models/billing/billing.model.ts
+
 import { z } from "zod";
 import {
   PaymentMethod,
@@ -8,43 +9,36 @@ import {
 } from "@prisma/client";
 
 // ==========================================
-// 1. Zod Validation Schemas
+// 1. Explicit TypeScript Interfaces (for tsoa parsing)
 // ==========================================
 
-export const createInvoiceItemSchema = z.object({
-  chargeType: z.nativeEnum(ChargeType),
-  referenceId: z.string().uuid("Invalid Reference ID").optional().nullable(),
-  description: z.string().min(1, "Description is required"),
-  quantity: z.number().int().positive("Quantity must be at least 1").default(1),
-  unitPrice: z.number().min(0, "Unit price cannot be negative"),
-});
+export interface CreateInvoiceItemDTO {
+  chargeType: ChargeType;
+  referenceId?: string | null;
+  description: string;
+  quantity?: number;
+  unitPrice: number;
+}
 
-export const createInvoiceSchema = z.object({
-  visitId: z.string().uuid("Invalid Visit ID"),
-  patientId: z.string().uuid("Invalid Patient ID"),
-  notes: z.string().optional().nullable(),
-  items: z.array(createInvoiceItemSchema).optional().default([]),
-});
+export interface CreateInvoiceDTO {
+  visitId: string;
+  patientId: string;
+  notes?: string | null;
+  items?: CreateInvoiceItemDTO[];
+}
 
-export const recordPaymentSchema = z.object({
-  invoiceId: z.string().uuid("Invalid Invoice ID"),
-  amount: z.number().positive("Payment amount must be greater than 0"),
-  paymentMethod: z.nativeEnum(PaymentMethod),
-  transactionRef: z.string().optional().nullable(),
-  receivedById: z.string().uuid("Invalid Staff/User ID"),
-});
-
-// ==========================================
-// 2. Inferred TypeScript DTO Types
-// ==========================================
-
-export type CreateInvoiceItemDTO = z.infer<typeof createInvoiceItemSchema>;
-export type CreateInvoiceDTO = z.infer<typeof createInvoiceSchema>;
-export type RecordPaymentDTO = z.infer<typeof recordPaymentSchema>;
+export interface RecordPaymentDTO {
+  invoiceId: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  transactionRef?: string | null;
+  receivedById: string;
+}
 
 export type CreatePaymentDTO = RecordPaymentDTO;
+
 // ==========================================
-// 3. Response DTO Interfaces
+// 2. Response DTO Interfaces
 // ==========================================
 
 export interface InvoiceItemResponseDTO {
@@ -93,3 +87,30 @@ export interface InvoiceResponseDTO {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// ==========================================
+// 3. Zod Runtime Validation Schemas
+// ==========================================
+
+export const createInvoiceItemSchema = z.object({
+  chargeType: z.nativeEnum(ChargeType),
+  referenceId: z.string().uuid("Invalid Reference ID").optional().nullable(),
+  description: z.string().min(1, "Description is required"),
+  quantity: z.number().int().positive("Quantity must be at least 1").default(1),
+  unitPrice: z.number().min(0, "Unit price cannot be negative"),
+});
+
+export const createInvoiceSchema = z.object({
+  visitId: z.string().uuid("Invalid Visit ID"),
+  patientId: z.string().uuid("Invalid Patient ID"),
+  notes: z.string().optional().nullable(),
+  items: z.array(createInvoiceItemSchema).optional().default([]),
+});
+
+export const recordPaymentSchema = z.object({
+  invoiceId: z.string().uuid("Invalid Invoice ID"),
+  amount: z.number().positive("Payment amount must be greater than 0"),
+  paymentMethod: z.nativeEnum(PaymentMethod),
+  transactionRef: z.string().optional().nullable(),
+  receivedById: z.string().uuid("Invalid Staff/User ID"),
+});

@@ -1073,6 +1073,128 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"_36_Enums.InsuranceStatus": {
+				"type": "string",
+				"enum": [
+					"ACTIVE",
+					"INACTIVE",
+					"EXPIRED",
+					"EXHAUSTED"
+				]
+			},
+			"CreatePatientInsuranceDTO": {
+				"properties": {
+					"patientId": {
+						"type": "string"
+					},
+					"providerName": {
+						"type": "string"
+					},
+					"policyNumber": {
+						"type": "string"
+					},
+					"cardNumber": {
+						"type": "string"
+					},
+					"principalName": {
+						"type": "string"
+					},
+					"relationship": {
+						"type": "string"
+					},
+					"coverageLimit": {
+						"type": "number",
+						"format": "double"
+					},
+					"expiryDate": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"patientId",
+					"providerName",
+					"policyNumber",
+					"cardNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.ClaimStatus": {
+				"type": "string",
+				"enum": [
+					"CANCELLED",
+					"PAID",
+					"PENDING_PRE_AUTH",
+					"PRE_AUTHORIZED",
+					"SUBMITTED",
+					"APPROVED",
+					"PARTIALLY_APPROVED",
+					"REJECTED"
+				]
+			},
+			"CreateInsuranceClaimDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"invoiceId": {
+						"type": "string"
+					},
+					"patientInsuranceId": {
+						"type": "string"
+					},
+					"requestedAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"preAuthCode": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"visitId",
+					"patientInsuranceId",
+					"requestedAmount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProcessInsuranceClaimDTO": {
+				"properties": {
+					"approvedAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"coPayAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"APPROVED",
+							"REJECTED",
+							"PARTIALLY_APPROVED"
+						]
+					},
+					"rejectionReason": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"approvedAmount",
+					"coPayAmount",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ComponentStatus": {
 				"properties": {
 					"status": {
@@ -1138,36 +1260,82 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"_36_Enums.InvoiceType": {
+			"_36_Enums.InvoiceStatus": {
 				"type": "string",
 				"enum": [
-					"FINAL",
-					"INTERIM"
-				]
-			},
-			"_36_Enums.PaymentStatus": {
-				"type": "string",
-				"enum": [
-					"PENDING",
 					"CANCELLED",
-					"PAID",
-					"PARTIALLY_PAID"
+					"UNPAID",
+					"PARTIALLY_PAID",
+					"PAID"
 				]
 			},
-			"InvoiceType": {
-				"$ref": "#/components/schemas/_36_Enums.InvoiceType"
+			"InvoiceStatus": {
+				"$ref": "#/components/schemas/_36_Enums.InvoiceStatus"
 			},
-			"GenerateInvoiceDTO": {
+			"_36_Enums.ChargeType": {
+				"type": "string",
+				"enum": [
+					"WARD_STAY",
+					"CONSULTATION",
+					"LAB_TEST",
+					"PHARMACY",
+					"PROCEDURE",
+					"MISCELLANEOUS"
+				]
+			},
+			"ChargeType": {
+				"$ref": "#/components/schemas/_36_Enums.ChargeType"
+			},
+			"InvoiceItemResponseDTO": {
 				"properties": {
-					"visitId": {
+					"id": {
 						"type": "string"
 					},
-					"type": {
-						"$ref": "#/components/schemas/InvoiceType"
+					"invoiceId": {
+						"type": "string"
+					},
+					"chargeType": {
+						"$ref": "#/components/schemas/ChargeType"
+					},
+					"referenceId": {
+						"type": "string",
+						"nullable": true
+					},
+					"description": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
 				"required": [
-					"visitId"
+					"id",
+					"invoiceId",
+					"chargeType",
+					"referenceId",
+					"description",
+					"quantity",
+					"unitPrice",
+					"totalPrice",
+					"createdAt",
+					"updatedAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1184,6 +1352,166 @@
 			"PaymentMethod": {
 				"$ref": "#/components/schemas/_36_Enums.PaymentMethod"
 			},
+			"_36_Enums.PaymentStatus": {
+				"type": "string",
+				"enum": [
+					"PENDING",
+					"CANCELLED",
+					"PARTIALLY_PAID",
+					"PAID",
+					"REFUNDEDInvoiceStatus"
+				]
+			},
+			"PaymentStatus": {
+				"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
+			},
+			"PaymentResponseDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"receiptNumber": {
+						"type": "string"
+					},
+					"invoiceId": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"paymentMethod": {
+						"$ref": "#/components/schemas/PaymentMethod"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PaymentStatus"
+					},
+					"transactionRef": {
+						"type": "string",
+						"nullable": true
+					},
+					"receivedById": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"receiptNumber",
+					"invoiceId",
+					"amount",
+					"paymentMethod",
+					"status",
+					"transactionRef",
+					"receivedById",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"InvoiceResponseDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"invoiceNumber": {
+						"type": "string"
+					},
+					"visitId": {
+						"type": "string"
+					},
+					"patientId": {
+						"type": "string"
+					},
+					"subtotal": {
+						"type": "number",
+						"format": "double"
+					},
+					"tax": {
+						"type": "number",
+						"format": "double"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"insurancePay": {
+						"type": "number",
+						"format": "double"
+					},
+					"patientPay": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"amountPaid": {
+						"type": "number",
+						"format": "double"
+					},
+					"balanceDue": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/InvoiceStatus"
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/InvoiceItemResponseDTO"
+						},
+						"type": "array"
+					},
+					"payments": {
+						"items": {
+							"$ref": "#/components/schemas/PaymentResponseDTO"
+						},
+						"type": "array"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"invoiceNumber",
+					"visitId",
+					"patientId",
+					"subtotal",
+					"tax",
+					"discount",
+					"insurancePay",
+					"patientPay",
+					"totalAmount",
+					"amountPaid",
+					"balanceDue",
+					"status",
+					"notes",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"RecordPaymentDTO": {
 				"properties": {
 					"invoiceId": {
@@ -1196,20 +1524,25 @@
 					"paymentMethod": {
 						"$ref": "#/components/schemas/PaymentMethod"
 					},
-					"referenceNo": {
-						"type": "string"
+					"transactionRef": {
+						"type": "string",
+						"nullable": true
 					},
-					"notes": {
+					"receivedById": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"invoiceId",
 					"amount",
-					"paymentMethod"
+					"paymentMethod",
+					"receivedById"
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"CreatePaymentDTO": {
+				"$ref": "#/components/schemas/RecordPaymentDTO"
 			},
 			"AuthUserData": {
 				"properties": {
@@ -1359,6 +1692,112 @@
 				},
 				"required": [
 					"refreshToken"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.WardType": {
+				"type": "string",
+				"enum": [
+					"MALE",
+					"FEMALE",
+					"GENERAL",
+					"PEDIATRIC",
+					"ICU",
+					"HDUK",
+					"MATERNITY",
+					"SURGICAL",
+					"ISOLATION",
+					"PRIVATE"
+				]
+			},
+			"WardType": {
+				"$ref": "#/components/schemas/_36_Enums.WardType"
+			},
+			"CreateWardDTO": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"code": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/WardType"
+					},
+					"capacity": {
+						"type": "number",
+						"format": "double"
+					},
+					"dailyRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"dailyRate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateBedDTO": {
+				"properties": {
+					"wardId": {
+						"type": "string"
+					},
+					"bedNumber": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"wardId",
+					"bedNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AdmitPatientDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"patientId": {
+						"type": "string"
+					},
+					"bedId": {
+						"type": "string"
+					},
+					"admittedById": {
+						"type": "string"
+					},
+					"admissionNotes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"visitId",
+					"patientId",
+					"bedId",
+					"admittedById"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DischargePatientDTO": {
+				"properties": {
+					"dischargedById": {
+						"type": "string"
+					},
+					"dischargeNotes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"dischargedById"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2006,10 +2445,10 @@
 																				"type": "number",
 																				"format": "double"
 																			},
-																			"description": {
+																			"code": {
 																				"type": "string"
 																			},
-																			"code": {
+																			"description": {
 																				"type": "string"
 																			},
 																			"category": {
@@ -2035,8 +2474,8 @@
 																		},
 																		"required": [
 																			"reorderLevel",
-																			"description",
 																			"code",
+																			"description",
 																			"category",
 																			"unitPrice",
 																			"updatedAt",
@@ -3574,10 +4013,10 @@
 											"type": "number",
 											"format": "double"
 										},
-										"description": {
+										"code": {
 											"type": "string"
 										},
-										"code": {
+										"description": {
 											"type": "string"
 										},
 										"category": {
@@ -3603,8 +4042,8 @@
 									},
 									"required": [
 										"reorderLevel",
-										"description",
 										"code",
+										"description",
 										"category",
 										"unitPrice",
 										"updatedAt",
@@ -3721,10 +4160,10 @@
 											"type": "number",
 											"format": "double"
 										},
-										"description": {
+										"code": {
 											"type": "string"
 										},
-										"code": {
+										"description": {
 											"type": "string"
 										},
 										"category": {
@@ -3750,8 +4189,8 @@
 									},
 									"required": [
 										"reorderLevel",
-										"description",
 										"code",
+										"description",
 										"category",
 										"unitPrice",
 										"updatedAt",
@@ -4032,6 +4471,435 @@
 				}
 			}
 		},
+		"/api/billing/insurance": {
+			"post": {
+				"operationId": "RegisterInsurance",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"expiryDate": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"coverageLimit": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"relationship": {
+											"type": "string"
+										},
+										"principalName": {
+											"type": "string"
+										},
+										"cardNumber": {
+											"type": "string"
+										},
+										"policyNumber": {
+											"type": "string"
+										},
+										"providerName": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.InsuranceStatus"
+										},
+										"patientId": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"expiryDate",
+										"coverageLimit",
+										"relationship",
+										"principalName",
+										"cardNumber",
+										"policyNumber",
+										"providerName",
+										"status",
+										"patientId",
+										"updatedAt",
+										"createdAt",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Insurance Registered Successfully"
+					}
+				},
+				"description": "Register insurance details for a patient",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePatientInsuranceDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/billing/insurance/patient/{patientId}": {
+			"get": {
+				"operationId": "GetPatientInsurances",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Retrieve active insurance policies for a patient (Cached in Redis)",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "patientId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/billing/claims": {
+			"post": {
+				"operationId": "CreateClaim",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"patientInsurance": {
+													"properties": {
+														"expiryDate": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"coverageLimit": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"relationship": {
+															"type": "string"
+														},
+														"principalName": {
+															"type": "string"
+														},
+														"cardNumber": {
+															"type": "string"
+														},
+														"policyNumber": {
+															"type": "string"
+														},
+														"providerName": {
+															"type": "string"
+														},
+														"status": {
+															"$ref": "#/components/schemas/_36_Enums.InsuranceStatus"
+														},
+														"patientId": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"expiryDate",
+														"coverageLimit",
+														"relationship",
+														"principalName",
+														"cardNumber",
+														"policyNumber",
+														"providerName",
+														"status",
+														"patientId",
+														"updatedAt",
+														"createdAt",
+														"id"
+													],
+													"type": "object"
+												}
+											},
+											"required": [
+												"patientInsurance"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"processedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"submittedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"rejectionReason": {
+													"type": "string"
+												},
+												"coPayAmount": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"approvedAmount": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"requestedAmount": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"preAuthCode": {
+													"type": "string"
+												},
+												"patientInsuranceId": {
+													"type": "string"
+												},
+												"claimNumber": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.ClaimStatus"
+												},
+												"invoiceId": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"notes": {
+													"type": "string"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"processedAt",
+												"submittedAt",
+												"rejectionReason",
+												"coPayAmount",
+												"approvedAmount",
+												"requestedAmount",
+												"preAuthCode",
+												"patientInsuranceId",
+												"claimNumber",
+												"status",
+												"invoiceId",
+												"updatedAt",
+												"createdAt",
+												"notes",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Claim Submitted Successfully"
+					}
+				},
+				"description": "Submit an insurance claim for pre-authorization or payout",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInsuranceClaimDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/billing/claims/{claimId}/process": {
+			"patch": {
+				"operationId": "ProcessClaim",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"processedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"submittedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"rejectionReason": {
+											"type": "string"
+										},
+										"coPayAmount": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"approvedAmount": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"requestedAmount": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"preAuthCode": {
+											"type": "string"
+										},
+										"patientInsuranceId": {
+											"type": "string"
+										},
+										"claimNumber": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.ClaimStatus"
+										},
+										"invoiceId": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"notes": {
+											"type": "string"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"processedAt",
+										"submittedAt",
+										"rejectionReason",
+										"coPayAmount",
+										"approvedAmount",
+										"requestedAmount",
+										"preAuthCode",
+										"patientInsuranceId",
+										"claimNumber",
+										"status",
+										"invoiceId",
+										"updatedAt",
+										"createdAt",
+										"notes",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Approve, partially approve, or reject an insurance claim",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "claimId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ProcessInsuranceClaimDTO"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/health": {
 			"get": {
 				"operationId": "CheckHealth",
@@ -4065,337 +4933,87 @@
 				"parameters": []
 			}
 		},
-		"/api/billing/invoices/generate": {
-			"post": {
-				"operationId": "GenerateInvoice",
-				"responses": {
-					"201": {
-						"description": "Invoice Generated",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"balance": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"amountPaid": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"grandTotal": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"medicationTotal": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"serviceTotal": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"invoiceNumber": {
-											"type": "string"
-										},
-										"status": {
-											"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
-										},
-										"type": {
-											"$ref": "#/components/schemas/_36_Enums.InvoiceType"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"visitId": {
-											"type": "string"
-										},
-										"id": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"balance",
-										"amountPaid",
-										"grandTotal",
-										"medicationTotal",
-										"serviceTotal",
-										"invoiceNumber",
-										"status",
-										"type",
-										"updatedAt",
-										"createdAt",
-										"visitId",
-										"id"
-									],
-									"type": "object"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Invalid Request Body"
-					}
-				},
-				"description": "Generate an automated invoice summing provided services and pharmacy items for a visit.",
-				"tags": [
-					"Billing & Invoices"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/GenerateInvoiceDTO"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/billing/payments": {
-			"post": {
-				"operationId": "RecordPayment",
-				"responses": {
-					"201": {
-						"description": "Payment Recorded",
-						"content": {
-							"application/json": {
-								"schema": {
-									"allOf": [
-										{
-											"properties": {
-												"payments": {
-													"items": {
-														"properties": {
-															"receivedById": {
-																"type": "string"
-															},
-															"referenceNo": {
-																"type": "string"
-															},
-															"paymentMethod": {
-																"$ref": "#/components/schemas/_36_Enums.PaymentMethod"
-															},
-															"amount": {
-																"$ref": "#/components/schemas/Decimal"
-															},
-															"invoiceId": {
-																"type": "string"
-															},
-															"createdAt": {
-																"type": "string",
-																"format": "date-time"
-															},
-															"notes": {
-																"type": "string"
-															},
-															"id": {
-																"type": "string"
-															}
-														},
-														"required": [
-															"receivedById",
-															"referenceNo",
-															"paymentMethod",
-															"amount",
-															"invoiceId",
-															"createdAt",
-															"notes",
-															"id"
-														],
-														"type": "object"
-													},
-													"type": "array"
-												}
-											},
-											"required": [
-												"payments"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"balance": {
-													"$ref": "#/components/schemas/Decimal"
-												},
-												"amountPaid": {
-													"$ref": "#/components/schemas/Decimal"
-												},
-												"grandTotal": {
-													"$ref": "#/components/schemas/Decimal"
-												},
-												"medicationTotal": {
-													"$ref": "#/components/schemas/Decimal"
-												},
-												"serviceTotal": {
-													"$ref": "#/components/schemas/Decimal"
-												},
-												"invoiceNumber": {
-													"type": "string"
-												},
-												"status": {
-													"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
-												},
-												"type": {
-													"$ref": "#/components/schemas/_36_Enums.InvoiceType"
-												},
-												"updatedAt": {
-													"type": "string",
-													"format": "date-time"
-												},
-												"createdAt": {
-													"type": "string",
-													"format": "date-time"
-												},
-												"visitId": {
-													"type": "string"
-												},
-												"id": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"balance",
-												"amountPaid",
-												"grandTotal",
-												"medicationTotal",
-												"serviceTotal",
-												"invoiceNumber",
-												"status",
-												"type",
-												"updatedAt",
-												"createdAt",
-												"visitId",
-												"id"
-											],
-											"type": "object"
-										}
-									]
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Validation Error or Exceeded Balance"
-					}
-				},
-				"description": "Record a payment against an outstanding invoice.",
-				"tags": [
-					"Billing & Invoices"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/RecordPaymentDTO"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/billing/invoices/visit/{visitId}": {
+		"/api/invoices/{invoiceId}": {
 			"get": {
-				"operationId": "GetInvoiceByVisit",
+				"operationId": "GetInvoice",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"balance": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"amountPaid": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"grandTotal": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"medicationTotal": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"serviceTotal": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"invoiceNumber": {
-											"type": "string"
-										},
-										"status": {
-											"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
-										},
-										"type": {
-											"$ref": "#/components/schemas/_36_Enums.InvoiceType"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"visitId": {
-											"type": "string"
-										},
-										"id": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"balance",
-										"amountPaid",
-										"grandTotal",
-										"medicationTotal",
-										"serviceTotal",
-										"invoiceNumber",
-										"status",
-										"type",
-										"updatedAt",
-										"createdAt",
-										"visitId",
-										"id"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/InvoiceResponseDTO"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Invoice not found"
 					}
 				},
-				"description": "Fetch invoice breakdown by visit ID.",
+				"description": "Get invoice details by ID, including line items and payment history",
 				"tags": [
 					"Billing & Invoices"
 				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "visitId",
+						"name": "invoiceId",
 						"required": true,
 						"schema": {
 							"type": "string"
 						}
 					}
 				]
+			}
+		},
+		"/api/invoices/{invoiceId}/payments": {
+			"post": {
+				"operationId": "RecordPayment",
+				"responses": {
+					"201": {
+						"description": "Payment Processed Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InvoiceResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid payment amount or invoice already paid"
+					},
+					"404": {
+						"description": "Invoice not found"
+					}
+				},
+				"description": "Process a payment against an outstanding invoice",
+				"tags": [
+					"Billing & Invoices"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "invoiceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePaymentDTO"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/auth/login": {
@@ -4509,6 +5127,190 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/RefreshTokenDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admissions/wards": {
+			"post": {
+				"operationId": "CreateWard",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				},
+				"description": "Register a new hospital Ward",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWardDTO"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllWards",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Get all Wards (with linked Beds)",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/v1/admissions/beds": {
+			"post": {
+				"operationId": "CreateBed",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				},
+				"description": "Add a new Bed to a Ward",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateBedDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admissions/admit": {
+			"post": {
+				"operationId": "AdmitPatient",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bed unavailable or bad request"
+					}
+				},
+				"description": "Admit a patient to an available Bed and trigger RabbitMQ event",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AdmitPatientDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admissions/{admissionId}/discharge": {
+			"put": {
+				"operationId": "DischargePatient",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Active admission not found"
+					}
+				},
+				"description": "Discharge an admitted patient, release Bed, and publish billing event",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "admissionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DischargePatientDTO"
 							}
 						}
 					}

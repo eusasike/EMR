@@ -19,7 +19,7 @@ export interface HealthResponseDTO {
 }
 
 @Tags("Health")
-@Route("health")
+@Route("api/v1/health")
 export class HealthController extends Controller {
   /**
    * Check system health (PostgreSQL and Redis connectivity)

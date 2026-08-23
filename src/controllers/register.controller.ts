@@ -15,7 +15,7 @@ import {
 } from "../models/User/user.model";
 
 @Tags("Users")
-@Route("api/users")
+@Route("api/v1/users")
 export class UserController extends Controller {
   private userService: UserService;
 

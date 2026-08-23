@@ -18,7 +18,7 @@ import {
 import { PrescriptionService } from "../service/clinical/prescription.service";
 
 @Tags("Prescriptions")
-@Route("api/prescriptions")
+@Route("api/v1/prescriptions")
 export class PrescriptionController extends Controller {
   private prescriptionService = new PrescriptionService();
 

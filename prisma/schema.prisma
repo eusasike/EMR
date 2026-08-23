@@ -31,7 +31,7 @@ enum PaymentStatus {
   PARTIALLY_PAID
   PAID
   CANCELLED
-  REFUNDEDInvoiceStatus
+  REFUNDED
 }
 
 enum PaymentMethod {
@@ -150,37 +150,39 @@ enum ChargeType {
   PROCEDURE
   MISCELLANEOUS
 }
+
 // ==========================================
 // USER & ACCESS CONTROL
 // ==========================================
 
 model User {
-  id         String   @id @default(uuid())
-  firstName  String   @default("First") @map("first_name")
-  lastName   String   @default("Last") @map("last_name")
-  middleName String   @default("middle") @map("middle_name")
-  email      String   @unique
-  phone      String?  @map("phone_number")
+  id         String  @id @default(uuid())
+  firstName  String  @default("First") @map("first_name")
+  lastName   String  @default("Last") @map("last_name")
+  middleName String  @default("middle") @map("middle_name")
+  email      String  @unique
+  phone      String? @map("phone_number")
   password   String
-  role       Role     @default(GUEST)
-  isActive   Boolean  @default(true) @map("is_active")
+  role       Role    @default(GUEST)
+  isActive   Boolean @default(true) @map("is_active")
 
   // EMR Relations
-  providedServices ProvidedService[]
+  providedServices    ProvidedService[]
   dispenseRecords     DispenseRecord[]
   attendedVisits      PatientVisit[]
   receivedPayments    Payment[]
   vitalSigns          VitalSigns[]
   prescriptions       Prescription[]
   recordedAllergies   PatientAllergy[]
-  performedLabResults LabResult[]          @relation("LabPerformedBy")
-  verifiedLabResults  LabResult[]          @relation("LabVerifiedBy")
-  admittedPatients    AdmissionRecord[]    @relation("AdmittedBy")
-  dischargedPatients  AdmissionRecord[]    @relation("DischargedBy")
+  performedLabResults LabResult[]       @relation("LabPerformedBy")
+  verifiedLabResults  LabResult[]       @relation("LabVerifiedBy")
+  admittedPatients    AdmissionRecord[] @relation("AdmittedBy")
+  dischargedPatients  AdmissionRecord[] @relation("DischargedBy")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([role])
   @@map("users")
 }
 
@@ -205,11 +207,12 @@ model Patient {
   allergies         PatientAllergy[]
   insurancePolicies PatientInsurance[]
   admissions        AdmissionRecord[]
-  invoices           Invoice[]
+  invoices          Invoice[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([lastName, firstName])
   @@map("patients")
 }
 
@@ -238,6 +241,9 @@ model PatientVisit {
 
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([patientId])
+  @@index([attendingId])
+  @@index([createdAt])
   @@map("patient_visits")
 }
 
@@ -299,6 +305,8 @@ model ProvidedService {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([visitId])
+  @@index([serviceId])
   @@map("provided_services")
 }
 
@@ -343,6 +351,7 @@ model ProductBatch {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([productId, batchNumber])
+  @@index([expiryDate])
   @@map("product_batches")
 }
 
@@ -362,6 +371,7 @@ model DispenseRecord {
 
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([prescriptionId])
   @@map("dispense_records")
 }
 
@@ -376,6 +386,8 @@ model DispensedItem {
   quantity         Int
   unitPrice        Decimal        @map("unit_price") @db.Decimal(10, 2)
 
+  @@index([dispenseRecordId])
+  @@index([batchId])
   @@map("dispensed_items")
 }
 
@@ -384,32 +396,33 @@ model DispensedItem {
 // ==========================================
 
 model Invoice {
-  id            String        @id @default(uuid())
-  invoiceNumber String        @unique @map("invoice_number")
-  visitId   String       @unique @map("visit_id") // Add @unique here
-  visit         PatientVisit  @relation(fields: [visitId], references: [id], onDelete: Cascade)
-  patientId     String        @map("patient_id")
-  patient       Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  invoiceNumber String   @unique @map("invoice_number")
+  visitId       String   @unique @map("visit_id")
+  visit         PatientVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  patientId     String   @map("patient_id")
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   // Billing Totals
-  subtotal      Decimal       @default(0.00) @db.Decimal(12, 2)
-  tax           Decimal       @default(0.00) @db.Decimal(12, 2)
-  discount      Decimal       @default(0.00) @db.Decimal(12, 2)
-  insurancePay  Decimal       @default(0.00) @map("insurance_pay") @db.Decimal(12, 2)
-  patientPay    Decimal       @default(0.00) @map("patient_pay") @db.Decimal(12, 2)
-  totalAmount   Decimal       @default(0.00) @map("total_amount") @db.Decimal(12, 2)
-  amountPaid    Decimal       @default(0.00) @map("amount_paid") @db.Decimal(12, 2)
-  balanceDue    Decimal       @default(0.00) @map("balance_due") @db.Decimal(12, 2)
-  insuranceClaim  InsuranceClaim? 
-  status        InvoiceStatus @default(UNPAID)
-  notes         String?
+  subtotal     Decimal @default(0.00) @db.Decimal(12, 2)
+  tax          Decimal @default(0.00) @db.Decimal(12, 2)
+  discount     Decimal @default(0.00) @db.Decimal(12, 2)
+  insurancePay Decimal @default(0.00) @map("insurance_pay") @db.Decimal(12, 2)
+  patientPay   Decimal @default(0.00) @map("patient_pay") @db.Decimal(12, 2)
+  totalAmount  Decimal @default(0.00) @map("total_amount") @db.Decimal(12, 2)
+  amountPaid   Decimal @default(0.00) @map("amount_paid") @db.Decimal(12, 2)
+  balanceDue   Decimal @default(0.00) @map("balance_due") @db.Decimal(12, 2)
+
+  insuranceClaim InsuranceClaim?
+  status         InvoiceStatus   @default(UNPAID)
+  notes          String?
 
   // Relations
-  items         InvoiceItem[]
-  payments      Payment[]
+  items    InvoiceItem[]
+  payments Payment[]
 
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([visitId])
   @@index([patientId])
@@ -418,19 +431,19 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id          String     @id @default(uuid())
-  invoiceId   String     @map("invoice_id")
-  invoice     Invoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  invoiceId String  @map("invoice_id")
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
   chargeType  ChargeType @map("charge_type")
-  referenceId String?    @map("reference_id") // Links to AdmissionRecord ID, Lab Request ID, etc.
+  referenceId String?    @map("reference_id") // Polymorphic: links to AdmissionRecord ID, Lab Request ID, etc. (not a DB-enforced FK)
   description String
   quantity    Int        @default(1)
   unitPrice   Decimal    @map("unit_price") @db.Decimal(10, 2)
   totalPrice  Decimal    @map("total_price") @db.Decimal(12, 2)
 
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([invoiceId])
   @@index([chargeType])
@@ -443,6 +456,7 @@ model Payment {
   invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   amount        Decimal       @db.Decimal(10, 2)
   paymentMethod PaymentMethod @map("payment_method")
+  status        PaymentStatus @default(PENDING)
   referenceNo   String?       @map("reference_no")
   receivedById  String        @map("received_by_id")
   receivedBy    User          @relation(fields: [receivedById], references: [id])
@@ -450,6 +464,8 @@ model Payment {
 
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([invoiceId])
+  @@index([receivedById])
   @@map("payments")
 }
 
@@ -471,6 +487,7 @@ model PatientAllergy {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([patientId])
   @@map("patient_allergies")
 }
 
@@ -490,6 +507,8 @@ model Prescription {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([visitId])
+  @@index([status])
   @@map("prescriptions")
 }
 
@@ -507,6 +526,7 @@ model PrescriptionItem {
   route             String?
   instructions      String?
 
+  @@index([prescriptionId])
   @@map("prescription_items")
 }
 
@@ -530,6 +550,8 @@ model LabResult {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([visitId])
+  @@index([status])
   @@map("lab_results")
 }
 
@@ -557,6 +579,7 @@ model PatientInsurance {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([providerName, cardNumber])
+  @@index([patientId])
   @@map("patient_insurance")
 }
 
@@ -585,6 +608,9 @@ model InsuranceClaim {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([visitId])
+  @@index([patientInsuranceId])
+  @@index([status])
   @@map("insurance_claims")
 }
 
@@ -624,6 +650,7 @@ model Bed {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([wardId, bedNumber])
+  @@index([status])
   @@map("beds")
 }
 
@@ -650,5 +677,8 @@ model AdmissionRecord {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([patientId])
+  @@index([bedId])
+  @@index([status])
   @@map("admission_records")
 }

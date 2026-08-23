@@ -23,7 +23,7 @@ import {
 } from "../models/lab/lab.model";
 
 @Tags("Lab Results")
-@Route("api/labs")
+@Route("api/v1/labs")
 export class LabController extends Controller {
   private labService = new LabService();
 

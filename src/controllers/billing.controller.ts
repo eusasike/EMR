@@ -17,7 +17,7 @@ import {
   InvoiceResponseDTO,
 } from "../models/billing/billing.model";
 
-@Route("api/invoices")
+@Route("api/v1/invoices")
 @Tags("Billing & Invoices")
 export class BillingController extends Controller {
   private billingService = new BillingService();
