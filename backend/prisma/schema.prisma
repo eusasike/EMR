@@ -7,18 +7,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Facility {
+  id        String         @id @default(uuid())
+  code      String         @unique
+  name      String
+  location  String?
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  patients  Patient[]
+  users     FacilityUser[]
+  wards     Ward[]
+
+  @@map("facilities")
+}
+
+model FacilityUser {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  facilityId String   @map("facility_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, facilityId])
+  @@map("facility_users")
+}
+
 model User {
-  id                  String            @id @default(uuid())
-  email               String            @unique
+  id                  String           @id @default(uuid())
+  email               String           @unique
   password            String
-  role                Role              @default(GUEST)
-  createdAt           DateTime          @default(now()) @map("created_at")
-  updatedAt           DateTime          @updatedAt @map("updated_at")
-  firstName           String            @default("First") @map("first_name")
-  lastName            String            @default("Last") @map("last_name")
-  middleName          String            @default("middle") @map("middle_name")
-  isActive            Boolean           @default(true) @map("is_active")
-  phone               String?           @map("phone_number")
+  role                Role             @default(GUEST)
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+  firstName           String           @default("First") @map("first_name")
+  lastName            String           @default("Last") @map("last_name")
+  middleName          String           @default("middle") @map("middle_name")
+  isActive            Boolean          @default(true) @map("is_active")
+  phone               String?          @map("phone_number")
+
+  facilities          FacilityUser[]
   admittedPatients    AdmissionRecord[] @relation("AdmittedBy")
   dischargedPatients  AdmissionRecord[] @relation("DischargedBy")
   dispenseRecords     DispenseRecord[]
@@ -35,19 +63,22 @@ model User {
 }
 
 model Patient {
-  id                    String             @id @default(uuid())
-  mrn                   String             @unique
-  firstName             String             @map("first_name")
-  lastName              String             @map("last_name")
+  id                    String            @id @default(uuid())
+  mrn                   String            @unique
+  facilityId            String            @map("facility_id")
+  facility              Facility          @relation(fields: [facilityId], references: [id])
+  firstName             String            @map("first_name")
+  lastName              String            @map("last_name")
+  middleName            String?
   gender                Gender
-  dateOfBirth           DateTime           @map("date_of_birth")
+  dateOfBirth           DateTime          @map("date_of_birth")
   phone                 String?
-  address                 String?
-  createdAt             DateTime           @default(now()) @map("created_at")
-  updatedAt             DateTime           @updatedAt @map("updated_at")
+  address               String?
   emergencyContactName  String?
   emergencyContactPhone String?
-  middleName            String?
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @updatedAt @map("updated_at")
+
   admissions            AdmissionRecord[]
   allergies             PatientAllergy[]
   insurancePolicies     PatientInsurance[]
@@ -57,23 +88,24 @@ model Patient {
 }
 
 model PatientVisit {
-  id             String            @id @default(uuid())
-  patientId      String            @map("patient_id")
-  attendingId    String            @map("attending_id")
+  id             String           @id @default(uuid())
+  patientId      String           @map("patient_id")
+  attendingId    String           @map("attending_id")
   diagnosis      String?
-  icdCode        String?           @map("icd_code")
+  icdCode        String?          @map("icd_code")
   symptoms       String?
-  createdAt      DateTime          @default(now()) @map("created_at")
-  priority       VisitPriority     @default(NORMAL)
-  visitType      VisitType         @default(OPD) @map("visit_type")
+  priority       VisitPriority    @default(NORMAL)
+  visitType      VisitType        @default(OPD) @map("visit_type")
   triagePriority TriagePriority?
+  createdAt      DateTime         @default(now()) @map("created_at")
+
   admission      AdmissionRecord?
   dispenseRecord DispenseRecord?
   claims         InsuranceClaim[]
   invoice        Invoice?
   labResults     LabResult[]
-  attending      User              @relation(fields: [attendingId], references: [id])
-  patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  attending      User             @relation(fields: [attendingId], references: [id])
+  patient        Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
   prescriptions  Prescription[]
   services       ProvidedService[]
   vitalSigns     VitalSigns?
@@ -98,6 +130,7 @@ model VitalSigns {
   recordedById    String         @map("recorded_by_id")
   createdAt       DateTime       @default(now()) @map("created_at")
   updatedAt       DateTime       @updatedAt @map("updated_at")
+
   recordedBy      User           @relation(fields: [recordedById], references: [id])
   visit           PatientVisit   @relation(fields: [visitId], references: [id], onDelete: Cascade)
 
@@ -111,6 +144,7 @@ model MedicalService {
   price            Decimal           @db.Decimal(10, 2)
   createdAt        DateTime          @default(now()) @map("created_at")
   updatedAt        DateTime          @updatedAt @map("updated_at")
+
   providedServices ProvidedService[]
 
   @@map("medical_services")
@@ -122,9 +156,10 @@ model ProvidedService {
   serviceId    String         @map("service_id")
   unitPrice    Decimal        @map("unit_price") @db.Decimal(10, 2)
   notes        String?
+  providedById String         @map("provided_by_id")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
-  providedById String         @map("provided_by_id")
+
   labResult    LabResult?
   providedBy   User           @relation(fields: [providedById], references: [id])
   service      MedicalService @relation(fields: [serviceId], references: [id])
@@ -138,11 +173,12 @@ model Product {
   name              String             @unique
   description       String?
   unitPrice         Decimal            @map("unit_price") @db.Decimal(10, 2)
-  createdAt         DateTime           @default(now()) @map("created_at")
-  updatedAt         DateTime           @updatedAt @map("updated_at")
   category          String             @default("MEDICINE")
   code              String?            @unique
   reorderLevel      Int                @default(10) @map("reorder_level")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
   dispensedItems    DispensedItem[]
   prescriptionItems PrescriptionItem[]
   batches           ProductBatch[]
@@ -160,6 +196,7 @@ model ProductBatch {
   expiryDate     DateTime        @map("expiry_date")
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
+
   dispensedItems DispensedItem[]
   product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -173,8 +210,9 @@ model DispenseRecord {
   dispensedById  String          @map("dispensed_by_id")
   totalCost      Decimal         @map("total_cost") @db.Decimal(10, 2)
   notes          String?
-  createdAt      DateTime        @default(now()) @map("created_at")
   prescriptionId String?         @map("prescription_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
   dispensedBy    User            @relation(fields: [dispensedById], references: [id])
   prescription   Prescription?   @relation(fields: [prescriptionId], references: [id])
   visit          PatientVisit?   @relation(fields: [visitId], references: [id])
@@ -190,6 +228,7 @@ model DispensedItem {
   quantity         Int
   unitPrice        Decimal        @map("unit_price") @db.Decimal(10, 2)
   batchId          String         @map("batch_id")
+
   batch            ProductBatch   @relation(fields: [batchId], references: [id])
   dispenseRecord   DispenseRecord @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
   product          Product        @relation(fields: [productId], references: [id])
@@ -207,9 +246,10 @@ model Invoice {
   amountPaid       Decimal         @default(0) @map("amount_paid") @db.Decimal(10, 2)
   balance          Decimal         @default(0) @db.Decimal(10, 2)
   status           PaymentStatus   @default(PENDING)
+  type             InvoiceType     @default(FINAL)
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
-  type             InvoiceType     @default(FINAL)
+
   insuranceClaim   InsuranceClaim?
   visit            PatientVisit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
   payments         Payment[]
@@ -224,8 +264,9 @@ model Payment {
   paymentMethod PaymentMethod @map("payment_method")
   referenceNo   String?       @map("reference_no")
   receivedById  String        @map("received_by_id")
-  createdAt     DateTime      @default(now()) @map("created_at")
   notes         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+
   invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   receivedBy    User          @relation(fields: [receivedById], references: [id])
 
@@ -242,6 +283,7 @@ model PatientAllergy {
   recordedById String?         @map("recorded_by_id")
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
+
   patient      Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
   recordedBy   User?           @relation(fields: [recordedById], references: [id])
 
@@ -257,6 +299,7 @@ model Prescription {
   notes              String?
   createdAt          DateTime           @default(now()) @map("created_at")
   updatedAt          DateTime           @updatedAt @map("updated_at")
+
   dispenseRecords    DispenseRecord[]
   items              PrescriptionItem[]
   prescribedBy       User               @relation(fields: [prescribedById], references: [id])
@@ -276,6 +319,7 @@ model PrescriptionItem {
   quantityDispensed Int          @default(0) @map("quantity_dispensed")
   route             String?
   instructions      String?
+
   prescription      Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
   product           Product      @relation(fields: [productId], references: [id])
 
@@ -296,6 +340,7 @@ model LabResult {
   verifiedById      String?         @map("verified_by_id")
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
+
   performedBy       User?           @relation("LabPerformedBy", fields: [performedById], references: [id])
   providedService   ProvidedService @relation(fields: [providedServiceId], references: [id], onDelete: Cascade)
   verifiedBy        User?           @relation("LabVerifiedBy", fields: [verifiedById], references: [id])
@@ -317,6 +362,7 @@ model PatientInsurance {
   expiryDate    DateTime?        @map("expiry_date")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
+
   claims        InsuranceClaim[]
   patient       Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
@@ -341,6 +387,7 @@ model InsuranceClaim {
   processedAt        DateTime?        @map("processed_at")
   createdAt          DateTime         @default(now()) @map("created_at")
   updatedAt          DateTime         @updatedAt @map("updated_at")
+
   invoice            Invoice?         @relation(fields: [invoiceId], references: [id])
   patientInsurance   PatientInsurance @relation(fields: [patientInsuranceId], references: [id])
   visit              PatientVisit     @relation(fields: [visitId], references: [id], onDelete: Cascade)
@@ -350,6 +397,7 @@ model InsuranceClaim {
 
 model Ward {
   id          String   @id @default(uuid())
+  facilityId  String   @map("facility_id")
   name        String   @unique
   code        String?  @unique
   type        WardType @default(GENERAL)
@@ -358,6 +406,8 @@ model Ward {
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+
+  facility    Facility @relation(fields: [facilityId], references: [id])
   beds        Bed[]
 
   @@map("wards")
@@ -370,6 +420,7 @@ model Bed {
   status     BedStatus         @default(AVAILABLE)
   createdAt  DateTime          @default(now()) @map("created_at")
   updatedAt  DateTime          @updatedAt @map("updated_at")
+
   admissions AdmissionRecord[]
   ward       Ward              @relation(fields: [wardId], references: [id], onDelete: Cascade)
 
@@ -392,6 +443,7 @@ model AdmissionRecord {
   dischargeNotes  String?         @map("discharge_notes")
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
+
   admittedBy      User            @relation("AdmittedBy", fields: [admittedById], references: [id])
   bed             Bed             @relation(fields: [bedId], references: [id])
   dischargedBy    User?           @relation("DischargedBy", fields: [dischargedById], references: [id])
