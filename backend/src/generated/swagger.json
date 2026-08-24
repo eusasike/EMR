@@ -1,0 +1,5326 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Decimal": {
+				"type": "string"
+			},
+			"_36_Enums.TriagePriority": {
+				"type": "string",
+				"enum": [
+					"RED",
+					"YELLOW",
+					"GREEN",
+					"BLACK"
+				]
+			},
+			"DefaultSelection_Prisma._36_VitalSignsPayload_": {
+				"properties": {
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"recordedById": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+					},
+					"bmi": {
+						"$ref": "#/components/schemas/Decimal"
+					},
+					"height": {
+						"$ref": "#/components/schemas/Decimal"
+					},
+					"weight": {
+						"$ref": "#/components/schemas/Decimal"
+					},
+					"spo2": {
+						"type": "number",
+						"format": "double"
+					},
+					"respiratoryRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"pulseRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"diastolicBP": {
+						"type": "number",
+						"format": "double"
+					},
+					"systolicBP": {
+						"type": "number",
+						"format": "double"
+					},
+					"temperature": {
+						"$ref": "#/components/schemas/Decimal"
+					},
+					"visitId": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"updatedAt",
+					"createdAt",
+					"recordedById",
+					"notes",
+					"priority",
+					"bmi",
+					"height",
+					"weight",
+					"spo2",
+					"respiratoryRate",
+					"pulseRate",
+					"diastolicBP",
+					"systolicBP",
+					"temperature",
+					"visitId",
+					"id"
+				],
+				"type": "object"
+			},
+			"VitalSigns": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_VitalSignsPayload_",
+				"description": "Model VitalSigns"
+			},
+			"TriagePriority": {
+				"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+			},
+			"CreateVitalSignsInput": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"temperature": {
+						"type": "number",
+						"format": "double"
+					},
+					"systolicBP": {
+						"type": "number",
+						"format": "double"
+					},
+					"diastolicBP": {
+						"type": "number",
+						"format": "double"
+					},
+					"pulseRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"respiratoryRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"spo2": {
+						"type": "number",
+						"format": "double"
+					},
+					"weight": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/TriagePriority"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"visitId",
+					"temperature",
+					"systolicBP",
+					"diastolicBP",
+					"pulseRate",
+					"respiratoryRate",
+					"spo2",
+					"weight",
+					"height"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_Omit_CreateVitalSignsInput.visitId__": {
+				"properties": {
+					"temperature": {
+						"type": "number",
+						"format": "double"
+					},
+					"systolicBP": {
+						"type": "number",
+						"format": "double"
+					},
+					"diastolicBP": {
+						"type": "number",
+						"format": "double"
+					},
+					"pulseRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"respiratoryRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"spo2": {
+						"type": "number",
+						"format": "double"
+					},
+					"weight": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdateVitalSignsInput": {
+				"$ref": "#/components/schemas/Partial_Omit_CreateVitalSignsInput.visitId__"
+			},
+			"_36_Enums.VisitType": {
+				"type": "string",
+				"enum": [
+					"OPD",
+					"EMERGENCY",
+					"REFERRAL",
+					"FOLLOW_UP"
+				]
+			},
+			"VisitType": {
+				"$ref": "#/components/schemas/_36_Enums.VisitType"
+			},
+			"_36_Enums.VisitPriority": {
+				"type": "string",
+				"enum": [
+					"NORMAL",
+					"URGENT",
+					"CRITICAL"
+				]
+			},
+			"VisitPriority": {
+				"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+			},
+			"VisitResponseDTO": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"attending": {
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"id"
+								],
+								"type": "object"
+							},
+							"createdAt": {
+								"type": "string",
+								"format": "date-time"
+							},
+							"priority": {
+								"$ref": "#/components/schemas/VisitPriority"
+							},
+							"visitType": {
+								"$ref": "#/components/schemas/VisitType"
+							},
+							"symptoms": {
+								"type": "string",
+								"nullable": true
+							},
+							"icdCode": {
+								"type": "string",
+								"nullable": true
+							},
+							"diagnosis": {
+								"type": "string",
+								"nullable": true
+							},
+							"attendingId": {
+								"type": "string"
+							},
+							"patientId": {
+								"type": "string"
+							},
+							"id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"createdAt",
+							"priority",
+							"visitType",
+							"attendingId",
+							"patientId",
+							"id"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Record_string.string-Array_": {
+				"properties": {},
+				"additionalProperties": {
+					"items": {
+						"type": "string"
+					},
+					"type": "array"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"ErrorResponseDTO": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-Array_"
+					}
+				},
+				"required": [
+					"success",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateVisitDTO": {
+				"properties": {
+					"patientId": {
+						"type": "string"
+					},
+					"attendingId": {
+						"type": "string"
+					},
+					"symptoms": {
+						"type": "string",
+						"nullable": true
+					},
+					"diagnosis": {
+						"type": "string",
+						"nullable": true
+					},
+					"icdCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"visitType": {
+						"$ref": "#/components/schemas/VisitType"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/VisitPriority"
+					}
+				},
+				"required": [
+					"patientId",
+					"attendingId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateVisitDTO": {
+				"properties": {
+					"diagnosis": {
+						"type": "string",
+						"nullable": true
+					},
+					"icdCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"symptoms": {
+						"type": "string",
+						"nullable": true
+					},
+					"priority": {
+						"$ref": "#/components/schemas/VisitPriority"
+					},
+					"attendingId": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.Role": {
+				"type": "string",
+				"enum": [
+					"ADMIN",
+					"MANAGER",
+					"GUEST",
+					"NURSE",
+					"DOCTOR",
+					"CASHIER"
+				]
+			},
+			"Role": {
+				"$ref": "#/components/schemas/_36_Enums.Role"
+			},
+			"RegisterUserDTO": {
+				"properties": {
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"middleName": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					}
+				},
+				"required": [
+					"firstName",
+					"lastName",
+					"email",
+					"password",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.PrescriptionStatus": {
+				"type": "string",
+				"enum": [
+					"PENDING",
+					"PARTIALLY_DISPENSED",
+					"COMPLETED",
+					"CANCELLED"
+				]
+			},
+			"CreatePrescriptionItemDTO": {
+				"properties": {
+					"productId": {
+						"type": "string"
+					},
+					"dosage": {
+						"type": "string"
+					},
+					"frequency": {
+						"type": "string"
+					},
+					"durationDays": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantityOrdered": {
+						"type": "number",
+						"format": "double"
+					},
+					"route": {
+						"type": "string"
+					},
+					"instructions": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"productId",
+					"dosage",
+					"frequency",
+					"durationDays",
+					"quantityOrdered"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePrescriptionDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/CreatePrescriptionItemDTO"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"visitId",
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.Gender": {
+				"type": "string",
+				"enum": [
+					"MALE",
+					"FEMALE",
+					"OTHER"
+				]
+			},
+			"Gender": {
+				"$ref": "#/components/schemas/_36_Enums.Gender"
+			},
+			"PatientDTO": {
+				"description": "Standard Patient entity projection matching Prisma return types exactly.\nPrisma returns `null` for optional database fields, not `undefined`.",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"mrn": {
+						"type": "string"
+					},
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"middleName": {
+						"type": "string",
+						"nullable": true
+					},
+					"gender": {
+						"$ref": "#/components/schemas/Gender"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"phone": {
+						"type": "string",
+						"nullable": true
+					},
+					"emergencyContactName": {
+						"type": "string",
+						"nullable": true
+					},
+					"emergencyContactPhone": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"mrn",
+					"firstName",
+					"lastName",
+					"middleName",
+					"gender",
+					"dateOfBirth",
+					"phone",
+					"emergencyContactName",
+					"emergencyContactPhone",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApiResponse_PatientDTO_": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"$ref": "#/components/schemas/PatientDTO"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PatientResponseDTO": {
+				"$ref": "#/components/schemas/ApiResponse_PatientDTO_"
+			},
+			"RegisterPatientDTO": {
+				"properties": {
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"middleName": {
+						"type": "string"
+					},
+					"gender": {
+						"$ref": "#/components/schemas/Gender"
+					},
+					"dateOfBirth": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"emergencyContactName": {
+						"type": "string"
+					},
+					"emergencyContactPhone": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"firstName",
+					"lastName",
+					"gender",
+					"dateOfBirth"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DefaultSelection_Prisma._36_PatientPayload_": {
+				"properties": {
+					"emergencyContactPhone": {
+						"type": "string"
+					},
+					"emergencyContactName": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"gender": {
+						"$ref": "#/components/schemas/_36_Enums.Gender"
+					},
+					"mrn": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"middleName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"firstName": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"emergencyContactPhone",
+					"emergencyContactName",
+					"dateOfBirth",
+					"gender",
+					"mrn",
+					"phone",
+					"middleName",
+					"lastName",
+					"firstName",
+					"updatedAt",
+					"createdAt",
+					"id"
+				],
+				"type": "object"
+			},
+			"Patient": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_PatientPayload_",
+				"description": "Model Patient"
+			},
+			"PatientListResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					},
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/Patient"
+						},
+						"type": "array"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"count",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginationMeta": {
+				"properties": {
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					},
+					"hasNextPage": {
+						"type": "boolean"
+					},
+					"hasPrevPage": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"total",
+					"page",
+					"limit",
+					"totalPages",
+					"hasNextPage",
+					"hasPrevPage"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginatedResponse_PatientDTO_": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/PatientDTO"
+						},
+						"type": "array"
+					},
+					"pagination": {
+						"$ref": "#/components/schemas/PaginationMeta"
+					}
+				},
+				"required": [
+					"success",
+					"data",
+					"pagination"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginatedPatientsResponseDTO": {
+				"$ref": "#/components/schemas/PaginatedResponse_PatientDTO_"
+			},
+			"CreateMedicalServiceInput": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"category",
+					"price"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_CreateMedicalServiceInput_": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdateMedicalServiceInput": {
+				"$ref": "#/components/schemas/Partial_CreateMedicalServiceInput_"
+			},
+			"Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"serviceId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"visitId",
+					"serviceId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_ProvideServiceInput.providedById_": {
+				"$ref": "#/components/schemas/Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"_36_Enums.LabStatus": {
+				"type": "string",
+				"enum": [
+					"COMPLETED",
+					"CANCELLED",
+					"ORDERED",
+					"SAMPLE_COLLECTED",
+					"IN_PROGRESS",
+					"VERIFIED"
+				]
+			},
+			"OrderLabServiceDTO": {
+				"properties": {
+					"providedServiceId": {
+						"type": "string"
+					},
+					"visitId": {
+						"type": "string"
+					},
+					"specimenType": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"providedServiceId",
+					"visitId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LabStatus": {
+				"$ref": "#/components/schemas/_36_Enums.LabStatus"
+			},
+			"RecordLabResultDTO": {
+				"properties": {
+					"resultValue": {
+						"type": "string"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"referenceRange": {
+						"type": "string"
+					},
+					"findings": {
+						"type": "string"
+					},
+					"specimenType": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/LabStatus"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateProductDTO": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string",
+						"enum": [
+							"MEDICINE",
+							"EQUIPMENT",
+							"CONSUMABLE",
+							"SUPPLEMENT"
+						]
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"reorderLevel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"unitPrice"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_CreateProductDTO_": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string",
+						"enum": [
+							"MEDICINE",
+							"EQUIPMENT",
+							"CONSUMABLE",
+							"SUPPLEMENT"
+						]
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"reorderLevel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdateProductDTO": {
+				"$ref": "#/components/schemas/Partial_CreateProductDTO_"
+			},
+			"CreateBatchDTO": {
+				"properties": {
+					"productId": {
+						"type": "string"
+					},
+					"batchNumber": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"costPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"expiryDate": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"productId",
+					"batchNumber",
+					"quantity",
+					"expiryDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DispenseItemInputDTO": {
+				"properties": {
+					"productId": {
+						"type": "string"
+					},
+					"batchId": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"productId",
+					"batchId",
+					"quantity",
+					"unitPrice"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateDispenseRecordDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"dispensedById": {
+						"type": "string"
+					},
+					"prescriptionId": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/DispenseItemInputDTO"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.InsuranceStatus": {
+				"type": "string",
+				"enum": [
+					"ACTIVE",
+					"INACTIVE",
+					"EXPIRED",
+					"EXHAUSTED"
+				]
+			},
+			"CreatePatientInsuranceDTO": {
+				"properties": {
+					"patientId": {
+						"type": "string"
+					},
+					"providerName": {
+						"type": "string"
+					},
+					"policyNumber": {
+						"type": "string"
+					},
+					"cardNumber": {
+						"type": "string"
+					},
+					"principalName": {
+						"type": "string"
+					},
+					"relationship": {
+						"type": "string"
+					},
+					"coverageLimit": {
+						"type": "number",
+						"format": "double"
+					},
+					"expiryDate": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"patientId",
+					"providerName",
+					"policyNumber",
+					"cardNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.ClaimStatus": {
+				"type": "string",
+				"enum": [
+					"CANCELLED",
+					"PAID",
+					"PENDING_PRE_AUTH",
+					"PRE_AUTHORIZED",
+					"SUBMITTED",
+					"APPROVED",
+					"PARTIALLY_APPROVED",
+					"REJECTED"
+				]
+			},
+			"CreateInsuranceClaimDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"invoiceId": {
+						"type": "string"
+					},
+					"patientInsuranceId": {
+						"type": "string"
+					},
+					"requestedAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"preAuthCode": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"visitId",
+					"patientInsuranceId",
+					"requestedAmount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProcessInsuranceClaimDTO": {
+				"properties": {
+					"approvedAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"coPayAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"APPROVED",
+							"REJECTED",
+							"PARTIALLY_APPROVED"
+						]
+					},
+					"rejectionReason": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"approvedAmount",
+					"coPayAmount",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ComponentStatus": {
+				"properties": {
+					"status": {
+						"type": "string",
+						"enum": [
+							"UP",
+							"DOWN"
+						]
+					},
+					"latencyMs": {
+						"type": "number",
+						"format": "double"
+					},
+					"error": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HealthResponseDTO": {
+				"properties": {
+					"status": {
+						"type": "string",
+						"enum": [
+							"UP",
+							"DOWN",
+							"DEGRADED"
+						]
+					},
+					"timestamp": {
+						"type": "string"
+					},
+					"uptimeSeconds": {
+						"type": "number",
+						"format": "double"
+					},
+					"services": {
+						"properties": {
+							"redis": {
+								"$ref": "#/components/schemas/ComponentStatus"
+							},
+							"postgres": {
+								"$ref": "#/components/schemas/ComponentStatus"
+							}
+						},
+						"required": [
+							"redis",
+							"postgres"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"status",
+					"timestamp",
+					"uptimeSeconds",
+					"services"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.InvoiceStatus": {
+				"type": "string",
+				"enum": [
+					"CANCELLED",
+					"UNPAID",
+					"PARTIALLY_PAID",
+					"PAID"
+				]
+			},
+			"InvoiceStatus": {
+				"$ref": "#/components/schemas/_36_Enums.InvoiceStatus"
+			},
+			"_36_Enums.ChargeType": {
+				"type": "string",
+				"enum": [
+					"WARD_STAY",
+					"CONSULTATION",
+					"LAB_TEST",
+					"PHARMACY",
+					"PROCEDURE",
+					"MISCELLANEOUS"
+				]
+			},
+			"ChargeType": {
+				"$ref": "#/components/schemas/_36_Enums.ChargeType"
+			},
+			"InvoiceItemResponseDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"invoiceId": {
+						"type": "string"
+					},
+					"chargeType": {
+						"$ref": "#/components/schemas/ChargeType"
+					},
+					"referenceId": {
+						"type": "string",
+						"nullable": true
+					},
+					"description": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"invoiceId",
+					"chargeType",
+					"referenceId",
+					"description",
+					"quantity",
+					"unitPrice",
+					"totalPrice",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.PaymentMethod": {
+				"type": "string",
+				"enum": [
+					"CASH",
+					"MOBILE_MONEY",
+					"INSURANCE",
+					"CARD"
+				]
+			},
+			"PaymentMethod": {
+				"$ref": "#/components/schemas/_36_Enums.PaymentMethod"
+			},
+			"_36_Enums.PaymentStatus": {
+				"type": "string",
+				"enum": [
+					"PENDING",
+					"CANCELLED",
+					"PARTIALLY_PAID",
+					"PAID",
+					"REFUNDEDInvoiceStatus"
+				]
+			},
+			"PaymentStatus": {
+				"$ref": "#/components/schemas/_36_Enums.PaymentStatus"
+			},
+			"PaymentResponseDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"receiptNumber": {
+						"type": "string"
+					},
+					"invoiceId": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"paymentMethod": {
+						"$ref": "#/components/schemas/PaymentMethod"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PaymentStatus"
+					},
+					"transactionRef": {
+						"type": "string",
+						"nullable": true
+					},
+					"receivedById": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"receiptNumber",
+					"invoiceId",
+					"amount",
+					"paymentMethod",
+					"status",
+					"transactionRef",
+					"receivedById",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"InvoiceResponseDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"invoiceNumber": {
+						"type": "string"
+					},
+					"visitId": {
+						"type": "string"
+					},
+					"patientId": {
+						"type": "string"
+					},
+					"subtotal": {
+						"type": "number",
+						"format": "double"
+					},
+					"tax": {
+						"type": "number",
+						"format": "double"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"insurancePay": {
+						"type": "number",
+						"format": "double"
+					},
+					"patientPay": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"amountPaid": {
+						"type": "number",
+						"format": "double"
+					},
+					"balanceDue": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/InvoiceStatus"
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/InvoiceItemResponseDTO"
+						},
+						"type": "array"
+					},
+					"payments": {
+						"items": {
+							"$ref": "#/components/schemas/PaymentResponseDTO"
+						},
+						"type": "array"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"invoiceNumber",
+					"visitId",
+					"patientId",
+					"subtotal",
+					"tax",
+					"discount",
+					"insurancePay",
+					"patientPay",
+					"totalAmount",
+					"amountPaid",
+					"balanceDue",
+					"status",
+					"notes",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RecordPaymentDTO": {
+				"properties": {
+					"invoiceId": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"paymentMethod": {
+						"$ref": "#/components/schemas/PaymentMethod"
+					},
+					"transactionRef": {
+						"type": "string",
+						"nullable": true
+					},
+					"receivedById": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"invoiceId",
+					"amount",
+					"paymentMethod",
+					"receivedById"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePaymentDTO": {
+				"$ref": "#/components/schemas/RecordPaymentDTO"
+			},
+			"AuthUserData": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"firstName",
+					"lastName",
+					"email",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginResponseDTO": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"refreshToken": {
+								"type": "string"
+							},
+							"accessToken": {
+								"type": "string"
+							},
+							"user": {
+								"$ref": "#/components/schemas/AuthUserData"
+							}
+						},
+						"required": [
+							"refreshToken",
+							"accessToken",
+							"user"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginDTO": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LogoutResponseDTO": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LogoutDTO": {
+				"properties": {
+					"refreshToken": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"refreshToken"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RefreshTokenResponseDTO": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"refreshToken": {
+								"type": "string"
+							},
+							"accessToken": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"refreshToken",
+							"accessToken"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RefreshTokenDTO": {
+				"properties": {
+					"refreshToken": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"refreshToken"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.WardType": {
+				"type": "string",
+				"enum": [
+					"MALE",
+					"FEMALE",
+					"GENERAL",
+					"PEDIATRIC",
+					"ICU",
+					"HDUK",
+					"MATERNITY",
+					"SURGICAL",
+					"ISOLATION",
+					"PRIVATE"
+				]
+			},
+			"WardType": {
+				"$ref": "#/components/schemas/_36_Enums.WardType"
+			},
+			"CreateWardDTO": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"code": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/WardType"
+					},
+					"capacity": {
+						"type": "number",
+						"format": "double"
+					},
+					"dailyRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"dailyRate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateBedDTO": {
+				"properties": {
+					"wardId": {
+						"type": "string"
+					},
+					"bedNumber": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"wardId",
+					"bedNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AdmitPatientDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"patientId": {
+						"type": "string"
+					},
+					"bedId": {
+						"type": "string"
+					},
+					"admittedById": {
+						"type": "string"
+					},
+					"admissionNotes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"visitId",
+					"patientId",
+					"bedId",
+					"admittedById"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DischargePatientDTO": {
+				"properties": {
+					"dischargedById": {
+						"type": "string"
+					},
+					"dischargeNotes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"dischargedById"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "auth-service",
+		"version": "1.0.0",
+		"description": "Authentication and RBAC Microservice",
+		"contact": {}
+	},
+	"paths": {
+		"/api/v1/vital-signs": {
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/VitalSigns"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"404": {
+						"description": "Patient Visit Not Found"
+					},
+					"409": {
+						"description": "Vital Signs Already Recorded"
+					}
+				},
+				"tags": [
+					"Vital Signs"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateVitalSignsInput"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAll",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"meta": {
+											"properties": {
+												"totalPages": {
+													"type": "number",
+													"format": "double"
+												},
+												"limit": {
+													"type": "number",
+													"format": "double"
+												},
+												"page": {
+													"type": "number",
+													"format": "double"
+												},
+												"total": {
+													"type": "number",
+													"format": "double"
+												}
+											},
+											"required": [
+												"totalPages",
+												"limit",
+												"page",
+												"total"
+											],
+											"type": "object"
+										},
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/VitalSigns"
+											},
+											"type": "array"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"meta",
+										"data",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vital Signs"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 20,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "patientId",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "priority",
+						"required": false,
+						"schema": {
+							"$ref": "#/components/schemas/TriagePriority"
+						}
+					},
+					{
+						"in": "query",
+						"name": "startDate",
+						"required": false,
+						"schema": {
+							"format": "date-time",
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "endDate",
+						"required": false,
+						"schema": {
+							"format": "date-time",
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/vital-signs/visit/{visitId}": {
+			"get": {
+				"operationId": "GetByVisitId",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/VitalSigns"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Vital Signs Not Found"
+					}
+				},
+				"tags": [
+					"Vital Signs"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "visitId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/vital-signs/{id}": {
+			"put": {
+				"operationId": "Update",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/VitalSigns"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Vital Signs Record Not Found"
+					}
+				},
+				"tags": [
+					"Vital Signs"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateVitalSignsInput"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/visits": {
+			"post": {
+				"operationId": "CreateVisit",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/VisitResponseDTO"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponseDTO"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation or Business Logic Error"
+					},
+					"404": {
+						"description": "Patient or Staff Not Found"
+					}
+				},
+				"tags": [
+					"Patient Visits"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateVisitDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/visits/{id}": {
+			"put": {
+				"operationId": "UpdateVisit",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/VisitResponseDTO"
+										},
+										{
+											"$ref": "#/components/schemas/ErrorResponseDTO"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation Error"
+					},
+					"404": {
+						"description": "Visit Not Found"
+					}
+				},
+				"tags": [
+					"Patient Visits"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateVisitDTO"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetVisitById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"message": {},
+												"data": {},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Visit Not Found"
+					}
+				},
+				"tags": [
+					"Patient Visits"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/visits/patient/{mrn}": {
+			"get": {
+				"operationId": "GetVisitsByPatient",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {},
+										"count": {},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"count",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Patient Visits"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/users/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"201": {
+						"description": "Staff member registered successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation failed"
+					},
+					"409": {
+						"description": "Email already exists"
+					}
+				},
+				"description": "Register a new staff member (Admin only)",
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterUserDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/prescriptions": {
+			"post": {
+				"operationId": "CreatePrescription",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"prescribedBy": {
+													"properties": {
+														"email": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"email",
+														"id"
+													],
+													"type": "object"
+												},
+												"items": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"product": {
+																		"properties": {
+																			"reorderLevel": {
+																				"type": "number",
+																				"format": "double"
+																			},
+																			"code": {
+																				"type": "string"
+																			},
+																			"description": {
+																				"type": "string"
+																			},
+																			"category": {
+																				"type": "string"
+																			},
+																			"unitPrice": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"reorderLevel",
+																			"code",
+																			"description",
+																			"category",
+																			"unitPrice",
+																			"updatedAt",
+																			"createdAt",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"product"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"instructions": {
+																		"type": "string"
+																	},
+																	"route": {
+																		"type": "string"
+																	},
+																	"quantityDispensed": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"quantityOrdered": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"durationDays": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"frequency": {
+																		"type": "string"
+																	},
+																	"dosage": {
+																		"type": "string"
+																	},
+																	"productId": {
+																		"type": "string"
+																	},
+																	"prescriptionId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"instructions",
+																	"route",
+																	"quantityDispensed",
+																	"quantityOrdered",
+																	"durationDays",
+																	"frequency",
+																	"dosage",
+																	"productId",
+																	"prescriptionId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"prescribedBy",
+												"items"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+												},
+												"prescribedById": {
+													"type": "string"
+												},
+												"prescriptionNumber": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"notes": {
+													"type": "string"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"status",
+												"prescribedById",
+												"prescriptionNumber",
+												"updatedAt",
+												"createdAt",
+												"notes",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					}
+				},
+				"tags": [
+					"Prescriptions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePrescriptionDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/prescriptions/pending": {
+			"get": {
+				"operationId": "GetPendingPrescriptions",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Prescriptions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/v1/patients/register": {
+			"post": {
+				"operationId": "RegisterPatient",
+				"responses": {
+					"201": {
+						"description": "Patient Registered Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PatientResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request / Validation Error"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				},
+				"tags": [
+					"Patient Management"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterPatientDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/patients/lookup": {
+			"get": {
+				"operationId": "LookupPatients",
+				"responses": {
+					"200": {
+						"description": "Patients Fetched Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PatientListResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Missing query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PatientListResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieve patient details by Medical Record Number (MRN).\nChecks Redis cache first before falling back to PostgreSQL.",
+				"tags": [
+					"Patient Management"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"DOCTOR",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "mrn",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "firstName",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "lastName",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/patients": {
+			"get": {
+				"operationId": "GetPatients",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedPatientsResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid Query Parameters"
+					}
+				},
+				"description": "Search and list patients with pagination and filtering.",
+				"tags": [
+					"Patient Management"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "gender",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"MALE",
+								"FEMALE",
+								"OTHER"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "sortBy",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"createdAt",
+								"lastName",
+								"mrn"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "sortOrder",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"asc",
+								"desc"
+							]
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/medical-services": {
+			"post": {
+				"operationId": "CreateService",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"price": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"category": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"price",
+										"category",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"409": {
+						"description": "Service Already Exists"
+					}
+				},
+				"description": "Create a new medical service definition (Admin only)",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMedicalServiceInput"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetServices",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"meta": {
+											"properties": {
+												"totalPages": {
+													"type": "number",
+													"format": "double"
+												},
+												"limit": {
+													"type": "number",
+													"format": "double"
+												},
+												"page": {
+													"type": "number",
+													"format": "double"
+												},
+												"total": {
+													"type": "number",
+													"format": "double"
+												}
+											},
+											"required": [
+												"totalPages",
+												"limit",
+												"page",
+												"total"
+											],
+											"type": "object"
+										},
+										"data": {
+											"items": {
+												"properties": {
+													"price": {
+														"$ref": "#/components/schemas/Decimal"
+													},
+													"category": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"createdAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"id": {
+														"type": "string"
+													},
+													"name": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"price",
+													"category",
+													"updatedAt",
+													"createdAt",
+													"id",
+													"name"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"meta",
+										"data"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieve a paginated and searchable list of medical services",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "category",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/medical-services/{id}": {
+			"get": {
+				"operationId": "GetServiceById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"price": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"category": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"price",
+										"category",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Medical Service Not Found"
+					}
+				},
+				"description": "Retrieve a single medical service by ID",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateService",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"price": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"category": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"price",
+										"category",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Medical Service Not Found"
+					}
+				},
+				"description": "Update medical service details (Admin only)",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateMedicalServiceInput"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/medical-services/provide": {
+			"post": {
+				"operationId": "ProvideService",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"unitPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"providedById": {
+											"type": "string"
+										},
+										"serviceId": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"notes": {
+											"type": "string"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"unitPrice",
+										"providedById",
+										"serviceId",
+										"updatedAt",
+										"createdAt",
+										"notes",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Patient Visit or Medical Service Not Found"
+					}
+				},
+				"description": "Record a service provided to a patient visit",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Omit_ProvideServiceInput.providedById_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/medical-services/patient/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetByMrn",
+				"responses": {
+					"200": {
+						"description": "Provided services retrieved by MRN",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"allOf": [
+											{
+												"properties": {
+													"service": {
+														"properties": {
+															"price": {
+																"$ref": "#/components/schemas/Decimal"
+															},
+															"category": {
+																"type": "string"
+															},
+															"id": {
+																"type": "string"
+															},
+															"name": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"price",
+															"category",
+															"id",
+															"name"
+														],
+														"type": "object"
+													},
+													"visit": {
+														"properties": {
+															"createdAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"id": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"createdAt",
+															"id"
+														],
+														"type": "object"
+													}
+												},
+												"required": [
+													"service",
+													"visit"
+												],
+												"type": "object"
+											},
+											{
+												"properties": {
+													"unitPrice": {
+														"$ref": "#/components/schemas/Decimal"
+													},
+													"providedById": {
+														"type": "string"
+													},
+													"serviceId": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"createdAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"notes": {
+														"type": "string"
+													},
+													"visitId": {
+														"type": "string"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"unitPrice",
+													"providedById",
+													"serviceId",
+													"updatedAt",
+													"createdAt",
+													"notes",
+													"visitId",
+													"id"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all provided services for a patient using their MRN",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/medical-services/visit/latest/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetLatestVisitByMrn",
+				"responses": {
+					"200": {
+						"description": "Latest visit retrieved by MRN",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"services": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"service": {
+																		"properties": {
+																			"price": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"category": {
+																				"type": "string"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"price",
+																			"category",
+																			"updatedAt",
+																			"createdAt",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"service"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"providedById": {
+																		"type": "string"
+																	},
+																	"serviceId": {
+																		"type": "string"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"notes": {
+																		"type": "string"
+																	},
+																	"visitId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"unitPrice",
+																	"providedById",
+																	"serviceId",
+																	"updatedAt",
+																	"createdAt",
+																	"notes",
+																	"visitId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"services"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"triagePriority": {
+													"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+												},
+												"visitType": {
+													"$ref": "#/components/schemas/_36_Enums.VisitType"
+												},
+												"symptoms": {
+													"type": "string"
+												},
+												"icdCode": {
+													"type": "string"
+												},
+												"diagnosis": {
+													"type": "string"
+												},
+												"attendingId": {
+													"type": "string"
+												},
+												"patientId": {
+													"type": "string"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"priority": {
+													"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"triagePriority",
+												"visitType",
+												"symptoms",
+												"icdCode",
+												"diagnosis",
+												"attendingId",
+												"patientId",
+												"createdAt",
+												"priority",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the latest visit and its provided services by MRN",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/labs/order": {
+			"post": {
+				"operationId": "OrderLab",
+				"responses": {
+					"201": {
+						"description": "Lab Service Ordered",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"providedService": {
+													"properties": {
+														"unitPrice": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"providedById": {
+															"type": "string"
+														},
+														"serviceId": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"unitPrice",
+														"providedById",
+														"serviceId",
+														"updatedAt",
+														"createdAt",
+														"notes",
+														"visitId",
+														"id"
+													],
+													"type": "object"
+												}
+											},
+											"required": [
+												"providedService"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"verifiedById": {
+													"type": "string"
+												},
+												"performedById": {
+													"type": "string"
+												},
+												"findings": {
+													"type": "string"
+												},
+												"referenceRange": {
+													"type": "string"
+												},
+												"unit": {
+													"type": "string"
+												},
+												"resultValue": {
+													"type": "string"
+												},
+												"specimenType": {
+													"type": "string"
+												},
+												"providedServiceId": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.LabStatus"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"verifiedById",
+												"performedById",
+												"findings",
+												"referenceRange",
+												"unit",
+												"resultValue",
+												"specimenType",
+												"providedServiceId",
+												"status",
+												"updatedAt",
+												"createdAt",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation Error or Invalid Input"
+					}
+				},
+				"description": "Order a new lab service for a patient visit.",
+				"tags": [
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/OrderLabServiceDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/labs/{id}/results": {
+			"put": {
+				"operationId": "RecordResult",
+				"responses": {
+					"200": {
+						"description": "Lab Result Recorded Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"verifiedById": {
+											"type": "string"
+										},
+										"performedById": {
+											"type": "string"
+										},
+										"findings": {
+											"type": "string"
+										},
+										"referenceRange": {
+											"type": "string"
+										},
+										"unit": {
+											"type": "string"
+										},
+										"resultValue": {
+											"type": "string"
+										},
+										"specimenType": {
+											"type": "string"
+										},
+										"providedServiceId": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.LabStatus"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"verifiedById",
+										"performedById",
+										"findings",
+										"referenceRange",
+										"unit",
+										"resultValue",
+										"specimenType",
+										"providedServiceId",
+										"status",
+										"updatedAt",
+										"createdAt",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation Error or Invalid Status Transition"
+					},
+					"404": {
+						"description": "Lab Result Not Found"
+					}
+				},
+				"description": "Record findings, result values, and transition status to COMPLETED.",
+				"tags": [
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RecordLabResultDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/labs/{id}/verify": {
+			"put": {
+				"operationId": "VerifyResult",
+				"responses": {
+					"200": {
+						"description": "Lab Result Verified Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"verifiedById": {
+											"type": "string"
+										},
+										"performedById": {
+											"type": "string"
+										},
+										"findings": {
+											"type": "string"
+										},
+										"referenceRange": {
+											"type": "string"
+										},
+										"unit": {
+											"type": "string"
+										},
+										"resultValue": {
+											"type": "string"
+										},
+										"specimenType": {
+											"type": "string"
+										},
+										"providedServiceId": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.LabStatus"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"verifiedById",
+										"performedById",
+										"findings",
+										"referenceRange",
+										"unit",
+										"resultValue",
+										"specimenType",
+										"providedServiceId",
+										"status",
+										"updatedAt",
+										"createdAt",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Lab Result Not Found"
+					}
+				},
+				"description": "Final verification of a lab result by a senior technician or doctor.\nTransitions status to VERIFIED.",
+				"tags": [
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"findings": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/labs/visit/{visitId}": {
+			"get": {
+				"operationId": "GetByVisit",
+				"responses": {
+					"200": {
+						"description": "Lab Results Retrieved",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Retrieve the complete lab history for a specific patient visit.",
+				"tags": [
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "visitId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/pharmacy/products": {
+			"post": {
+				"operationId": "CreateProduct",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"reorderLevel": {
+											"type": "number",
+											"format": "double"
+										},
+										"code": {
+											"type": "string"
+										},
+										"description": {
+											"type": "string"
+										},
+										"category": {
+											"type": "string"
+										},
+										"unitPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"reorderLevel",
+										"code",
+										"description",
+										"category",
+										"unitPrice",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					}
+				},
+				"description": "Create a new pharmacy product with a reorder level threshold.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProductDTO"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllProducts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Get all products along with their active batch inventory (Cached in Redis).",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/v1/pharmacy/products/{id}": {
+			"get": {
+				"operationId": "GetProductById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "Product Not Found"
+					}
+				},
+				"description": "Get a single product by ID (Cached in Redis).",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"reorderLevel": {
+											"type": "number",
+											"format": "double"
+										},
+										"code": {
+											"type": "string"
+										},
+										"description": {
+											"type": "string"
+										},
+										"category": {
+											"type": "string"
+										},
+										"unitPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"reorderLevel",
+										"code",
+										"description",
+										"category",
+										"unitPrice",
+										"updatedAt",
+										"createdAt",
+										"id",
+										"name"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					},
+					"404": {
+						"description": "Product Not Found"
+					}
+				},
+				"description": "Update product details or adjust its reorder level.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProductDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/pharmacy/batches": {
+			"post": {
+				"operationId": "CreateBatch",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"costPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"initialQty": {
+											"type": "number",
+											"format": "double"
+										},
+										"batchNumber": {
+											"type": "string"
+										},
+										"quantity": {
+											"type": "number",
+											"format": "double"
+										},
+										"productId": {
+											"type": "string"
+										},
+										"expiryDate": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"costPrice",
+										"initialQty",
+										"batchNumber",
+										"quantity",
+										"productId",
+										"expiryDate",
+										"updatedAt",
+										"createdAt",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Validation Error"
+					}
+				},
+				"description": "Add a new stock batch to a product and clear low-stock alert locks.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateBatchDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/pharmacy/dispense": {
+			"post": {
+				"operationId": "DispenseProducts",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"allOf": [
+												{
+													"properties": {
+														"items": {
+															"items": {
+																"properties": {
+																	"quantity": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"batchId": {
+																		"type": "string"
+																	},
+																	"productId": {
+																		"type": "string"
+																	},
+																	"dispenseRecordId": {
+																		"type": "string"
+																	},
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"quantity",
+																	"batchId",
+																	"productId",
+																	"dispenseRecordId",
+																	"unitPrice",
+																	"id"
+																],
+																"type": "object"
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"items"
+													],
+													"type": "object"
+												},
+												{
+													"properties": {
+														"prescriptionId": {
+															"type": "string"
+														},
+														"totalCost": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"dispensedById": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"prescriptionId",
+														"totalCost",
+														"dispensedById",
+														"createdAt",
+														"notes",
+														"visitId",
+														"id"
+													],
+													"type": "object"
+												}
+											]
+										},
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Insufficient Stock or Invalid Input"
+					}
+				},
+				"description": "Atomically dispense items, record transactions, emit RabbitMQ events,\nand evaluate reorder levels for low-stock notifications.",
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateDispenseRecordDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/billing/insurance": {
+			"post": {
+				"operationId": "RegisterInsurance",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"expiryDate": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"coverageLimit": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"relationship": {
+											"type": "string"
+										},
+										"principalName": {
+											"type": "string"
+										},
+										"cardNumber": {
+											"type": "string"
+										},
+										"policyNumber": {
+											"type": "string"
+										},
+										"providerName": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.InsuranceStatus"
+										},
+										"patientId": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"expiryDate",
+										"coverageLimit",
+										"relationship",
+										"principalName",
+										"cardNumber",
+										"policyNumber",
+										"providerName",
+										"status",
+										"patientId",
+										"updatedAt",
+										"createdAt",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Insurance Registered Successfully"
+					}
+				},
+				"description": "Register insurance details for a patient",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePatientInsuranceDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/billing/insurance/patient/{patientId}": {
+			"get": {
+				"operationId": "GetPatientInsurances",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Retrieve active insurance policies for a patient (Cached in Redis)",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "patientId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/billing/claims": {
+			"post": {
+				"operationId": "CreateClaim",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"patientInsurance": {
+													"properties": {
+														"expiryDate": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"coverageLimit": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"relationship": {
+															"type": "string"
+														},
+														"principalName": {
+															"type": "string"
+														},
+														"cardNumber": {
+															"type": "string"
+														},
+														"policyNumber": {
+															"type": "string"
+														},
+														"providerName": {
+															"type": "string"
+														},
+														"status": {
+															"$ref": "#/components/schemas/_36_Enums.InsuranceStatus"
+														},
+														"patientId": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"expiryDate",
+														"coverageLimit",
+														"relationship",
+														"principalName",
+														"cardNumber",
+														"policyNumber",
+														"providerName",
+														"status",
+														"patientId",
+														"updatedAt",
+														"createdAt",
+														"id"
+													],
+													"type": "object"
+												}
+											},
+											"required": [
+												"patientInsurance"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"processedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"submittedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"rejectionReason": {
+													"type": "string"
+												},
+												"coPayAmount": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"approvedAmount": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"requestedAmount": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"preAuthCode": {
+													"type": "string"
+												},
+												"patientInsuranceId": {
+													"type": "string"
+												},
+												"claimNumber": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.ClaimStatus"
+												},
+												"invoiceId": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"notes": {
+													"type": "string"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"processedAt",
+												"submittedAt",
+												"rejectionReason",
+												"coPayAmount",
+												"approvedAmount",
+												"requestedAmount",
+												"preAuthCode",
+												"patientInsuranceId",
+												"claimNumber",
+												"status",
+												"invoiceId",
+												"updatedAt",
+												"createdAt",
+												"notes",
+												"visitId",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Claim Submitted Successfully"
+					}
+				},
+				"description": "Submit an insurance claim for pre-authorization or payout",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInsuranceClaimDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/billing/claims/{claimId}/process": {
+			"patch": {
+				"operationId": "ProcessClaim",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"processedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"submittedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"rejectionReason": {
+											"type": "string"
+										},
+										"coPayAmount": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"approvedAmount": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"requestedAmount": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"preAuthCode": {
+											"type": "string"
+										},
+										"patientInsuranceId": {
+											"type": "string"
+										},
+										"claimNumber": {
+											"type": "string"
+										},
+										"status": {
+											"$ref": "#/components/schemas/_36_Enums.ClaimStatus"
+										},
+										"invoiceId": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"notes": {
+											"type": "string"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"processedAt",
+										"submittedAt",
+										"rejectionReason",
+										"coPayAmount",
+										"approvedAmount",
+										"requestedAmount",
+										"preAuthCode",
+										"patientInsuranceId",
+										"claimNumber",
+										"status",
+										"invoiceId",
+										"updatedAt",
+										"createdAt",
+										"notes",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Approve, partially approve, or reject an insurance claim",
+				"tags": [
+					"Insurance & Claims"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "claimId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ProcessInsuranceClaimDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/health": {
+			"get": {
+				"operationId": "CheckHealth",
+				"responses": {
+					"200": {
+						"description": "All services are operational",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HealthResponseDTO"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "One or more services are down",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HealthResponseDTO"
+								}
+							}
+						}
+					}
+				},
+				"description": "Check system health (PostgreSQL and Redis connectivity)",
+				"tags": [
+					"Health"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/v1/invoices/{invoiceId}": {
+			"get": {
+				"operationId": "GetInvoice",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InvoiceResponseDTO"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invoice not found"
+					}
+				},
+				"description": "Get invoice details by ID, including line items and payment history",
+				"tags": [
+					"Billing & Invoices"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "invoiceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/invoices/{invoiceId}/payments": {
+			"post": {
+				"operationId": "RecordPayment",
+				"responses": {
+					"201": {
+						"description": "Payment Processed Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InvoiceResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid payment amount or invoice already paid"
+					},
+					"404": {
+						"description": "Invoice not found"
+					}
+				},
+				"description": "Process a payment against an outstanding invoice",
+				"tags": [
+					"Billing & Invoices"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "invoiceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePaymentDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/auth/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Login successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation failed"
+					},
+					"401": {
+						"description": "Invalid credentials"
+					},
+					"403": {
+						"description": "Account deactivated"
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/auth/logout": {
+			"post": {
+				"operationId": "Logout",
+				"responses": {
+					"200": {
+						"description": "Logout successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LogoutResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation failed"
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LogoutDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/auth/refresh": {
+			"post": {
+				"operationId": "Refresh",
+				"responses": {
+					"200": {
+						"description": "Tokens refreshed successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RefreshTokenResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation failed"
+					},
+					"401": {
+						"description": "Invalid or revoked refresh token"
+					},
+					"403": {
+						"description": "Account deactivated"
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RefreshTokenDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admissions/wards": {
+			"post": {
+				"operationId": "CreateWard",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				},
+				"description": "Register a new hospital Ward",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWardDTO"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllWards",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Get all Wards (with linked Beds)",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/v1/admissions/beds": {
+			"post": {
+				"operationId": "CreateBed",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				},
+				"description": "Add a new Bed to a Ward",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateBedDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admissions/admit": {
+			"post": {
+				"operationId": "AdmitPatient",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bed unavailable or bad request"
+					}
+				},
+				"description": "Admit a patient to an available Bed and trigger RabbitMQ event",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AdmitPatientDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admissions/{admissionId}/discharge": {
+			"put": {
+				"operationId": "DischargePatient",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Active admission not found"
+					}
+				},
+				"description": "Discharge an admitted patient, release Bed, and publish billing event",
+				"tags": [
+					"Wards & Admissions"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "admissionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DischargePatientDTO"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}
