@@ -6,7 +6,9 @@ import {
   SuccessResponse,
   Response,
   Tags,
+  Request,
 } from "tsoa";
+import express from "express";
 import { AuthService } from "../service/user/auth.service";
 import {
   LoginDTO,
@@ -15,10 +17,10 @@ import {
   LogoutDTO,
   LogoutResponseDTO,
   LogoutZodSchema,
-  RefreshTokenDTO,
-  RefreshTokenZodSchema,
   RefreshTokenResponseDTO,
 } from "../models/User/auth.model";
+
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 @Tags("Authentication")
 @Route("api/v1/auth")
@@ -30,17 +32,48 @@ export class AuthController extends Controller {
     this.authService = new AuthService();
   }
 
-  //login
+  /**
+   * Helper method to attach HTTP-Only authentication cookies to response
+   */
+  private setAuthCookies(
+    res: express.Response,
+    accessToken: string,
+    refreshToken: string,
+  ): void {
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: IS_PRODUCTION,
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: IS_PRODUCTION,
+      sameSite: "lax",
+      path: "/api/v1/auth/refresh", // Scoped exclusively to refresh route
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+  }
+
+  // LOGIN
   @SuccessResponse("200", "Login successful")
   @Response("400", "Validation failed")
   @Response("401", "Invalid credentials")
   @Response("403", "Account deactivated")
   @Post("login")
-  public async login(@Body() requestBody: LoginDTO): Promise<LoginResponseDTO> {
+  public async login(
+    @Body() requestBody: LoginDTO,
+    @Request() req: express.Request,
+  ): Promise<LoginResponseDTO> {
     LoginZodSchema.parse(requestBody);
 
-    // 2. Process login service
     const authData = await this.authService.login(requestBody);
+
+    // Set HTTP-Only cookies
+    if (req.res) {
+      this.setAuthCookies(req.res, authData.accessToken, authData.refreshToken);
+    }
 
     this.setStatus(200);
     return {
@@ -50,18 +83,23 @@ export class AuthController extends Controller {
     };
   }
 
-  //logout
+  // LOGOUT
   @SuccessResponse("200", "Logout successful")
   @Response("400", "Validation failed")
   @Post("logout")
   public async logout(
     @Body() requestBody: LogoutDTO,
+    @Request() req: express.Request,
   ): Promise<LogoutResponseDTO> {
-    // 1. Validate request payload
     LogoutZodSchema.parse(requestBody);
 
-    // 2. Perform logout in Redis
     await this.authService.logout(requestBody);
+
+    // Clear cookies on client browser
+    if (req.res) {
+      req.res.clearCookie("accessToken");
+      req.res.clearCookie("refreshToken", { path: "/api/v1/auth/refresh" });
+    }
 
     this.setStatus(200);
     return {
@@ -70,17 +108,33 @@ export class AuthController extends Controller {
     };
   }
 
-  //refresh token
+  // REFRESH TOKEN
   @SuccessResponse("200", "Tokens refreshed successfully")
-  @Response("400", "Validation failed")
-  @Response("401", "Invalid or revoked refresh token")
+  @Response("401", "Invalid or missing refresh token")
   @Response("403", "Account deactivated")
   @Post("refresh")
   public async refresh(
-    @Body() requestBody: RefreshTokenDTO,
+    @Request() req: express.Request,
   ): Promise<RefreshTokenResponseDTO> {
-    RefreshTokenZodSchema.parse(requestBody);
-    const tokenData = await this.authService.refreshToken(requestBody);
+    // 1. Extract refresh token directly from HTTP-Only cookie
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      this.setStatus(401);
+      throw new Error("Refresh token cookie missing.");
+    }
+
+    // 2. Delegate token rotation to authService
+    const tokenData = await this.authService.refreshToken({ refreshToken });
+
+    // 3. Set updated HTTP-Only cookies
+    if (req.res) {
+      this.setAuthCookies(
+        req.res,
+        tokenData.accessToken,
+        tokenData.refreshToken,
+      );
+    }
 
     this.setStatus(200);
     return {

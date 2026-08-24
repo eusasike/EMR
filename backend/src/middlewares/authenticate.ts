@@ -13,21 +13,28 @@ export async function expressAuthentication(
   scopes?: string[],
 ): Promise<JwtPayload> {
   if (securityName === "jwt") {
-    const authHeader = request.headers.authorization;
+    // 1. Try to read token from HTTP-Only cookie first, then fallback to Authorization header
+    let token: string | undefined = request.cookies?.accessToken;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new Error("Missing or invalid authorization header");
+    if (!token && request.headers.authorization) {
+      const parts = request.headers.authorization.split(" ");
+      if (parts[0] === "Bearer" && parts[1]) {
+        token = parts[1];
+      }
     }
 
-    const token = authHeader.split(" ")[1];
+    if (!token) {
+      throw new Error("Missing authentication token");
+    }
 
     try {
+      // 2. Verify token
       const decoded = jwt.verify(
         token,
         process.env.JWT_SECRET || "supersecret",
       ) as JwtPayload;
 
-      // Scope checking (e.g. checking if user has ADMIN role)
+      // 3. Scope / Role checking
       if (scopes && scopes.length > 0) {
         if (!scopes.includes(decoded.role)) {
           throw new Error("Insufficient permissions to access this resource");

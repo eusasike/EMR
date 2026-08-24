@@ -453,9 +453,9 @@
 				"type": "string",
 				"enum": [
 					"PENDING",
+					"CANCELLED",
 					"PARTIALLY_DISPENSED",
-					"COMPLETED",
-					"CANCELLED"
+					"COMPLETED"
 				]
 			},
 			"CreatePrescriptionItemDTO": {
@@ -565,6 +565,9 @@
 						"type": "string",
 						"nullable": true
 					},
+					"address": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -638,6 +641,9 @@
 					},
 					"emergencyContactPhone": {
 						"type": "string"
+					},
+					"address": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -651,6 +657,9 @@
 			},
 			"DefaultSelection_Prisma._36_PatientPayload_": {
 				"properties": {
+					"address": {
+						"type": "string"
+					},
 					"emergencyContactPhone": {
 						"type": "string"
 					},
@@ -692,6 +701,7 @@
 					}
 				},
 				"required": [
+					"address",
 					"emergencyContactPhone",
 					"emergencyContactName",
 					"dateOfBirth",
@@ -866,8 +876,8 @@
 			"_36_Enums.LabStatus": {
 				"type": "string",
 				"enum": [
-					"COMPLETED",
 					"CANCELLED",
+					"COMPLETED",
 					"ORDERED",
 					"SAMPLE_COLLECTED",
 					"IN_PROGRESS",
@@ -1122,8 +1132,8 @@
 			"_36_Enums.ClaimStatus": {
 				"type": "string",
 				"enum": [
-					"CANCELLED",
 					"PAID",
+					"CANCELLED",
 					"PENDING_PRE_AUTH",
 					"PRE_AUTHORIZED",
 					"SUBMITTED",
@@ -1263,10 +1273,10 @@
 			"_36_Enums.InvoiceStatus": {
 				"type": "string",
 				"enum": [
-					"CANCELLED",
-					"UNPAID",
 					"PARTIALLY_PAID",
-					"PAID"
+					"PAID",
+					"CANCELLED",
+					"UNPAID"
 				]
 			},
 			"InvoiceStatus": {
@@ -1356,10 +1366,10 @@
 				"type": "string",
 				"enum": [
 					"PENDING",
-					"CANCELLED",
 					"PARTIALLY_PAID",
 					"PAID",
-					"REFUNDEDInvoiceStatus"
+					"CANCELLED",
+					"REFUNDED"
 				]
 			},
 			"PaymentStatus": {
@@ -1680,18 +1690,6 @@
 					"success",
 					"message",
 					"data"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"RefreshTokenDTO": {
-				"properties": {
-					"refreshToken": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"refreshToken"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2554,14 +2552,14 @@
 										},
 										{
 											"properties": {
-												"status": {
-													"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
-												},
 												"prescribedById": {
 													"type": "string"
 												},
 												"prescriptionNumber": {
 													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
 												},
 												"updatedAt": {
 													"type": "string",
@@ -2582,9 +2580,9 @@
 												}
 											},
 											"required": [
-												"status",
 												"prescribedById",
 												"prescriptionNumber",
+												"status",
 												"updatedAt",
 												"createdAt",
 												"notes",
@@ -5106,11 +5104,8 @@
 							}
 						}
 					},
-					"400": {
-						"description": "Validation failed"
-					},
 					"401": {
-						"description": "Invalid or revoked refresh token"
+						"description": "Invalid or missing refresh token"
 					},
 					"403": {
 						"description": "Account deactivated"
@@ -5120,17 +5115,7 @@
 					"Authentication"
 				],
 				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/RefreshTokenDTO"
-							}
-						}
-					}
-				}
+				"parameters": []
 			}
 		},
 		"/api/v1/admissions/wards": {

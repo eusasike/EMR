@@ -8,7 +8,7 @@ import { httpRequestsTotal } from "./config/metrics";
 import { RegisterRoutes } from "./generated/routes";
 import { initializePatientWorkers } from "./message/worker/patient.worker";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 export const app: Express = express();
 
 //CRSF Middleware
@@ -27,6 +27,7 @@ app.use(
 );
 
 app.options("*", cors());
+app.use(cookieParser());
 
 // Body Parser Middleware
 app.use(express.json());

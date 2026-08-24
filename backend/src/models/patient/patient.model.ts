@@ -32,9 +32,9 @@ export interface PatientDTO {
   phone: string | null;
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
+  address?: string;
   createdAt: Date;
   updatedAt: Date;
-  address?: string;
 }
 
 export interface PatientListResponse {

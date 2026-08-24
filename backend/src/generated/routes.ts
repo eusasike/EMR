@@ -189,7 +189,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PrescriptionStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]},{"dataType":"enum","enums":["COMPLETED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreatePrescriptionItemDTO": {
@@ -239,6 +239,7 @@ const models: TsoaRoute.Models = {
             "phone": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "emergencyContactName": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "emergencyContactPhone": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "address": {"dataType":"string"},
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
         },
@@ -271,13 +272,14 @@ const models: TsoaRoute.Models = {
             "phone": {"dataType":"string"},
             "emergencyContactName": {"dataType":"string"},
             "emergencyContactPhone": {"dataType":"string"},
+            "address": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_PatientPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"emergencyContactPhone":{"dataType":"string","required":true},"emergencyContactName":{"dataType":"string","required":true},"dateOfBirth":{"dataType":"datetime","required":true},"gender":{"ref":"_36_Enums.Gender","required":true},"mrn":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"middleName":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"address":{"dataType":"string","required":true},"emergencyContactPhone":{"dataType":"string","required":true},"emergencyContactName":{"dataType":"string","required":true},"dateOfBirth":{"dataType":"datetime","required":true},"gender":{"ref":"_36_Enums.Gender","required":true},"mrn":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"middleName":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Patient": {
@@ -356,7 +358,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.LabStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]},{"dataType":"enum","enums":["VERIFIED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]},{"dataType":"enum","enums":["VERIFIED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "OrderLabServiceDTO": {
@@ -467,7 +469,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.ClaimStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["PENDING_PRE_AUTH"]},{"dataType":"enum","enums":["PRE_AUTHORIZED"]},{"dataType":"enum","enums":["SUBMITTED"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["PARTIALLY_APPROVED"]},{"dataType":"enum","enums":["REJECTED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING_PRE_AUTH"]},{"dataType":"enum","enums":["PRE_AUTHORIZED"]},{"dataType":"enum","enums":["SUBMITTED"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["PARTIALLY_APPROVED"]},{"dataType":"enum","enums":["REJECTED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateInsuranceClaimDTO": {
@@ -518,7 +520,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.InvoiceStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["UNPAID"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["UNPAID"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "InvoiceStatus": {
@@ -565,7 +567,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PaymentStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["REFUNDEDInvoiceStatus"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["REFUNDED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PaymentStatus": {
@@ -686,14 +688,6 @@ const models: TsoaRoute.Models = {
             "success": {"dataType":"boolean","required":true},
             "message": {"dataType":"string","required":true},
             "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"refreshToken":{"dataType":"string","required":true},"accessToken":{"dataType":"string","required":true}},"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "RefreshTokenDTO": {
-        "dataType": "refObject",
-        "properties": {
-            "refreshToken": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -1970,6 +1964,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_login: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"LoginDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/api/v1/auth/login',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -2000,6 +1995,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_logout: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"LogoutDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/api/v1/auth/logout',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
@@ -2029,7 +2025,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_refresh: Record<string, TsoaRoute.ParameterSchema> = {
-                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RefreshTokenDTO"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/api/v1/auth/refresh',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
