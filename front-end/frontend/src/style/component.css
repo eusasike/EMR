@@ -1,0 +1,121 @@
+/* src/styles/components.css */
+@import "./theme.css";
+
+/* Shared Action Bar */
+.page-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.search-input {
+  width: 320px;
+  padding: 10px 14px;
+  border-radius: var(--emr-radius-sm);
+  border: 1px solid var(--emr-border);
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--emr-primary);
+}
+
+/* Shared EMR Data Tables */
+.table-card {
+  background-color: #ffffff;
+  border-radius: var(--emr-radius-md);
+  border: 1px solid var(--emr-border);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.emr-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.emr-table th {
+  background-color: #f8fafc;
+  padding: 14px 20px;
+  font-weight: 600;
+  color: var(--emr-text-muted);
+  border-bottom: 1px solid var(--emr-border);
+}
+
+.emr-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--emr-border);
+  color: var(--emr-text-main);
+}
+
+.emr-table tr:last-child td {
+  border-bottom: none;
+}
+
+.emr-table tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* Badges & Indicators */
+.code-badge {
+  font-family: monospace;
+  font-weight: 600;
+  background-color: var(--emr-primary-light);
+  color: var(--emr-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Reusable Modal Dialogs */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 540px;
+  padding: 32px;
+  border-radius: var(--emr-radius-lg);
+  box-shadow: var(--emr-shadow-card);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--emr-text-muted);
+}
+
+.modal-close-btn:hover {
+  color: var(--emr-text-main);
+}
+
+/* Form Layout Utilities */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}

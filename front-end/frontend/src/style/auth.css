@@ -1,0 +1,122 @@
+/* src/styles/auth.css */
+@import "./theme.css";
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--emr-bg-main);
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  border-radius: var(--emr-radius-lg);
+  background-color: var(--emr-bg-card);
+  box-shadow: var(--emr-shadow-card);
+  border: 1px solid var(--emr-border);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-logo-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--emr-radius-md);
+  background-color: var(--emr-primary);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px auto;
+  letter-spacing: -0.5px;
+}
+
+.auth-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--emr-text-main);
+}
+
+.auth-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--emr-text-muted);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--emr-text-main);
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--emr-radius-sm);
+  border: 1px solid var(--emr-border);
+  font-size: 14px;
+  font-family: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--emr-primary);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: var(--emr-radius-sm);
+  background-color: var(--emr-primary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--emr-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.alert-danger {
+  padding: 12px 14px;
+  border-radius: var(--emr-radius-sm);
+  background-color: var(--emr-danger-bg);
+  border: 1px solid var(--emr-danger-border);
+  color: var(--emr-danger);
+  font-size: 13px;
+  font-weight: 500;
+}
