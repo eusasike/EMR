@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { Gender, Patient } from "@prisma/client";
 import { ApiResponse, PaginatedResponse } from "../../util/apiResponse";
+
 // ==========================================
 // 2. PATIENT DOMAIN DTOs
 // ==========================================
 
 export interface RegisterPatientDTO {
+  facilityId?: string; // Optional in DTO if derived directly from JWT session in controller
   firstName: string;
   lastName: string;
   middleName?: string;
@@ -15,6 +17,8 @@ export interface RegisterPatientDTO {
   emergencyContactName?: string;
   emergencyContactPhone?: string;
   address?: string;
+  regionId?: string;
+  districtId?: string;
 }
 
 /**
@@ -24,15 +28,18 @@ export interface RegisterPatientDTO {
 export interface PatientDTO {
   id: string;
   mrn: string;
+  facilityId: string;
   firstName: string;
   lastName: string;
   middleName: string | null;
   gender: Gender;
   dateOfBirth: Date;
   phone: string | null;
+  address: string | null; // 👈 Fixed from optional string to match Prisma nullability
+  regionId: string | null;
+  districtId: string | null;
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
-  address?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,6 +75,7 @@ export type PaginatedPatientsResponseDTO = PaginatedResponse<PatientDTO>;
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
 export const RegisterPatientZodSchema = z.object({
+  facilityId: z.string().uuid("Invalid Facility ID format").optional(), // Validated if provided in request body
   firstName: z
     .string()
     .trim()
@@ -112,6 +120,8 @@ export const RegisterPatientZodSchema = z.object({
     .regex(phoneRegex, "Invalid emergency contact phone number format")
     .optional(),
   address: z.string().trim().max(100).optional(),
+  regionId: z.string().uuid("Invalid Region ID").optional(),
+  districtId: z.string().uuid("Invalid District ID").optional(),
 });
 
 export const PatientQueryZodSchema = z.object({

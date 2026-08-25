@@ -4,19 +4,28 @@ export interface LoginDTO {
   email: string;
   password: string;
 }
-
+export interface FacilitySummary {
+  id: string;
+  code: string;
+  name: string;
+}
 export interface UserProfile {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
   role: string;
+  facilities?: FacilitySummary[]; // 👈 Updated to Array
 }
 
 export interface LoginResponse {
   user: UserProfile;
-  accessToken: string;
-  refreshToken: string;
+  accessToken?: string;
+  refreshToken?: string;
+  tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export const loginApi = async (data: LoginDTO): Promise<LoginResponse> => {

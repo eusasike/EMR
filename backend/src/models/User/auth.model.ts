@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-// DTO for TSOA Swagger Generation
-export interface LoginDTO {
-  email: string;
-  password: string;
+// Included facility details in user metadata
+export interface AuthFacilityData {
+  id: string;
+  code: string;
+  name: string;
 }
 
 export interface AuthUserData {
@@ -12,6 +13,13 @@ export interface AuthUserData {
   lastName: string;
   email: string;
   role: string;
+  facilities: AuthFacilityData[]; // 👈 Facilities array
+}
+
+// DTO for TSOA Swagger Generation
+export interface LoginDTO {
+  email: string;
+  password: string;
 }
 
 export interface LoginResponseDTO {

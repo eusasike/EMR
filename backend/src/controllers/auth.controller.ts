@@ -32,9 +32,6 @@ export class AuthController extends Controller {
     this.authService = new AuthService();
   }
 
-  /**
-   * Helper method to attach HTTP-Only authentication cookies to response
-   */
   private setAuthCookies(
     res: express.Response,
     accessToken: string,
@@ -44,23 +41,21 @@ export class AuthController extends Controller {
       httpOnly: true,
       secure: IS_PRODUCTION,
       sameSite: "lax",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: IS_PRODUCTION,
       sameSite: "lax",
-      path: "/api/v1/auth/refresh", // Scoped exclusively to refresh route
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/api/v1/auth/refresh",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
 
-  // LOGIN
   @SuccessResponse("200", "Login successful")
   @Response("400", "Validation failed")
   @Response("401", "Invalid credentials")
-  @Response("403", "Account deactivated")
   @Post("login")
   public async login(
     @Body() requestBody: LoginDTO,
@@ -70,7 +65,6 @@ export class AuthController extends Controller {
 
     const authData = await this.authService.login(requestBody);
 
-    // Set HTTP-Only cookies
     if (req.res) {
       this.setAuthCookies(req.res, authData.accessToken, authData.refreshToken);
     }
@@ -83,7 +77,6 @@ export class AuthController extends Controller {
     };
   }
 
-  // LOGOUT
   @SuccessResponse("200", "Logout successful")
   @Response("400", "Validation failed")
   @Post("logout")
@@ -95,7 +88,6 @@ export class AuthController extends Controller {
 
     await this.authService.logout(requestBody);
 
-    // Clear cookies on client browser
     if (req.res) {
       req.res.clearCookie("accessToken");
       req.res.clearCookie("refreshToken", { path: "/api/v1/auth/refresh" });
@@ -108,15 +100,12 @@ export class AuthController extends Controller {
     };
   }
 
-  // REFRESH TOKEN
   @SuccessResponse("200", "Tokens refreshed successfully")
   @Response("401", "Invalid or missing refresh token")
-  @Response("403", "Account deactivated")
   @Post("refresh")
   public async refresh(
     @Request() req: express.Request,
   ): Promise<RefreshTokenResponseDTO> {
-    // 1. Extract refresh token directly from HTTP-Only cookie
     const refreshToken = req.cookies?.refreshToken;
 
     if (!refreshToken) {
@@ -124,10 +113,8 @@ export class AuthController extends Controller {
       throw new Error("Refresh token cookie missing.");
     }
 
-    // 2. Delegate token rotation to authService
     const tokenData = await this.authService.refreshToken({ refreshToken });
 
-    // 3. Set updated HTTP-Only cookies
     if (req.res) {
       this.setAuthCookies(
         req.res,

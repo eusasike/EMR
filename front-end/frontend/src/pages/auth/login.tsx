@@ -18,13 +18,40 @@ export const LoginPage: React.FC = () => {
 
     try {
       const data = await loginApi({ email, password });
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Extract tokens (supports flat or nested token structures)
+      const accessToken = data.accessToken || data.tokens?.accessToken;
+      const refreshToken = data.refreshToken || data.tokens?.refreshToken;
+
+      if (!accessToken) {
+        throw new Error("Invalid token response from server.");
+      }
+
+      localStorage.setItem("accessToken", accessToken);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
+
+      const user = data.user;
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Extract primary facility from the facilities array
+      const primaryFacility = user?.facilities?.[0];
+
+      if (primaryFacility?.id) {
+        localStorage.setItem("facilityId", primaryFacility.id);
+      }
+
+      if (primaryFacility?.code) {
+        localStorage.setItem("facilityCode", primaryFacility.code);
+      }
+
       navigate("/dashboard");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Invalid email or password.");
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
         setError("An unexpected error occurred.");
       }
@@ -39,7 +66,6 @@ export const LoginPage: React.FC = () => {
         <div className="auth-header">
           <div className="auth-logo-badge">CP</div>
           <h1 className="auth-title">Mount Meru Hope Dispensary</h1>
-          {/* <p className="auth-subtitle">Sign in to access clinical workspace</p> */}
         </div>
 
         {error && <div className="alert-danger">{error}</div>}

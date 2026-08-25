@@ -7,6 +7,7 @@ import {
   Response,
   Security,
   Tags,
+  Get,
 } from "tsoa";
 import { UserService } from "../service/user/register.service";
 import {
@@ -46,6 +47,44 @@ export class UserController extends Controller {
       success: true,
       message: "Staff member registered successfully.",
       data: newUser,
+    };
+  }
+
+  //view all users
+  @Security("jwt", ["ADMIN"])
+  @SuccessResponse("200", "Users fetched successfully")
+  @Response("400", "Validation failed")
+  @Response("409", "Email already exists")
+  @Get("view")
+  public async view(): Promise<{
+    success: boolean;
+    message: string;
+    data: any;
+  }> {
+    const users = await this.userService.viewUser();
+    this.setStatus(200);
+    return {
+      success: true,
+      message: "Users fetched successfully.",
+      data: users,
+    };
+  }
+
+  //view by email
+  @Security("jwt", ["ADMIN"])
+  @SuccessResponse("200", "Users fetched successfully")
+  @Response("400", "Validation failed")
+  @Response("409", "Email already exists")
+  @Post("view/:email")
+  public async viewByEmail(
+    email: string,
+  ): Promise<{ success: boolean; message: string; data: any }> {
+    const users = await this.userService.findByEmail(email);
+    this.setStatus(200);
+    return {
+      success: true,
+      message: "Users fetched successfully.",
+      data: users,
     };
   }
 }

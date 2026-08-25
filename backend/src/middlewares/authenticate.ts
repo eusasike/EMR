@@ -5,6 +5,7 @@ export interface JwtPayload {
   id: string;
   email: string;
   role: string;
+  facilityIds?: string[]; // 👈 Accessible facility IDs in token payload
 }
 
 export async function expressAuthentication(
@@ -13,7 +14,6 @@ export async function expressAuthentication(
   scopes?: string[],
 ): Promise<JwtPayload> {
   if (securityName === "jwt") {
-    // 1. Try to read token from HTTP-Only cookie first, then fallback to Authorization header
     let token: string | undefined = request.cookies?.accessToken;
 
     if (!token && request.headers.authorization) {
@@ -28,13 +28,11 @@ export async function expressAuthentication(
     }
 
     try {
-      // 2. Verify token
       const decoded = jwt.verify(
         token,
         process.env.JWT_SECRET || "supersecret",
       ) as JwtPayload;
 
-      // 3. Scope / Role checking
       if (scopes && scopes.length > 0) {
         if (!scopes.includes(decoded.role)) {
           throw new Error("Insufficient permissions to access this resource");

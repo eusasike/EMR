@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./pages/auth/login";
 import { DashboardPage } from "./pages/dashboard/dashboard";
 import { PatientsPage } from "./pages/patient/patient";
+import { UsersPage } from "./pages/user/register";
 
 // Route Guard for authenticated staff members
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -38,6 +39,16 @@ export const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <PatientsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Admin Routes */}
+        <Route
+          path="/user-register"
+          element={
+            <ProtectedRoute>
+              <UsersPage />
             </ProtectedRoute>
           }
         />

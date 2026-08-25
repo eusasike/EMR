@@ -16,6 +16,8 @@ import { PatientController } from './../controllers/patient.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MedicalServiceController } from './../controllers/medical-service.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { LocationAdminController } from './../controllers/location.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { LabController } from './../controllers/lab.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PharmacyController } from './../controllers/inventory.controller';
@@ -23,6 +25,8 @@ import { PharmacyController } from './../controllers/inventory.controller';
 import { InsuranceController } from './../controllers/insuarance.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { HealthController } from './../controllers/health.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { FacilityController } from './../controllers/facility.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { BillingController } from './../controllers/billing.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -183,6 +187,7 @@ const models: TsoaRoute.Models = {
             "phone": {"dataType":"string"},
             "password": {"dataType":"string","required":true},
             "role": {"ref":"Role","required":true},
+            "facilityId": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -231,15 +236,18 @@ const models: TsoaRoute.Models = {
         "properties": {
             "id": {"dataType":"string","required":true},
             "mrn": {"dataType":"string","required":true},
+            "facilityId": {"dataType":"string","required":true},
             "firstName": {"dataType":"string","required":true},
             "lastName": {"dataType":"string","required":true},
             "middleName": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "gender": {"ref":"Gender","required":true},
             "dateOfBirth": {"dataType":"datetime","required":true},
             "phone": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "address": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "regionId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "districtId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "emergencyContactName": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "emergencyContactPhone": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "address": {"dataType":"string"},
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
         },
@@ -264,6 +272,7 @@ const models: TsoaRoute.Models = {
     "RegisterPatientDTO": {
         "dataType": "refObject",
         "properties": {
+            "facilityId": {"dataType":"string"},
             "firstName": {"dataType":"string","required":true},
             "lastName": {"dataType":"string","required":true},
             "middleName": {"dataType":"string"},
@@ -273,13 +282,15 @@ const models: TsoaRoute.Models = {
             "emergencyContactName": {"dataType":"string"},
             "emergencyContactPhone": {"dataType":"string"},
             "address": {"dataType":"string"},
+            "regionId": {"dataType":"string"},
+            "districtId": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_PatientPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"address":{"dataType":"string","required":true},"emergencyContactPhone":{"dataType":"string","required":true},"emergencyContactName":{"dataType":"string","required":true},"dateOfBirth":{"dataType":"datetime","required":true},"gender":{"ref":"_36_Enums.Gender","required":true},"mrn":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"middleName":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"emergencyContactPhone":{"dataType":"string","required":true},"emergencyContactName":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"dateOfBirth":{"dataType":"datetime","required":true},"gender":{"ref":"_36_Enums.Gender","required":true},"middleName":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true},"facilityId":{"dataType":"string","required":true},"mrn":{"dataType":"string","required":true},"districtId":{"dataType":"string","required":true},"regionId":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Patient": {
@@ -356,9 +367,64 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_RegionPayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"code":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Region": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_RegionPayload_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateRegionDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "code": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateRegionDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "code": {"dataType":"string"},
+            "name": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_DistrictPayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"regionId":{"dataType":"string","required":true},"code":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "District": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_DistrictPayload_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateDistrictDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "code": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateDistrictDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.LabStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]},{"dataType":"enum","enums":["VERIFIED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "OrderLabServiceDTO": {
@@ -518,9 +584,25 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "FacilityDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "code": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "type": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "regionId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "districtId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "isActive": {"dataType":"boolean","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.InvoiceStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["UNPAID"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "InvoiceStatus": {
@@ -530,7 +612,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.ChargeType": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["WARD_STAY"]},{"dataType":"enum","enums":["CONSULTATION"]},{"dataType":"enum","enums":["LAB_TEST"]},{"dataType":"enum","enums":["PHARMACY"]},{"dataType":"enum","enums":["PROCEDURE"]},{"dataType":"enum","enums":["MISCELLANEOUS"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CONSULTATION"]},{"dataType":"enum","enums":["LABORATORY"]},{"dataType":"enum","enums":["PHARMACY"]},{"dataType":"enum","enums":["PROCEDURE"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ChargeType": {
@@ -567,7 +649,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PaymentStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["REFUNDED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PaymentStatus": {
@@ -634,6 +716,16 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"RecordPaymentDTO","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AuthFacilityData": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "code": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "AuthUserData": {
         "dataType": "refObject",
         "properties": {
@@ -642,6 +734,7 @@ const models: TsoaRoute.Models = {
             "lastName": {"dataType":"string","required":true},
             "email": {"dataType":"string","required":true},
             "role": {"dataType":"string","required":true},
+            "facilities": {"dataType":"array","array":{"dataType":"refObject","ref":"AuthFacilityData"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -1049,6 +1142,67 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_view: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/api/v1/users/view',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.view)),
+
+            async function UserController_view(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_view, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'view',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_viewByEmail: Record<string, TsoaRoute.ParameterSchema> = {
+                email: {"in":"path","name":"email","required":true,"dataType":"string"},
+        };
+        app.post('/api/v1/users/view/:email',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.viewByEmail)),
+
+            async function UserController_viewByEmail(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_viewByEmail, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'viewByEmail',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPrescriptionController_createPrescription: Record<string, TsoaRoute.ParameterSchema> = {
                 request: {"in":"request","name":"request","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreatePrescriptionDTO"},
@@ -1116,7 +1270,7 @@ export function RegisterRoutes(app: Router) {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/api/v1/patients/register',
-            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(PatientController)),
             ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.registerPatient)),
 
@@ -1144,12 +1298,13 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPatientController_lookupPatients: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 mrn: {"in":"query","name":"mrn","dataType":"string"},
                 firstName: {"in":"query","name":"firstName","dataType":"string"},
                 lastName: {"in":"query","name":"lastName","dataType":"string"},
         };
         app.get('/api/v1/patients/lookup',
-            authenticateMiddleware([{"jwt":["NURSE","DOCTOR","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(PatientController)),
             ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.lookupPatients)),
 
@@ -1177,6 +1332,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPatientController_getPatients: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 page: {"in":"query","name":"page","dataType":"double"},
                 limit: {"in":"query","name":"limit","dataType":"double"},
                 search: {"in":"query","name":"search","dataType":"string"},
@@ -1185,7 +1341,7 @@ export function RegisterRoutes(app: Router) {
                 sortOrder: {"in":"query","name":"sortOrder","dataType":"union","subSchemas":[{"dataType":"enum","enums":["asc"]},{"dataType":"enum","enums":["desc"]}]},
         };
         app.get('/api/v1/patients',
-            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(PatientController)),
             ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.getPatients)),
 
@@ -1421,6 +1577,258 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getLatestVisitByMrn',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_createRegion: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateRegionDTO"},
+        };
+        app.post('/api/v1/admin/locations/regions',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.createRegion)),
+
+            async function LocationAdminController_createRegion(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_createRegion, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'createRegion',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_updateRegion: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateRegionDTO"},
+        };
+        app.put('/api/v1/admin/locations/regions/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.updateRegion)),
+
+            async function LocationAdminController_updateRegion(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_updateRegion, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'updateRegion',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_deleteRegion: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.delete('/api/v1/admin/locations/regions/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.deleteRegion)),
+
+            async function LocationAdminController_deleteRegion(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_deleteRegion, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteRegion',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_createDistrict: Record<string, TsoaRoute.ParameterSchema> = {
+                regionId: {"in":"path","name":"regionId","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateDistrictDTO"},
+        };
+        app.post('/api/v1/admin/locations/regions/:regionId/districts',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.createDistrict)),
+
+            async function LocationAdminController_createDistrict(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_createDistrict, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'createDistrict',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_updateDistrict: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateDistrictDTO"},
+        };
+        app.put('/api/v1/admin/locations/districts/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.updateDistrict)),
+
+            async function LocationAdminController_updateDistrict(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_updateDistrict, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'updateDistrict',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_deleteDistrict: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.delete('/api/v1/admin/locations/districts/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.deleteDistrict)),
+
+            async function LocationAdminController_deleteDistrict(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_deleteDistrict, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteDistrict',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_getRegionByName: Record<string, TsoaRoute.ParameterSchema> = {
+                name: {"in":"query","name":"name","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/admin/locations/regions/search',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.getRegionByName)),
+
+            async function LocationAdminController_getRegionByName(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_getRegionByName, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'getRegionByName',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_getDistrictByName: Record<string, TsoaRoute.ParameterSchema> = {
+                name: {"in":"query","name":"name","required":true,"dataType":"string"},
+                regionId: {"in":"query","name":"regionId","dataType":"string"},
+        };
+        app.get('/api/v1/admin/locations/districts/search',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.getDistrictByName)),
+
+            async function LocationAdminController_getDistrictByName(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_getDistrictByName, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'getDistrictByName',
                 controller,
                 response,
                 next,
@@ -1890,6 +2298,66 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'checkHealth',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsFacilityController_getFacilityByCode: Record<string, TsoaRoute.ParameterSchema> = {
+                code: {"in":"query","name":"code","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/facilities/by-code',
+            ...(fetchMiddlewares<RequestHandler>(FacilityController)),
+            ...(fetchMiddlewares<RequestHandler>(FacilityController.prototype.getFacilityByCode)),
+
+            async function FacilityController_getFacilityByCode(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsFacilityController_getFacilityByCode, request, response });
+
+                const controller = new FacilityController();
+
+              await templateService.apiHandler({
+                methodName: 'getFacilityByCode',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsFacilityController_searchFacilitiesByName: Record<string, TsoaRoute.ParameterSchema> = {
+                name: {"in":"query","name":"name","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/facilities/search',
+            ...(fetchMiddlewares<RequestHandler>(FacilityController)),
+            ...(fetchMiddlewares<RequestHandler>(FacilityController.prototype.searchFacilitiesByName)),
+
+            async function FacilityController_searchFacilitiesByName(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsFacilityController_searchFacilitiesByName, request, response });
+
+                const controller = new FacilityController();
+
+              await templateService.apiHandler({
+                methodName: 'searchFacilitiesByName',
                 controller,
                 response,
                 next,

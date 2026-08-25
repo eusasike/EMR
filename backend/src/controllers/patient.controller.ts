@@ -11,6 +11,7 @@ import {
   Security,
   Request,
 } from "tsoa";
+import { Request as ExpressRequest } from "express";
 import {
   RegisterPatientDTO,
   PatientResponseDTO,
@@ -24,7 +25,7 @@ import { JwtPayload } from "../middlewares/authenticate";
 
 @Route("api/v1/patients")
 @Tags("Patient Management")
-@Security("jwt", ["NURSE", "ADMIN"])
+@Security("jwt", ["NURSE", "ADMIN", "DOCTOR"])
 export class PatientController extends Controller {
   private patientService: PatientService;
 
@@ -36,14 +37,25 @@ export class PatientController extends Controller {
   @Post("register")
   @SuccessResponse("201", "Patient Registered Successfully")
   @Response("400", "Bad Request / Validation Error")
+  @Response("401", "Unauthorized")
   @Response("500", "Internal Server Error")
   public async registerPatient(
     @Body() requestBody: RegisterPatientDTO,
-    @Request() req: Express.Request, // 👈 Declare req here as a parameter!
+    @Request() req: ExpressRequest,
   ): Promise<PatientResponseDTO> {
-    // 1. Enforce Zod runtime validation & sanitization
-    const validationResult = RegisterPatientZodSchema.safeParse(requestBody);
+    // 1. Extract and validate user session & facility context from JWT
+    const currentUser = (req as any).user as JwtPayload;
+    if (!currentUser || !currentUser.facilityIds) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Unauthorized: Missing active facility context in session",
+        data: null as any,
+      };
+    }
 
+    // 2. Runtime validation
+    const validationResult = RegisterPatientZodSchema.safeParse(requestBody);
     if (!validationResult.success) {
       this.setStatus(400);
       const errorMessages = validationResult.error.issues
@@ -57,19 +69,11 @@ export class PatientController extends Controller {
       };
     }
 
-    // 2. Delegate execution to PatientService
-    const currentuser = (req as any).user as JwtPayload;
-    if (!currentuser) {
-      this.setStatus(401);
-      return {
-        success: false,
-        message: "Unauthorized",
-        data: null as any,
-      };
-    }
+    // 3. Delegate execution with facility scope
     const patient = await this.patientService.registerPatient(
       validationResult.data,
-      currentuser.id,
+      currentUser.id,
+      currentUser.facilityIds[0],
     );
 
     this.setStatus(201);
@@ -80,23 +84,27 @@ export class PatientController extends Controller {
     };
   }
 
-  /**
-   * Retrieve patient details by Medical Record Number (MRN).
-   * Checks Redis cache first before falling back to PostgreSQL.
-   */
   @Get("lookup")
-  @Security("jwt", ["NURSE", "DOCTOR", "ADMIN"])
   @SuccessResponse("200", "Patients Fetched Successfully")
-  @Response<PatientListResponse>(
-    "400",
-    "Bad Request - Missing query parameters",
-  )
+  @Response("400", "Bad Request - Missing query parameters")
+  @Response("401", "Unauthorized")
   public async lookupPatients(
+    @Request() req: ExpressRequest,
     @Query() mrn?: string,
     @Query() firstName?: string,
     @Query() lastName?: string,
   ): Promise<PatientListResponse> {
-    // 1. Validate that at least one filter query parameter was supplied
+    const currentUser = (req as any).user as JwtPayload;
+    if (!currentUser || !currentUser.facilityIds) {
+      this.setStatus(401);
+      return {
+        success: false,
+        count: 0,
+        data: [],
+        message: "Unauthorized: Missing facility context",
+      };
+    }
+
     if (!mrn && !firstName && !lastName) {
       this.setStatus(400);
       return {
@@ -108,28 +116,26 @@ export class PatientController extends Controller {
       };
     }
 
-    // 2. Fetch matches from Service Layer
     const patients = await this.patientService.searchPatients({
       mrn,
       firstName,
       lastName,
+      facilityId: currentUser.facilityIds[0],
     });
 
-    // 3. Return structured response with count and array
     return {
       success: true,
       count: patients.length,
       data: patients,
     };
   }
-  /**
-   * Search and list patients with pagination and filtering.
-   */
+
   @Get("")
-  @Security("jwt", ["NURSE", "ADMIN"]) // 🔒 Enforces Nurse role via JWT
   @SuccessResponse("200", "OK")
   @Response("400", "Invalid Query Parameters")
+  @Response("401", "Unauthorized")
   public async getPatients(
+    @Request() req: ExpressRequest,
     @Query() page?: number,
     @Query() limit?: number,
     @Query() search?: string,
@@ -137,7 +143,12 @@ export class PatientController extends Controller {
     @Query() sortBy?: "createdAt" | "lastName" | "mrn",
     @Query() sortOrder?: "asc" | "desc",
   ): Promise<PaginatedPatientsResponseDTO> {
-    // 1. Validate query filters
+    const currentUser = (req as any).user as JwtPayload;
+    if (!currentUser || !currentUser.facilityIds) {
+      this.setStatus(401);
+      throw new Error("Unauthorized: Missing facility context");
+    }
+
     const queryValidation = PatientQueryZodSchema.safeParse({
       page,
       limit,
@@ -154,8 +165,10 @@ export class PatientController extends Controller {
       );
     }
 
-    // 2. Query paginated results
-    const result = await this.patientService.getPatients(queryValidation.data);
+    const result = await this.patientService.getPatients(
+      queryValidation.data,
+      currentUser.facilityIds[0],
+    );
 
     this.setStatus(200);
     return result;

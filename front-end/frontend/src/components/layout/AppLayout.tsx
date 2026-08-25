@@ -7,12 +7,20 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
+  UserPlus,
 } from "lucide-react";
 import "../../style/dashboard.css";
 
 interface AppLayoutProps {
   children: React.ReactNode;
   pageTitle: string;
+}
+
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ReactNode;
+  allowedRoles?: string[]; // Allowed roles for this item (empty or undefined means allowed for all)
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({
@@ -22,6 +30,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   const navigate = useNavigate();
   const rawUser = localStorage.getItem("user");
   const user = rawUser ? JSON.parse(rawUser) : null;
+  const userRole = user?.role?.toUpperCase(); // Standardize role string matching
+
+  const displayFacilityCode =
+    localStorage.getItem("facilityCode") ||
+    user?.facilities?.[0]?.code ||
+    "N/A";
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -36,6 +50,45 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     navigate("/login");
   };
 
+  // Define Navigation Items with Role Restrictions
+  const navItems: NavItem[] = [
+    {
+      to: "/dashboard",
+      label: "Dashboard",
+      icon: <LayoutDashboard size={18} />,
+    },
+    {
+      to: "/user-register",
+      label: "Register User",
+      icon: <UserPlus size={18} />,
+      allowedRoles: ["ADMIN", "SUPER_ADMIN", "FACILITY_ADMIN"],
+    },
+    {
+      to: "/patients",
+      label: "Patients",
+      icon: <Users size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "REGISTRATION_CLERK"],
+    },
+    {
+      to: "/wards",
+      label: "Ward & Beds",
+      icon: <BedDouble size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE"],
+    },
+    {
+      to: "/billing",
+      label: "Billing",
+      icon: <FileText size={18} />,
+      allowedRoles: ["ADMIN", "ACCOUNTANT", "BILLING_CLERK"],
+    },
+  ];
+
+  // Filter links based on current user role
+  const visibleNavItems = navItems.filter((item) => {
+    if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
+    return item.allowedRoles.includes(userRole);
+  });
+
   return (
     <div className="dashboard-layout">
       {/* Sidebar Navigation */}
@@ -46,34 +99,18 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-          >
-            <LayoutDashboard size={18} />
-            <span>Dashboard</span>
-          </NavLink>
-          <NavLink
-            to="/patients"
-            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-          >
-            <Users size={18} />
-            <span>Patients</span>
-          </NavLink>
-          <NavLink
-            to="/wards"
-            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-          >
-            <BedDouble size={18} />
-            <span>Ward & Beds</span>
-          </NavLink>
-          <NavLink
-            to="/billing"
-            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-          >
-            <FileText size={18} />
-            <span>Billing</span>
-          </NavLink>
+          {visibleNavItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
         </nav>
       </aside>
 
@@ -85,11 +122,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           <div className="user-profile">
             <div className="user-badge">
               <div className="user-name">
-                {user?.firstName
-                  ? `${user.firstName} ${user.lastName}`
-                  : user?.email || "Staff Member"}
+                {user?.email ? `${user.email}` : "Staff Member"}
               </div>
               <div className="user-role">{user?.role || "Clinical Staff"}</div>
+              <div className="user-facility">{displayFacilityCode}</div>
             </div>
             <button
               onClick={handleLogout}

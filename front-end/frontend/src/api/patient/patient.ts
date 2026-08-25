@@ -11,6 +11,8 @@ export interface Patient {
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
   address?: string;
+  regionId?: string | null;
+  districtId?: string | null;
   createdAt?: string;
 }
 
@@ -23,6 +25,8 @@ export interface CreatePatientDTO {
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
   address?: string;
+  regionId?: string | null;
+  districtId?: string | null;
 }
 
 export interface PatientListResponse {
@@ -47,4 +51,28 @@ export const createPatientApi = async (
 
   const response = await api.post("/patients/register", data);
   return response.data.data || response.data;
+};
+
+// Search patient
+export const searchPatientApi = async (
+  searchQuery: string,
+): Promise<Patient[]> => {
+  const query = searchQuery.trim();
+  const isMrn = /^MRN/i.test(query);
+  const nameParts = query.split(/\s+/);
+
+  const params = new URLSearchParams();
+
+  if (isMrn) {
+    params.append("mrn", query);
+  } else {
+    if (nameParts[0]) params.append("firstName", nameParts[0]);
+    if (nameParts[1]) params.append("lastName", nameParts[1]);
+  }
+
+  const response = await api.get<PatientListResponse>(
+    `/patients/lookup?${params.toString()}`,
+  );
+
+  return response.data.data || [];
 };

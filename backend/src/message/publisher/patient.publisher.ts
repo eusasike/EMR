@@ -19,6 +19,7 @@ export interface PatientRegisteredEventPayload {
     mrn: string;
     fullName: string;
     phone?: string | null;
+    facilityId: string;
   };
 }
 

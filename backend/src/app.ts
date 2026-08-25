@@ -14,19 +14,14 @@ export const app: Express = express();
 //CRSF Middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:4000"], // Frontend Vite URL
-    credentials: true, // Allow headers/cookies if used
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "X-CSRF-Token",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: ["http://localhost:5173", "http://localhost:4000"],
+    credentials: true,
+    allowedHeaders: "*", // Accepts custom headers (X-Facility-Code, etc.)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   }),
 );
 
-app.options("*", cors());
+app.options(/(.*)/, cors());
 app.use(cookieParser());
 
 // Body Parser Middleware

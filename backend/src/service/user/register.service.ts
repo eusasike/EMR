@@ -37,9 +37,26 @@ export class UserService {
       email: newUser.email,
       name: `${newUser.firstName} ${newUser.lastName}`,
       role: newUser.role,
+      facilityId: input.facilityId,
       tempPassword: input.password,
     });
 
     return newUser;
+  }
+
+  //view user
+
+  async viewUser() {
+    const user = await this.userRepository.findAll();
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  }
+
+  //find by email
+
+  async findByEmail(email: string) {
+    return this.userRepository.findByEmail(email);
   }
 }

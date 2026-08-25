@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "preserve",
+    "module": "CommonJS",
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": "./",
+    "types": ["node"],
 
     /* Strict Type-Checking Options */
     "strict": true,
@@ -21,6 +22,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "prisma/**/*"],
   "exclude": ["node_modules", "dist"]
 }

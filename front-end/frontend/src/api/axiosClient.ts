@@ -1,87 +1,93 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, {
+  type AxiosInstance,
+  type InternalAxiosRequestConfig,
+} from "axios";
 
-// 1. Create client configured for Vite and HTTP-Only cookies
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api/v1",
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api/v1";
+
+export const api: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Crucial: Tells the browser to automatically include HTTP-Only cookies
+  timeout: 15000,
 });
 
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: () => void;
-  reject: (error: unknown) => void;
-}> = [];
+// ============================================================================
+// REQUEST INTERCEPTOR: Attach Authorization & Active Facility Context Headers
+// ============================================================================
+api.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const accessToken = localStorage.getItem("accessToken");
+    const facilityId = localStorage.getItem("facilityId");
+    const facilityCode = localStorage.getItem("facilityCode");
 
-// Helper to resolve/reject all queued requests after token refresh
-const processQueue = (error: unknown = null) => {
-  failedQueue.forEach((promise) => {
-    if (error) {
-      promise.reject(error);
-    } else {
-      promise.resolve();
+    // Attach Bearer Access Token
+    if (accessToken && config.headers) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-  });
-  failedQueue = [];
-};
 
-// 2. Response Interceptor for handling 401 Unauthorized & refreshing tokens
+    // Attach Facility Context Headers for scoped clinical & administrative queries
+    if (facilityId && config.headers) {
+      config.headers["x-facility-id"] = facilityId;
+    }
+
+    if (facilityCode && config.headers) {
+      config.headers["x-facility-code"] = facilityCode;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+// ============================================================================
+// RESPONSE INTERCEPTOR: Handle Token Expiration & Authentication Errors
+// ============================================================================
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean;
-    };
+  async (error) => {
+    const originalRequest = error.config;
 
-    // Skip handling if it's not a 401 error or if this request has already been retried
-    if (error.response?.status !== 401 || originalRequest?._retry) {
-      return Promise.reject(error);
+    // Handle 401 Unauthorized (e.g., Expired Token)
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (!refreshToken) {
+          throw new Error("No refresh token available");
+        }
+
+        // Attempt token renewal
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          refreshToken,
+        });
+
+        const newAccessToken = data.data?.accessToken || data.accessToken;
+        if (!newAccessToken) {
+          throw new Error("Failed to retrieve new access token");
+        }
+
+        localStorage.setItem("accessToken", newAccessToken);
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return api(originalRequest);
+      } catch (refreshError) {
+        // Clear stored auth and redirect to login if renewal fails
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        localStorage.removeItem("facilityId");
+        localStorage.removeItem("facilityCode");
+
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      }
     }
 
-    // Don't intercept 401 errors coming directly from the login or refresh endpoints
-    if (
-      originalRequest.url?.includes("/auth/login") ||
-      originalRequest.url?.includes("/auth/refresh")
-    ) {
-      return Promise.reject(error);
-    }
-
-    // Queue concurrent requests while a refresh attempt is active
-    if (isRefreshing) {
-      return new Promise<void>((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
-      })
-        .then(() => api(originalRequest))
-        .catch((err) => Promise.reject(err));
-    }
-
-    originalRequest._retry = true;
-    isRefreshing = true;
-
-    try {
-      // Execute refresh request using raw axios with credentials enabled.
-      // The browser automatically attaches the 'refreshToken' HTTP-Only cookie.
-      await axios.post(
-        `${api.defaults.baseURL}/auth/refresh`,
-        {},
-        { withCredentials: true },
-      );
-
-      // Refresh successful: Process any pending requests in queue
-      processQueue(null);
-
-      // Re-run the original request (browser automatically attaches the updated cookies)
-      return api(originalRequest);
-    } catch (refreshError) {
-      processQueue(refreshError);
-
-      // If refresh fails (token expired/invalid), redirect to login page
-      window.location.href = "/login";
-      return Promise.reject(refreshError);
-    } finally {
-      isRefreshing = false;
-    }
+    return Promise.reject(error);
   },
 );

@@ -1,5 +1,5 @@
 import { Patient, Prisma } from "@prisma/client";
-import { prisma } from "../../config/database"; // Shared Prisma Singleton instance
+import { prisma } from "../../config/database";
 import { redisClient } from "../../config/redis";
 import {
   RegisterPatientDTO,
@@ -12,29 +12,32 @@ export interface PatientSearchParams {
   mrn?: string;
   firstName?: string;
   lastName?: string;
+  facilityId: string; // Scope searches by facility
 }
+
 export class PatientService {
   /**
-   * Registers a patient with atomic MRN generation, DB persistence,
-   * resilient caching, and event broadcasting.
+   * Registers a patient with facility-scoped MRN generation,
+   * DB persistence, non-blocking caching, and RabbitMQ event publication.
    */
   async registerPatient(
     input: RegisterPatientDTO,
     attendingUserId: string,
+    facilityId: string,
     maxRetries = 3,
   ): Promise<Patient> {
     let patient: Patient | null = null;
 
-    // 1. Persist to PostgreSQL with MRN Collision Retry
+    // 1. Persist to PostgreSQL with Facility-Scoped MRN Collision Retry
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const mrn = await this.generateMRNWithRedis();
+        const mrn = await this.generateFacilityMRNWithRedis(facilityId);
 
         patient = await prisma.$transaction(async (tx) => {
-          // Create patient record
           const createdPatient = await tx.patient.create({
             data: {
               mrn,
+              facilityId, // 👈 Satisfies Prisma non-null foreign key requirement
               firstName: input.firstName.trim(),
               lastName: input.lastName.trim(),
               middleName: input.middleName?.trim() || null,
@@ -51,10 +54,8 @@ export class PatientService {
           return createdPatient;
         });
 
-        // Break loop on successful insertion
         break;
       } catch (error) {
-        // ✅ Corrected: Check against Prisma's static class constructor from namespace
         const isDuplicateMrn =
           error instanceof Prisma.PrismaClientKnownRequestError &&
           error.code === "P2002" &&
@@ -62,19 +63,20 @@ export class PatientService {
 
         if (isDuplicateMrn) {
           console.warn(
-            `⚠️ [MRN Collision] Duplicate MRN on attempt ${attempt}/${maxRetries}. Resyncing Redis sequence...`,
+            `⚠️ [MRN Collision] Facility ${facilityId} hit MRN collision on attempt ${attempt}/${maxRetries}. Invalidating Redis sequence...`,
           );
-          // Flush stale sequence key in Redis to force re-seeding from DB on next loop
+
           const year = new Date().getFullYear();
-          await redisClient.del(`mrn:sequence:${year}`).catch(() => {});
+          const sequenceKey = `mrn:sequence:${facilityId}:${year}`;
+          await redisClient.del(sequenceKey).catch(() => {});
 
           if (attempt === maxRetries) {
             throw new Error(
-              "Failed to register patient: MRN generation collision limit reached.",
+              "Failed to register patient: MRN generation retry limit reached.",
             );
           }
         } else {
-          throw error; // Re-throw non-collision errors immediately
+          throw error;
         }
       }
     }
@@ -83,8 +85,8 @@ export class PatientService {
       throw new Error("Patient registration failed.");
     }
 
-    // 2. Cache patient profile in Redis (Non-blocking)
-    const cacheKey = `patient:mrn:${patient.mrn}`;
+    // 2. Facility-Scoped Cache Entry
+    const cacheKey = `patient:facility:${facilityId}:mrn:${patient.mrn}`;
     try {
       await redisClient.set(cacheKey, JSON.stringify(patient), "EX", 86400);
     } catch (cacheError: any) {
@@ -94,11 +96,12 @@ export class PatientService {
       );
     }
 
-    // 3. Publish RabbitMQ Event (Non-blocking)
+    // 3. Publish Event
     try {
       await publishPatientRegisteredEvent({
         patientId: patient.id,
         mrn: patient.mrn,
+        facilityId: patient.facilityId,
         fullName: `${patient.firstName} ${patient.lastName}`,
         phone: patient.phone,
       });
@@ -113,13 +116,41 @@ export class PatientService {
   }
 
   /**
-   * Retrieves patient by MRN with Read-Through caching & date reconstruction.
+   * Generates facility-scoped atomic MRN using Redis INCR with DB max sequence fallback seeding.
+   * Format: MRN-{FACILITY_PREFIX}-{YEAR}-{SEQUENCE} or MRN-{YEAR}-{SEQUENCE} scoped per facility.
+   */
+  private async generateFacilityMRNWithRedis(
+    facilityId: string,
+  ): Promise<string> {
+    const year = new Date().getFullYear();
+    const sequenceKey = `mrn:sequence:${facilityId}:${year}`;
+
+    const exists = await redisClient.exists(sequenceKey);
+    if (!exists) {
+      // Seed sequence from max numeric value for this specific facility and year
+      const result = await prisma.$queryRaw<{ max_seq: number | null }[]>`
+        SELECT MAX(CAST(SPLIT_PART(mrn, '-', 3) AS INTEGER)) as max_seq
+        FROM patients
+        WHERE facility_id = ${facilityId}
+          AND mrn LIKE ${`MRN-${year}-%`}
+      `;
+
+      const lastSeq = result[0]?.max_seq ?? 0;
+      await redisClient.setnx(sequenceKey, lastSeq);
+    }
+
+    const seq = await redisClient.incr(sequenceKey);
+    return `MRN-${year}-${String(seq).padStart(6, "0")}`;
+  }
+
+  /**
+   * Search patients constrained to the requestor's facilityId.
    */
   async searchPatients(params: PatientSearchParams): Promise<Patient[]> {
-    const { mrn, firstName, lastName } = params;
+    const { mrn, firstName, lastName, facilityId } = params;
 
-    // Build unique cache key identifier
     const cacheIdentifier = [
+      `fac:${facilityId}`,
       mrn ? `mrn:${mrn.trim()}` : null,
       firstName ? `fn:${firstName.toLowerCase().trim()}` : null,
       lastName ? `ln:${lastName.toLowerCase().trim()}` : null,
@@ -127,20 +158,12 @@ export class PatientService {
       .filter(Boolean)
       .join(":");
 
-    if (!cacheIdentifier) {
-      return [];
-    }
+    const cacheKey = `patient:search:${cacheIdentifier}`;
 
-    const cacheKey = `patient:search_list:${cacheIdentifier}`;
-
-    // 1. Check Redis Cache
     try {
       const cachedData = await redisClient.get(cacheKey);
       if (cachedData) {
-        console.log(`⚡ [Redis Cache Hit] ${cacheKey}`);
         const parsedArray: Patient[] = JSON.parse(cachedData);
-
-        // Reconstruct Date instances for all items in the array
         return parsedArray.map((patient) => ({
           ...patient,
           dateOfBirth: new Date(patient.dateOfBirth),
@@ -149,52 +172,44 @@ export class PatientService {
         }));
       }
     } catch (error: any) {
-      console.warn(`⚠️ [Redis Error] Bypassing cache: ${error.message}`);
+      console.warn(`⚠️ [Redis Error] Bypassing search cache: ${error.message}`);
     }
 
-    // 2. Build Prisma Dynamic Filter
-    const where: Prisma.PatientWhereInput = {};
+    const where: Prisma.PatientWhereInput = { facilityId };
 
-    if (mrn) {
-      where.mrn = mrn.trim();
-    }
-    if (firstName) {
+    if (mrn) where.mrn = mrn.trim();
+    if (firstName)
       where.firstName = { equals: firstName.trim(), mode: "insensitive" };
-    }
-    if (lastName) {
+    if (lastName)
       where.lastName = { equals: lastName.trim(), mode: "insensitive" };
-    }
 
-    // 3. Database Query (returns all matching records, capped at 50)
-    console.log(`🐢 [DB Query] Searching patients with criteria:`, where);
     const patients = await prisma.patient.findMany({
       where,
       orderBy: { createdAt: "desc" },
       take: 50,
     });
 
-    // 4. Cache Array in Redis
     if (patients.length > 0) {
-      try {
-        await redisClient.set(cacheKey, JSON.stringify(patients), "EX", 3600);
-      } catch (err) {
-        // Suppress cache write errors
-      }
+      await redisClient
+        .set(cacheKey, JSON.stringify(patients), "EX", 3600)
+        .catch(() => {});
     }
 
     return patients;
   }
+
   /**
-   * Paginated search for patients by name, MRN, or phone number.
+   * Paginated retrieval constrained by facility context.
    */
   async getPatients(
     query: PatientQueryDTO,
+    facilityId: string,
   ): Promise<PaginatedResponse<Patient>> {
     const page = query.page || 1;
     const limit = Math.min(query.limit || 20, 100);
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.PatientWhereInput = { facilityId };
 
     if (query.gender) {
       where.gender = query.gender;
@@ -234,29 +249,5 @@ export class PatientService {
         hasPrevPage: page > 1,
       },
     };
-  }
-
-  /**
-   * Generates atomic MRN using Redis INCR with automatic DB fallback seeding.
-   */
-  private async generateMRNWithRedis(): Promise<string> {
-    const year = new Date().getFullYear();
-    const sequenceKey = `mrn:sequence:${year}`;
-
-    const exists = await redisClient.exists(sequenceKey);
-    if (!exists) {
-      // Cast string sequence to integer in SQL to ensure accurate numeric ordering
-      const result = await prisma.$queryRaw<{ max_seq: number | null }[]>`
-      SELECT MAX(CAST(SPLIT_PART(mrn, '-', 3) AS INTEGER)) as max_seq
-      FROM patients
-      WHERE mrn LIKE ${`MRN-${year}-%`}
-    `;
-
-      const lastSeq = result[0]?.max_seq ?? 0;
-      await redisClient.setnx(sequenceKey, lastSeq);
-    }
-
-    const seq = await redisClient.incr(sequenceKey);
-    return `MRN-${year}-${String(seq).padStart(6, "0")}`;
   }
 }

@@ -12,9 +12,10 @@ export interface RegisterUserDTO {
   phone?: string;
   password: string;
   role: Role;
+  facilityId?: string; // Optional facility ID to create the initial FacilityUser relation
 }
 
-// Zod Schema used inside the controller for runtime regex validation
+// Zod Schema used inside the controller for runtime validation
 export const RegisterUserZodSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
@@ -25,4 +26,5 @@ export const RegisterUserZodSchema = z.object({
   role: z.nativeEnum(Role, {
     message: "Invalid staff role specified",
   }),
+  facilityId: z.string().optional(),
 });

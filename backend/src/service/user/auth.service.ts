@@ -18,34 +18,63 @@ const JWT_REFRESH_SECRET =
 
 export class AuthService {
   async login(input: LoginDTO): Promise<LoginResponseDTO["data"]> {
-    // 1. Fetch user from database
+    // 1. Fetch user along with explicit FacilityUser relations
     const user = await prisma.user.findUnique({
       where: { email: input.email },
+      include: {
+        facilities: {
+          select: {
+            facility: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    // 2. Validate user existence and status
     if (!user) {
       throw new UnauthorizedError("Invalid email or password");
     }
 
-    // 3. Verify password
+    if (!user.isActive) {
+      throw new UnauthorizedError("Account has been deactivated");
+    }
+
     const isPasswordValid = await bcrypt.compare(input.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedError("Invalid email or password");
     }
 
-    // 4. Generate JWT Tokens
-    const payload = { id: user.id, email: user.email, role: user.role };
+    // 2. Map facility details
+    const userFacilities = user.facilities.map((f) => ({
+      id: f.facility.id,
+      code: f.facility.code,
+      name: f.facility.name,
+    }));
+
+    const facilityIds = userFacilities.map((f) => f.id);
+
+    // 3. Generate JWT Tokens with facility context
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      facilityIds, // 👈 Embedded facility IDs for authorization checks
+    };
 
     const accessToken = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: "15m", // Short-lived access token
+      expiresIn: "15m",
     });
 
     const refreshToken = jwt.sign({ id: user.id }, JWT_REFRESH_SECRET, {
-      expiresIn: "7d", // Long-lived refresh token
+      expiresIn: "7d",
     });
 
-    // 5. Store Refresh Token in Redis (7 Days TTL)
+    // 4. Store Refresh Token in Redis
     const redisKey = `refresh_token:${user.id}`;
     const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
 
@@ -60,11 +89,12 @@ export class AuthService {
       console.warn("⚠️ Failed to store refresh token in Redis:", cacheError);
     }
 
-    // 6. Emit audit event to RabbitMQ
+    // 5. Emit audit event to RabbitMQ
     try {
       await publishToQueue("auth_events", "USER_LOGGED_IN", {
         userId: user.id,
         email: user.email,
+        facilityIds,
         timestamp: new Date().toISOString(),
       });
     } catch (queueError) {
@@ -78,6 +108,7 @@ export class AuthService {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        facilities: userFacilities,
       },
       accessToken,
       refreshToken,
@@ -90,7 +121,6 @@ export class AuthService {
   ): Promise<RefreshTokenResponseDTO["data"]> {
     const { refreshToken } = input;
 
-    // 1. Verify JWT signature & expiration
     let decoded: { id: string };
     try {
       decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { id: string };
@@ -99,15 +129,10 @@ export class AuthService {
     }
 
     const redisKey = `refresh_token:${decoded.id}`;
-
-    // 2. Fetch stored refresh token from Redis
     const storedToken = await redisClient.get(redisKey);
 
-    // 3. Reuse / Compromise Detection:
-    // If no token exists or provided token doesn't match stored token, invalidate session
     if (!storedToken || storedToken !== refreshToken) {
       if (storedToken) {
-        // Token was likely stolen & reused elsewhere -> force revoke
         await redisClient.del(redisKey);
       }
       throw new UnauthorizedError(
@@ -115,18 +140,31 @@ export class AuthService {
       );
     }
 
-    // 4. Ensure user still exists and account is active
+    // Fetch user with linked facilities
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
+      include: {
+        facilities: {
+          select: {
+            facilityId: true,
+          },
+        },
+      },
     });
 
-    if (!user) {
+    if (!user || !user.isActive) {
       await redisClient.del(redisKey);
-      throw new UnauthorizedError("User account no longer exists");
+      throw new UnauthorizedError("User account no longer active");
     }
 
-    // 5. Generate New Token Pair (Refresh Token Rotation)
-    const payload = { id: user.id, email: user.email, role: user.role };
+    const facilityIds = user.facilities.map((f) => f.facilityId);
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      facilityIds,
+    };
 
     const newAccessToken = jwt.sign(payload, JWT_SECRET, {
       expiresIn: "15m",
@@ -136,7 +174,6 @@ export class AuthService {
       expiresIn: "7d",
     });
 
-    // 6. Overwrite old token in Redis with new Refresh Token (7 Days TTL)
     const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
     await redisClient.set(
       redisKey,
@@ -156,7 +193,6 @@ export class AuthService {
     const { refreshToken } = input;
 
     try {
-      // Decode payload to extract user ID (using decode so expired tokens won't throw)
       const decoded = jwt.decode(refreshToken) as { id?: string } | null;
 
       if (decoded?.id) {
