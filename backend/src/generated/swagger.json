@@ -150,14 +150,7 @@
 				},
 				"required": [
 					"visitId",
-					"temperature",
-					"systolicBP",
-					"diastolicBP",
-					"pulseRate",
-					"respiratoryRate",
-					"spo2",
-					"weight",
-					"height"
+					"weight"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -215,7 +208,8 @@
 					"OPD",
 					"EMERGENCY",
 					"REFERRAL",
-					"FOLLOW_UP"
+					"FOLLOW_UP",
+					"IPD"
 				]
 			},
 			"VisitType": {
@@ -232,83 +226,84 @@
 			"VisitPriority": {
 				"$ref": "#/components/schemas/_36_Enums.VisitPriority"
 			},
-			"VisitResponseDTO": {
+			"_36_Enums.VisitStatus": {
+				"type": "string",
+				"enum": [
+					"NOT_STARTED",
+					"IN_PROGRESS",
+					"COMPLETED",
+					"CANCELLED"
+				]
+			},
+			"VisitStatus": {
+				"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+			},
+			"VisitDataPayload": {
 				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"message": {
+					"id": {
 						"type": "string"
 					},
-					"data": {
-						"properties": {
-							"attending": {
-								"properties": {
-									"email": {
-										"type": "string"
-									},
-									"lastName": {
-										"type": "string"
-									},
-									"firstName": {
-										"type": "string"
-									},
-									"id": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"id"
-								],
-								"type": "object"
-							},
-							"createdAt": {
+					"patientId": {
+						"type": "string"
+					},
+					"attendingId": {
+						"type": "string"
+					},
+					"facilityId": {
+						"type": "string"
+					},
+					"visitType": {
+						"$ref": "#/components/schemas/VisitType"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/VisitPriority"
+					},
+					"status": {
+						"$ref": "#/components/schemas/VisitStatus"
+					},
+					"symptoms": {
+						"type": "string",
+						"nullable": true
+					},
+					"diagnosis": {
+						"type": "string",
+						"nullable": true
+					},
+					"icdCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdAt": {
+						"anyOf": [
+							{
 								"type": "string",
 								"format": "date-time"
 							},
-							"priority": {
-								"$ref": "#/components/schemas/VisitPriority"
-							},
-							"visitType": {
-								"$ref": "#/components/schemas/VisitType"
-							},
-							"symptoms": {
-								"type": "string",
-								"nullable": true
-							},
-							"icdCode": {
-								"type": "string",
-								"nullable": true
-							},
-							"diagnosis": {
-								"type": "string",
-								"nullable": true
-							},
-							"attendingId": {
-								"type": "string"
-							},
-							"patientId": {
-								"type": "string"
-							},
-							"id": {
+							{
 								"type": "string"
 							}
-						},
-						"required": [
-							"createdAt",
-							"priority",
-							"visitType",
-							"attendingId",
-							"patientId",
-							"id"
-						],
-						"type": "object"
+						]
+					},
+					"updatedAt": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
 					}
 				},
 				"required": [
-					"success",
-					"message",
-					"data"
+					"id",
+					"patientId",
+					"attendingId",
+					"facilityId",
+					"visitType",
+					"priority",
+					"status"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -323,6 +318,28 @@
 				},
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
+			},
+			"VisitResponseDTO": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-Array_"
+					},
+					"data": {
+						"$ref": "#/components/schemas/VisitDataPayload"
+					}
+				},
+				"required": [
+					"success",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"ErrorResponseDTO": {
 				"properties": {
@@ -345,10 +362,13 @@
 			},
 			"CreateVisitDTO": {
 				"properties": {
-					"patientId": {
+					"facilityId": {
 						"type": "string"
 					},
 					"attendingId": {
+						"type": "string"
+					},
+					"patientId": {
 						"type": "string"
 					},
 					"symptoms": {
@@ -368,11 +388,15 @@
 					},
 					"priority": {
 						"$ref": "#/components/schemas/VisitPriority"
+					},
+					"status": {
+						"$ref": "#/components/schemas/VisitStatus"
 					}
 				},
 				"required": [
-					"patientId",
-					"attendingId"
+					"facilityId",
+					"attendingId",
+					"patientId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -393,6 +417,9 @@
 					},
 					"priority": {
 						"$ref": "#/components/schemas/VisitPriority"
+					},
+					"status": {
+						"$ref": "#/components/schemas/VisitStatus"
 					},
 					"attendingId": {
 						"type": "string"
@@ -455,10 +482,10 @@
 			"_36_Enums.PrescriptionStatus": {
 				"type": "string",
 				"enum": [
-					"PENDING",
+					"COMPLETED",
 					"CANCELLED",
-					"PARTIALLY_DISPENSED",
-					"COMPLETED"
+					"PENDING",
+					"PARTIALLY_DISPENSED"
 				]
 			},
 			"CreatePrescriptionItemDTO": {
@@ -850,6 +877,51 @@
 			"PaginatedPatientsResponseDTO": {
 				"$ref": "#/components/schemas/PaginatedResponse_PatientDTO_"
 			},
+			"UpdatePatientDTO": {
+				"properties": {
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					},
+					"middleName": {
+						"type": "string"
+					},
+					"gender": {
+						"$ref": "#/components/schemas/Gender"
+					},
+					"dateOfBirth": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"emergencyContactName": {
+						"type": "string"
+					},
+					"emergencyContactPhone": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"regionId": {
+						"type": "string"
+					},
+					"districtId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"firstName",
+					"lastName",
+					"gender",
+					"dateOfBirth"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CreateMedicalServiceInput": {
 				"properties": {
 					"name": {
@@ -1039,11 +1111,11 @@
 			"_36_Enums.LabStatus": {
 				"type": "string",
 				"enum": [
-					"CANCELLED",
+					"IN_PROGRESS",
 					"COMPLETED",
+					"CANCELLED",
 					"ORDERED",
-					"SAMPLE_COLLECTED",
-					"IN_PROGRESS"
+					"SAMPLE_COLLECTED"
 				]
 			},
 			"OrderLabServiceDTO": {
@@ -1294,8 +1366,8 @@
 			"_36_Enums.ClaimStatus": {
 				"type": "string",
 				"enum": [
-					"PAID",
 					"CANCELLED",
+					"PAID",
 					"PENDING_PRE_AUTH",
 					"PRE_AUTHORIZED",
 					"SUBMITTED",
@@ -1482,9 +1554,9 @@
 			"_36_Enums.InvoiceStatus": {
 				"type": "string",
 				"enum": [
+					"CANCELLED",
 					"PENDING",
-					"PAID",
-					"CANCELLED"
+					"PAID"
 				]
 			},
 			"InvoiceStatus": {
@@ -1571,10 +1643,10 @@
 			"_36_Enums.PaymentStatus": {
 				"type": "string",
 				"enum": [
+					"CANCELLED",
 					"PENDING",
 					"PARTIALLY_PAID",
-					"PAID",
-					"CANCELLED"
+					"PAID"
 				]
 			},
 			"PaymentStatus": {
@@ -2369,10 +2441,14 @@
 					"400": {
 						"description": "Validation or Business Logic Error"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
-						"description": "Patient or Staff Not Found"
+						"description": "Patient Not Found"
 					}
 				},
+				"description": "Check in a patient for a visit.\n`attendingId` and `facilityId` are extracted automatically from the authenticated user context.",
 				"tags": [
 					"Patient Visits"
 				],
@@ -2380,7 +2456,8 @@
 					{
 						"jwt": [
 							"NURSE",
-							"ADMIN"
+							"ADMIN",
+							"DOCTOR"
 						]
 					}
 				],
@@ -2425,6 +2502,7 @@
 						"description": "Visit Not Found"
 					}
 				},
+				"description": "Update clinical encounter details or status on an active visit.",
 				"tags": [
 					"Patient Visits"
 				],
@@ -2432,7 +2510,8 @@
 					{
 						"jwt": [
 							"NURSE",
-							"ADMIN"
+							"ADMIN",
+							"DOCTOR"
 						]
 					}
 				],
@@ -2483,9 +2562,212 @@
 										{
 											"properties": {
 												"data": {},
+												"message": {},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Visit Not Found"
+					}
+				},
+				"description": "Retrieve visit details by visit ID.",
+				"tags": [
+					"Patient Visits"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN",
+							"DOCTOR"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/visits/patient/{mrn}": {
+			"get": {
+				"operationId": "GetVisitsByPatient",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"message": {},
+												"data": {},
+												"count": {},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"count",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"count": {},
+												"message": {},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Patient Not Found"
+					}
+				},
+				"description": "Retrieve all visit records for a patient by MRN.",
+				"tags": [
+					"Patient Visits"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN",
+							"DOCTOR"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/visits/{id}/complete": {
+			"put": {
+				"operationId": "CompleteVisit",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"data": {
+													"properties": {
+														"status": {
+															"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+														},
+														"triagePriority": {
+															"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+														},
+														"visitType": {
+															"$ref": "#/components/schemas/_36_Enums.VisitType"
+														},
+														"symptoms": {
+															"type": "string"
+														},
+														"icdCode": {
+															"type": "string"
+														},
+														"diagnosis": {
+															"type": "string"
+														},
+														"attendingId": {
+															"type": "string"
+														},
+														"patientId": {
+															"type": "string"
+														},
+														"facilityId": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"priority": {
+															"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"status",
+														"triagePriority",
+														"visitType",
+														"symptoms",
+														"icdCode",
+														"diagnosis",
+														"attendingId",
+														"patientId",
+														"facilityId",
+														"createdAt",
+														"priority",
+														"id"
+													],
+													"type": "object"
+												},
 												"message": {
 													"type": "string"
 												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"message": {},
 												"success": {
 													"type": "boolean"
 												}
@@ -2512,7 +2794,8 @@
 					{
 						"jwt": [
 							"NURSE",
-							"ADMIN"
+							"ADMIN",
+							"DOCTOR"
 						]
 					}
 				],
@@ -2520,56 +2803,6 @@
 					{
 						"in": "path",
 						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/api/v1/visits/patient/{mrn}": {
-			"get": {
-				"operationId": "GetVisitsByPatient",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"data": {},
-										"count": {},
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"data",
-										"count",
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Patient Visits"
-				],
-				"security": [
-					{
-						"jwt": [
-							"NURSE",
-							"ADMIN"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "mrn",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -3056,6 +3289,64 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/v1/patients/{id}": {
+			"put": {
+				"operationId": "UpdatePatient",
+				"responses": {
+					"200": {
+						"description": "Patient Updated Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PatientResponseDTO"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request / Validation Error"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				},
+				"tags": [
+					"Patient Management"
+				],
+				"security": [
+					{
+						"jwt": [
+							"NURSE",
+							"ADMIN",
+							"DOCTOR"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdatePatientDTO"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/v1/medical-services": {
@@ -3741,6 +4032,9 @@
 										},
 										{
 											"properties": {
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+												},
 												"triagePriority": {
 													"$ref": "#/components/schemas/_36_Enums.TriagePriority"
 												},
@@ -3777,6 +4071,7 @@
 												}
 											},
 											"required": [
+												"status",
 												"triagePriority",
 												"visitType",
 												"symptoms",

@@ -4,6 +4,7 @@ import { redisClient } from "../../config/redis";
 import {
   RegisterPatientDTO,
   PatientQueryDTO,
+  UpdatePatientDTO,
 } from "../../models/patient/patient.model";
 import { publishPatientRegisteredEvent } from "../../message/publisher/patient.publisher";
 import { PaginatedResponse } from "../../util/apiResponse";
@@ -12,8 +13,11 @@ export interface PatientSearchParams {
   mrn?: string;
   firstName?: string;
   lastName?: string;
-  facilityId: string; // Scope searches by facility
+  facilityId: string;
 }
+
+const PATIENT_CACHE_TTL = 3600; // 1 hour in seconds
+const getPatientCacheKey = (id: string) => `patient:${id}`;
 
 export class PatientService {
   /**
@@ -28,16 +32,15 @@ export class PatientService {
   ): Promise<Patient> {
     let patient: Patient | null = null;
 
-    // 1. Persist to PostgreSQL with Facility-Scoped MRN Collision Retry
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const mrn = await this.generateFacilityMRNWithRedis(facilityId);
 
         patient = await prisma.$transaction(async (tx) => {
-          const createdPatient = await tx.patient.create({
+          return await tx.patient.create({
             data: {
               mrn,
-              facilityId, // 👈 Satisfies Prisma non-null foreign key requirement
+              facilityId,
               firstName: input.firstName.trim(),
               lastName: input.lastName.trim(),
               middleName: input.middleName?.trim() || null,
@@ -48,10 +51,14 @@ export class PatientService {
               emergencyContactPhone:
                 input.emergencyContactPhone?.trim() || null,
               address: input.address?.trim() || null,
+              regionId: input.regionId || null,
+              districtId: input.districtId || null,
+            },
+            include: {
+              region: true,
+              district: true,
             },
           });
-
-          return createdPatient;
         });
 
         break;
@@ -63,7 +70,7 @@ export class PatientService {
 
         if (isDuplicateMrn) {
           console.warn(
-            `⚠️ [MRN Collision] Facility ${facilityId} hit MRN collision on attempt ${attempt}/${maxRetries}. Invalidating Redis sequence...`,
+            `⚠️ [MRN Collision] Facility ${facilityId} hit MRN collision on attempt ${attempt}/${maxRetries}. Invalidating sequence...`,
           );
 
           const year = new Date().getFullYear();
@@ -85,18 +92,30 @@ export class PatientService {
       throw new Error("Patient registration failed.");
     }
 
-    // 2. Facility-Scoped Cache Entry
-    const cacheKey = `patient:facility:${facilityId}:mrn:${patient.mrn}`;
+    // Cache by Primary Key and MRN
     try {
-      await redisClient.set(cacheKey, JSON.stringify(patient), "EX", 86400);
+      await Promise.all([
+        redisClient.set(
+          getPatientCacheKey(patient.id),
+          JSON.stringify(patient),
+          "EX",
+          PATIENT_CACHE_TTL,
+        ),
+        redisClient.set(
+          `patient:facility:${facilityId}:mrn:${patient.mrn}`,
+          JSON.stringify(patient),
+          "EX",
+          86400,
+        ),
+      ]);
     } catch (cacheError: any) {
       console.error(
-        `⚠️ [Redis Cache Error] Failed to cache MRN ${patient.mrn}:`,
+        `⚠️ [Redis Cache Error] Failed to cache patient ${patient.id}:`,
         cacheError.message,
       );
     }
 
-    // 3. Publish Event
+    // Publish Event
     try {
       await publishPatientRegisteredEvent({
         patientId: patient.id,
@@ -117,22 +136,31 @@ export class PatientService {
 
   /**
    * Generates facility-scoped atomic MRN using Redis INCR with DB max sequence fallback seeding.
-   * Format: MRN-{FACILITY_PREFIX}-{YEAR}-{SEQUENCE} or MRN-{YEAR}-{SEQUENCE} scoped per facility.
    */
   private async generateFacilityMRNWithRedis(
     facilityId: string,
   ): Promise<string> {
     const year = new Date().getFullYear();
+
+    // 1. Fetch the facility code from your database using facilityId
+    const facility = await prisma.facility.findUnique({
+      where: { id: facilityId },
+      select: { code: true }, // Ensure your facility model has a 'code' field (e.g., 'DAR', 'MOH')
+    });
+
+    const facilityCode = facility?.code ? facility.code.toUpperCase() : "GEN";
+
+    // 2. Include facilityCode in the Redis sequence key so counters are per facility
     const sequenceKey = `mrn:sequence:${facilityId}:${year}`;
 
     const exists = await redisClient.exists(sequenceKey);
     if (!exists) {
-      // Seed sequence from max numeric value for this specific facility and year
+      // 3. Optional: Adjust query if your MRN structure changes (e.g., splitting at index 3 or 4)
       const result = await prisma.$queryRaw<{ max_seq: number | null }[]>`
-        SELECT MAX(CAST(SPLIT_PART(mrn, '-', 3) AS INTEGER)) as max_seq
+        SELECT MAX(CAST(SPLIT_PART(mrn, '-', 4) AS INTEGER)) as max_seq
         FROM patients
         WHERE facility_id = ${facilityId}
-          AND mrn LIKE ${`MRN-${year}-%`}
+          AND mrn LIKE ${`MRN-${year}-${facilityCode}-%`}
       `;
 
       const lastSeq = result[0]?.max_seq ?? 0;
@@ -140,11 +168,88 @@ export class PatientService {
     }
 
     const seq = await redisClient.incr(sequenceKey);
-    return `MRN-${year}-${String(seq).padStart(6, "0")}`;
+
+    // 4. Return MRN format containing the facility code
+    return `MRN-${year}-${facilityCode}-${String(seq).padStart(6, "0")}`;
   }
 
   /**
-   * Search patients constrained to the requestor's facilityId.
+   * Fetch Patient by ID with Cache-Aside Pattern
+   */
+  async getPatientById(id: string): Promise<Patient | null> {
+    const cacheKey = getPatientCacheKey(id);
+
+    try {
+      const cachedData = await redisClient.get(cacheKey);
+      if (cachedData) {
+        const parsed: Patient = JSON.parse(cachedData);
+        return {
+          ...parsed,
+          dateOfBirth: new Date(parsed.dateOfBirth),
+          createdAt: new Date(parsed.createdAt),
+          updatedAt: new Date(parsed.updatedAt),
+        };
+      }
+    } catch (err: any) {
+      console.warn(`⚠️ [Redis Error] Bypassing patient cache: ${err.message}`);
+    }
+
+    const patient = await prisma.patient.findUnique({
+      where: { id },
+      include: {
+        region: true,
+        district: true,
+      },
+    });
+
+    if (patient) {
+      await redisClient
+        .set(cacheKey, JSON.stringify(patient), "EX", PATIENT_CACHE_TTL)
+        .catch(() => {});
+    }
+
+    return patient;
+  }
+
+  /**
+   * Update Patient & Sync/Invalidate Caches
+   */
+  async updatePatient(id: string, data: UpdatePatientDTO): Promise<Patient> {
+    const updatedPatient = await prisma.patient.update({
+      where: { id },
+      data: {
+        ...data,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+      },
+      include: {
+        region: true,
+        district: true,
+      },
+    });
+
+    // Sync primary ID cache
+    const cacheKey = getPatientCacheKey(id);
+    await redisClient
+      .set(cacheKey, JSON.stringify(updatedPatient), "EX", PATIENT_CACHE_TTL)
+      .catch(() => {});
+
+    // Sync MRN cache if available
+    if (updatedPatient.facilityId && updatedPatient.mrn) {
+      await redisClient
+        .set(
+          `patient:facility:${updatedPatient.facilityId}:mrn:${updatedPatient.mrn}`,
+          JSON.stringify(updatedPatient),
+          "EX",
+          86400,
+        )
+        .catch(() => {});
+    }
+
+    return updatedPatient;
+  }
+
+  /**
+   * Search patients constrained to requestor facilityId.
    */
   async searchPatients(params: PatientSearchParams): Promise<Patient[]> {
     const { mrn, firstName, lastName, facilityId } = params;
@@ -187,6 +292,10 @@ export class PatientService {
       where,
       orderBy: { createdAt: "desc" },
       take: 50,
+      include: {
+        region: true,
+        district: true,
+      },
     });
 
     if (patients.length > 0) {
@@ -232,6 +341,10 @@ export class PatientService {
         skip,
         take: limit,
         orderBy: { [query.sortBy || "createdAt"]: query.sortOrder || "desc" },
+        include: {
+          region: true,
+          district: true,
+        },
       }),
     ]);
 

@@ -1,11 +1,12 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { AppLayout } from "../../components/layout/AppLayout";
 import {
-  getPatientsApi,
-  searchPatientApi,
   createPatientApi,
-  type Patient,
   type CreatePatientDTO,
+  updatePatientApi,
+  getPatientsApi,
+  type Patient,
+  searchPatientApi,
 } from "../../api/patient/patient";
 import {
   getRegionByNameApi,
@@ -13,7 +14,8 @@ import {
   type Region,
   type District,
 } from "../../api/location/location";
-import { Plus, Search } from "lucide-react";
+import { PatientVisitModal } from "./patientVisit.modal";
+import { Plus, Search, Stethoscope } from "lucide-react";
 import "../../style/component.css";
 
 export const PatientsPage: React.FC = () => {
@@ -21,8 +23,15 @@ export const PatientsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Registration / Edit Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editingPatientId, setEditingPatientId] = useState<string | null>(null);
+
+  // Visit Check-In Modal state
+  const [selectedPatientForVisit, setSelectedPatientForVisit] =
+    useState<Patient | null>(null);
 
   // Region and District states
   const [regionInput, setRegionInput] = useState("");
@@ -69,7 +78,7 @@ export const PatientsPage: React.FC = () => {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFormData((prev) => ({ ...prev, phone: value }));
+    setFormData((prev: CreatePatientDTO) => ({ ...prev, phone: value }));
 
     if (value && !isValidPhoneNumber(value)) {
       setPhoneError(
@@ -84,7 +93,10 @@ export const PatientsPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = e.target.value;
-    setFormData((prev) => ({ ...prev, emergencyContactPhone: value }));
+    setFormData((prev: CreatePatientDTO) => ({
+      ...prev,
+      emergencyContactPhone: value,
+    }));
 
     if (value && !isValidPhoneNumber(value)) {
       setEmergencyPhoneError(
@@ -99,10 +111,10 @@ export const PatientsPage: React.FC = () => {
     let isMounted = true;
 
     getPatientsApi()
-      .then((data) => {
+      .then((data: Patient[]) => {
         if (isMounted) setPatients(data);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error("Failed to load patients:", err);
       })
       .finally(() => {
@@ -157,14 +169,20 @@ export const PatientsPage: React.FC = () => {
   };
 
   const openRegistrationModal = () => {
+    setEditingPatientId(null);
     const parts = searchTerm.trim().split(/\s+/);
-    setFormData((prev) => ({
-      ...prev,
+    setFormData({
       firstName: parts[0] || "",
       lastName: parts.slice(1).join(" ") || "",
+      gender: "MALE",
+      dateOfBirth: "",
+      phone: "",
+      emergencyContactName: "",
+      emergencyContactPhone: "",
+      address: "",
       regionId: "",
       districtId: "",
-    }));
+    });
     setRegionInput("");
     setDistrictInput("");
     setSelectedRegion(null);
@@ -192,7 +210,11 @@ export const PatientsPage: React.FC = () => {
     setSelectedDistrict(null);
     setDistrictInput("");
     setRegionError("");
-    setFormData((prev) => ({ ...prev, regionId: "", districtId: "" }));
+    setFormData((prev: CreatePatientDTO) => ({
+      ...prev,
+      regionId: "",
+      districtId: "",
+    }));
 
     if (query.trim().length > 1) {
       try {
@@ -213,7 +235,7 @@ export const PatientsPage: React.FC = () => {
   const selectRegion = (region: Region) => {
     setRegionInput(region.name);
     setSelectedRegion(region);
-    setFormData((prev) => ({ ...prev, regionId: region.id }));
+    setFormData((prev: CreatePatientDTO) => ({ ...prev, regionId: region.id }));
     setShowRegionDropdown(false);
     setRegionError("");
     setLocationError("");
@@ -227,7 +249,7 @@ export const PatientsPage: React.FC = () => {
     setDistrictInput(query);
     setSelectedDistrict(null);
     setDistrictError("");
-    setFormData((prev) => ({ ...prev, districtId: "" }));
+    setFormData((prev: CreatePatientDTO) => ({ ...prev, districtId: "" }));
 
     if (query.trim().length > 1) {
       try {
@@ -251,13 +273,56 @@ export const PatientsPage: React.FC = () => {
   const selectDistrict = (district: District) => {
     setDistrictInput(district.name);
     setSelectedDistrict(district);
-    setFormData((prev) => ({ ...prev, districtId: district.id }));
+    setFormData((prev: CreatePatientDTO) => ({
+      ...prev,
+      districtId: district.id,
+    }));
     setShowDistrictDropdown(false);
     setDistrictError("");
     setLocationError("");
   };
 
-  const handleCreatePatient = async (e: React.FormEvent) => {
+  const openEditModal = (patient: Patient) => {
+    setEditingPatientId(patient.id);
+    setFormData({
+      firstName: patient.firstName || "",
+      lastName: patient.lastName || "",
+      gender: patient.gender || "MALE",
+      dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.split("T")[0] : "",
+      phone: patient.phone || "",
+      emergencyContactName: patient.emergencyContactName || "",
+      emergencyContactPhone: patient.emergencyContactPhone || "",
+      address: patient.address || "",
+      regionId: patient.regionId || "",
+      districtId: patient.districtId || "",
+    });
+
+    setRegionInput("");
+    setDistrictInput("");
+
+    setSelectedRegion(
+      patient.regionId ? { id: patient.regionId, name: "" } : null,
+    );
+    setSelectedDistrict(
+      patient.districtId && patient.regionId
+        ? {
+            id: patient.districtId,
+            name: "",
+            regionId: patient.regionId,
+          }
+        : null,
+    );
+
+    setLocationError("");
+    setRegionError("");
+    setDistrictError("");
+    setFormGeneralError("");
+    setPhoneError("");
+    setEmergencyPhoneError("");
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitPatient = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormGeneralError("");
     setRegionError("");
@@ -265,13 +330,11 @@ export const PatientsPage: React.FC = () => {
 
     let isValid = true;
 
-    // Validate Region selection
     if (regionInput.trim() && !formData.regionId) {
       setRegionError("Please select a valid region from the dropdown list.");
       isValid = false;
     }
 
-    // Validate District selection
     if (districtInput.trim() && !formData.districtId) {
       setDistrictError(
         "Please select a valid district from the dropdown list.",
@@ -279,7 +342,6 @@ export const PatientsPage: React.FC = () => {
       isValid = false;
     }
 
-    // Validate Phone Numbers
     const isPhoneValid = isValidPhoneNumber(formData.phone);
     const isEmergencyValid = isValidPhoneNumber(
       formData.emergencyContactPhone || "",
@@ -300,38 +362,31 @@ export const PatientsPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      await createPatientApi(formData);
-      setIsModalOpen(false);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        gender: "MALE",
-        dateOfBirth: "",
-        phone: "",
-        emergencyContactName: "",
-        emergencyContactPhone: "",
-        address: "",
-        regionId: "",
-        districtId: "",
-      });
-      setRegionInput("");
-      setDistrictInput("");
-      setSelectedRegion(null);
-      setSelectedDistrict(null);
-      setLocationError("");
-      setRegionError("");
-      setDistrictError("");
-      setFormGeneralError("");
-      setPhoneError("");
-      setEmergencyPhoneError("");
-      setHasSearched(false);
-      setSearchTerm("");
-      await refreshPatients();
+      if (editingPatientId) {
+        await updatePatientApi(editingPatientId, formData);
+        setIsModalOpen(false);
+        setEditingPatientId(null);
+        await refreshPatients();
+      } else {
+        const newPatient = await createPatientApi(formData);
+        setIsModalOpen(false);
+        await refreshPatients();
+
+        // Auto-open visit check-in for newly registered patient
+        setSelectedPatientForVisit(newPatient);
+      }
     } catch (err: unknown) {
-      console.error("Failed to register patient:", err);
-      // Capture precise backend error message if provided
-      const apiMessage =
-        "Failed to register patient. Please check required fields.";
+      console.error("Failed to save patient record:", err);
+      let apiMessage = "Failed to save record. Please verify input fields.";
+      if (err && typeof err === "object" && "response" in err) {
+        const response = (err as { response?: { data?: { message?: string } } })
+          .response;
+        if (response?.data?.message) {
+          apiMessage = response.data.message;
+        }
+      } else if (err instanceof Error) {
+        apiMessage = err.message;
+      }
       setFormGeneralError(apiMessage);
     } finally {
       setSubmitting(false);
@@ -340,7 +395,7 @@ export const PatientsPage: React.FC = () => {
 
   const handleGenderChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as CreatePatientDTO["gender"];
-    setFormData((prev) => ({ ...prev, gender: value }));
+    setFormData((prev: CreatePatientDTO) => ({ ...prev, gender: value }));
   };
 
   const displayedPatients = hasSearched
@@ -355,7 +410,6 @@ export const PatientsPage: React.FC = () => {
 
   return (
     <AppLayout pageTitle="Patient Registry & Admissions">
-      {/* Top Search Action Bar */}
       <form onSubmit={handleSearchSubmit} className="page-actions">
         <div style={{ display: "flex", gap: "8px", flex: 1 }}>
           <input
@@ -456,12 +510,27 @@ export const PatientsPage: React.FC = () => {
                     </td>
                     <td>{patient.phone || "—"}</td>
                     <td>
-                      <button
-                        className="btn-logout"
-                        style={{ fontSize: 12, padding: "4px 8px" }}
-                      >
-                        View Chart
-                      </button>
+                      <div style={{ display: "flex", gap: "6px" }}>
+                        <button
+                          className="btn-primary"
+                          style={{
+                            fontSize: 12,
+                            padding: "4px 8px",
+                            width: "auto",
+                          }}
+                          onClick={() => setSelectedPatientForVisit(patient)}
+                        >
+                          <Stethoscope size={13} style={{ marginRight: 4 }} />{" "}
+                          Open Visit
+                        </button>
+                        <button
+                          className="btn-logout"
+                          style={{ fontSize: 12, padding: "4px 8px" }}
+                          onClick={() => openEditModal(patient)}
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -471,12 +540,14 @@ export const PatientsPage: React.FC = () => {
         )}
       </div>
 
-      {/* Registration Modal */}
+      {/* Patient Registration / Edit Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-card">
             <div className="modal-header">
-              <h3 style={{ margin: 0 }}>Register Patient</h3>
+              <h3 style={{ margin: 0 }}>
+                {editingPatientId ? "Edit Patient Record" : "Register Patient"}
+              </h3>
               <button
                 type="button"
                 className="modal-close-btn"
@@ -485,7 +556,7 @@ export const PatientsPage: React.FC = () => {
                 ✕
               </button>
             </div>
-            <form onSubmit={handleCreatePatient} className="auth-form">
+            <form onSubmit={handleSubmitPatient} className="auth-form">
               {formGeneralError && (
                 <div
                   style={{
@@ -556,7 +627,6 @@ export const PatientsPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Region and District Autocomplete Search Fields */}
               <div className="form-grid">
                 <div className="form-group" style={{ position: "relative" }}>
                   <label className="form-label">Region</label>
@@ -755,11 +825,22 @@ export const PatientsPage: React.FC = () => {
               >
                 {submitting
                   ? "Saving Record..."
-                  : "Confirm Patient Registration"}
+                  : editingPatientId
+                    ? "Update Patient Record"
+                    : "Confirm Patient Registration"}
               </button>
             </form>
           </div>
         </div>
+      )}
+
+      {/* Render Visit Check-In Modal when a patient is selected */}
+      {selectedPatientForVisit && (
+        <PatientVisitModal
+          patient={selectedPatientForVisit}
+          isOpen={Boolean(selectedPatientForVisit)}
+          onClose={() => setSelectedPatientForVisit(null)}
+        />
       )}
     </AppLayout>
   );

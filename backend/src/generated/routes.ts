@@ -72,14 +72,14 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "visitId": {"dataType":"string","required":true},
-            "temperature": {"dataType":"double","required":true},
-            "systolicBP": {"dataType":"double","required":true},
-            "diastolicBP": {"dataType":"double","required":true},
-            "pulseRate": {"dataType":"double","required":true},
-            "respiratoryRate": {"dataType":"double","required":true},
-            "spo2": {"dataType":"double","required":true},
+            "temperature": {"dataType":"double"},
+            "systolicBP": {"dataType":"double"},
+            "diastolicBP": {"dataType":"double"},
+            "pulseRate": {"dataType":"double"},
+            "respiratoryRate": {"dataType":"double"},
+            "spo2": {"dataType":"double"},
             "weight": {"dataType":"double","required":true},
-            "height": {"dataType":"double","required":true},
+            "height": {"dataType":"double"},
             "priority": {"ref":"TriagePriority"},
             "notes": {"dataType":"string"},
         },
@@ -98,7 +98,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.VisitType": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["OPD"]},{"dataType":"enum","enums":["EMERGENCY"]},{"dataType":"enum","enums":["REFERRAL"]},{"dataType":"enum","enums":["FOLLOW_UP"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["OPD"]},{"dataType":"enum","enums":["EMERGENCY"]},{"dataType":"enum","enums":["REFERRAL"]},{"dataType":"enum","enums":["FOLLOW_UP"]},{"dataType":"enum","enums":["IPD"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VisitType": {
@@ -116,12 +116,31 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"_36_Enums.VisitPriority","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "VisitResponseDTO": {
+    "_36_Enums.VisitStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["NOT_STARTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitStatus": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.VisitStatus","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitDataPayload": {
         "dataType": "refObject",
         "properties": {
-            "success": {"dataType":"boolean","required":true},
-            "message": {"dataType":"string","required":true},
-            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"attending":{"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string"},"lastName":{"dataType":"string"},"firstName":{"dataType":"string"},"id":{"dataType":"string","required":true}}},"createdAt":{"dataType":"datetime","required":true},"priority":{"ref":"VisitPriority","required":true},"visitType":{"ref":"VisitType","required":true},"symptoms":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"icdCode":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"diagnosis":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"attendingId":{"dataType":"string","required":true},"patientId":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"required":true},
+            "id": {"dataType":"string","required":true},
+            "patientId": {"dataType":"string","required":true},
+            "attendingId": {"dataType":"string","required":true},
+            "facilityId": {"dataType":"string","required":true},
+            "visitType": {"ref":"VisitType","required":true},
+            "priority": {"ref":"VisitPriority","required":true},
+            "status": {"ref":"VisitStatus","required":true},
+            "symptoms": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "diagnosis": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "icdCode": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "createdAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"string"}]},
+            "updatedAt": {"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"string"}]},
         },
         "additionalProperties": false,
     },
@@ -129,6 +148,17 @@ const models: TsoaRoute.Models = {
     "Record_string.string-Array_": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"array","array":{"dataType":"string"}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitResponseDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "errors": {"ref":"Record_string.string-Array_"},
+            "data": {"ref":"VisitDataPayload"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ErrorResponseDTO": {
@@ -144,13 +174,15 @@ const models: TsoaRoute.Models = {
     "CreateVisitDTO": {
         "dataType": "refObject",
         "properties": {
-            "patientId": {"dataType":"string","required":true},
+            "facilityId": {"dataType":"string","required":true},
             "attendingId": {"dataType":"string","required":true},
+            "patientId": {"dataType":"string","required":true},
             "symptoms": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "diagnosis": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "icdCode": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "visitType": {"ref":"VisitType"},
             "priority": {"ref":"VisitPriority"},
+            "status": {"ref":"VisitStatus"},
         },
         "additionalProperties": false,
     },
@@ -162,6 +194,7 @@ const models: TsoaRoute.Models = {
             "icdCode": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "symptoms": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "priority": {"ref":"VisitPriority"},
+            "status": {"ref":"VisitStatus"},
             "attendingId": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -194,7 +227,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PrescriptionStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]},{"dataType":"enum","enums":["COMPLETED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreatePrescriptionItemDTO": {
@@ -337,6 +370,24 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"PaginatedResponse_PatientDTO_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdatePatientDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "firstName": {"dataType":"string","required":true},
+            "lastName": {"dataType":"string","required":true},
+            "middleName": {"dataType":"string"},
+            "gender": {"ref":"Gender","required":true},
+            "dateOfBirth": {"dataType":"string","required":true},
+            "phone": {"dataType":"string"},
+            "emergencyContactName": {"dataType":"string"},
+            "emergencyContactPhone": {"dataType":"string"},
+            "address": {"dataType":"string"},
+            "regionId": {"dataType":"string"},
+            "districtId": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateMedicalServiceInput": {
         "dataType": "refObject",
         "properties": {
@@ -424,7 +475,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.LabStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]},{"dataType":"enum","enums":["IN_PROGRESS"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["IN_PROGRESS"]},{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["ORDERED"]},{"dataType":"enum","enums":["SAMPLE_COLLECTED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "OrderLabServiceDTO": {
@@ -535,7 +586,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.ClaimStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING_PRE_AUTH"]},{"dataType":"enum","enums":["PRE_AUTHORIZED"]},{"dataType":"enum","enums":["SUBMITTED"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["PARTIALLY_APPROVED"]},{"dataType":"enum","enums":["REJECTED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["PENDING_PRE_AUTH"]},{"dataType":"enum","enums":["PRE_AUTHORIZED"]},{"dataType":"enum","enums":["SUBMITTED"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["PARTIALLY_APPROVED"]},{"dataType":"enum","enums":["REJECTED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateInsuranceClaimDTO": {
@@ -602,7 +653,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.InvoiceStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PAID"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "InvoiceStatus": {
@@ -649,7 +700,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PaymentStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_PAID"]},{"dataType":"enum","enums":["PAID"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PaymentStatus": {
@@ -987,10 +1038,11 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsVisitController_createVisit: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateVisitDTO"},
         };
         app.post('/api/v1/visits',
-            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(VisitController)),
             ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.createVisit)),
 
@@ -1022,7 +1074,7 @@ export function RegisterRoutes(app: Router) {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateVisitDTO"},
         };
         app.put('/api/v1/visits/:id',
-            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(VisitController)),
             ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.updateVisit)),
 
@@ -1053,7 +1105,7 @@ export function RegisterRoutes(app: Router) {
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
         };
         app.get('/api/v1/visits/:id',
-            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(VisitController)),
             ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.getVisitById)),
 
@@ -1081,10 +1133,11 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsVisitController_getVisitsByPatient: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 mrn: {"in":"path","name":"mrn","required":true,"dataType":"string"},
         };
         app.get('/api/v1/visits/patient/:mrn',
-            authenticateMiddleware([{"jwt":["NURSE","ADMIN"]}]),
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(VisitController)),
             ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.getVisitsByPatient)),
 
@@ -1100,6 +1153,37 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getVisitsByPatient',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsVisitController_completeVisit: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.put('/api/v1/visits/:id/complete',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VisitController)),
+            ...(fetchMiddlewares<RequestHandler>(VisitController.prototype.completeVisit)),
+
+            async function VisitController_completeVisit(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsVisitController_completeVisit, request, response });
+
+                const controller = new VisitController();
+
+              await templateService.apiHandler({
+                methodName: 'completeVisit',
                 controller,
                 response,
                 next,
@@ -1357,6 +1441,38 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getPatients',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPatientController_updatePatient: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdatePatientDTO"},
+        };
+        app.put('/api/v1/patients/:id',
+            authenticateMiddleware([{"jwt":["NURSE","ADMIN","DOCTOR"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PatientController)),
+            ...(fetchMiddlewares<RequestHandler>(PatientController.prototype.updatePatient)),
+
+            async function PatientController_updatePatient(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPatientController_updatePatient, request, response });
+
+                const controller = new PatientController();
+
+              await templateService.apiHandler({
+                methodName: 'updatePatient',
                 controller,
                 response,
                 next,

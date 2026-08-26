@@ -23,6 +23,8 @@ export interface VisitCreatedEventPayload {
     attendingId: string;
     priority: string;
     visitType: string;
+    facilityId: string;
+    status: string;
   };
 }
 
@@ -38,6 +40,8 @@ export interface VisitUpdatedEventPayload {
     diagnosis?: string | null;
     icdCode?: string | null;
     priority?: string;
+    facilityId?: string;
+    status?: string;
   };
 }
 

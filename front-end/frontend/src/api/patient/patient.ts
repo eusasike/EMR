@@ -76,3 +76,12 @@ export const searchPatientApi = async (
 
   return response.data.data || [];
 };
+
+//update patient
+export const updatePatientApi = async (
+  id: string,
+  data: CreatePatientDTO,
+): Promise<Patient> => {
+  const response = await api.put(`/patients/${id}`, data);
+  return response.data.data || response.data;
+};

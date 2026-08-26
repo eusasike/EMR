@@ -41,7 +41,8 @@ model Facility {
   id         String    @id @default(uuid())
   code       String    @unique
   name       String
-  isActive  Boolean  @default(true) @map("is_active") // 👈 Maps DB column to camelCase TS property  location   String?
+  isActive  Boolean  @default(true) @map("is_active") // 👈 Maps DB column to camelCase TS property 
+  location   String?
   regionId   String?   @map("region_id")
   districtId String?   @map("district_id")
   createdAt  DateTime  @default(now()) @map("created_at")
@@ -149,7 +150,8 @@ model PatientVisit {
   visitType      VisitType        @default(OPD) @map("visit_type")
   triagePriority TriagePriority?
   createdAt      DateTime         @default(now()) @map("created_at")
-
+  status      VisitStatus         @default(NOT_STARTED)
+  
   facility       Facility         @relation(fields: [facilityId], references: [id], onDelete: Cascade)
   attending      User             @relation(fields: [attendingId], references: [id])
   patient        Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
@@ -169,14 +171,14 @@ model PatientVisit {
 model VitalSigns {
   id              String         @id @default(uuid())
   visitId         String         @unique @map("visit_id")
-  temperature     Decimal        @db.Decimal(4, 1)
-  systolicBP      Int            @map("systolic_bp")
-  diastolicBP     Int            @map("diastolic_bp")
-  pulseRate       Int            @map("pulse_rate")
-  respiratoryRate Int            @map("respiratory_rate")
-  spo2            Int
+  temperature     Decimal?       @db.Decimal(4, 1)
+  systolicBP      Int?           @map("systolic_bp")
+  diastolicBP     Int?            @map("diastolic_bp")
+  pulseRate       Int?           @map("pulse_rate")
+  respiratoryRate Int?            @map("respiratory_rate")
+  spo2            Int?
   weight          Decimal        @db.Decimal(5, 2)
-  height          Decimal        @db.Decimal(5, 2)
+  height          Decimal?        @db.Decimal(5, 2)
   bmi             Decimal?       @db.Decimal(4, 1)
   priority        TriagePriority @default(GREEN)
   notes           String?
@@ -569,6 +571,7 @@ enum VisitType {
   EMERGENCY
   REFERRAL
   FOLLOW_UP
+  IPD
 }
 
 enum VisitPriority {
@@ -667,5 +670,12 @@ enum ChargeType {
 enum InvoiceStatus {
   PENDING
   PAID
+  CANCELLED
+}
+
+enum VisitStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
   CANCELLED
 }

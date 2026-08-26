@@ -63,6 +63,21 @@ export interface PatientQueryDTO {
   sortOrder?: "asc" | "desc";
 }
 
+//update
+export interface UpdatePatientDTO {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  gender: Gender;
+  dateOfBirth: string; // ISO 8601 String e.g. "1998-04-12"
+  phone?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  address?: string;
+  regionId?: string;
+  districtId?: string;
+}
+
 // Convenient TSOA Return Types
 export type PatientResponseDTO = ApiResponse<PatientDTO>;
 export type PaginatedPatientsResponseDTO = PaginatedResponse<PatientDTO>;
@@ -137,3 +152,53 @@ export const PatientQueryZodSchema = z.object({
   sortBy: z.enum(["createdAt", "lastName", "mrn"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
+
+//update patient zod
+// export const UpdatePatientZodSchema = z.object({
+//   firstName: z
+//     .string()
+//     .trim()
+//     .min(2, "First name must be at least 2 characters")
+//     .max(50, "First name cannot exceed 50 characters"),
+//   lastName: z
+//     .string()
+//     .trim()
+//     .min(2, "Last name must be at least 2 characters")
+//     .max(50, "Last name cannot exceed 50 characters"),
+//   middleName: z.string().trim().max(50).optional(),
+//   gender: z.nativeEnum(Gender, { message: "Invalid gender value" }),
+//   dateOfBirth: z
+//     .string()
+//     .refine((val) => !isNaN(Date.parse(val)), {
+//       message: "Invalid date format. Expected ISO date string",
+//     })
+//     .refine((val) => new Date(val) <= new Date(), {
+//       message: "Date of birth cannot be in the future",
+//     })
+//     .refine(
+//       (val) => {
+//         const ageInYears =
+//           (Date.now() - new Date(val).getTime()) /
+//           (1000 * 60 * 60 * 24 * 365.25);
+//         return ageInYears <= 125;
+//       },
+//       { message: "Date of birth exceeds maximum valid age (125 years)" },
+//     ),
+//   phone: z
+//     .string()
+//     .trim()
+//     .regex(
+//       phoneRegex,
+//       "Invalid phone number format (use E.164 standard, e.g., +255700000000)",
+//     )
+//     .optional(),
+//   emergencyContactName: z.string().trim().max(100).optional(),
+//   emergencyContactPhone: z
+//     .string()
+//     .trim()
+//     .regex(phoneRegex, "Invalid emergency contact phone number format")
+//     .optional(),
+//   address: z.string().trim().max(100).optional(),
+//   regionId: z.string().uuid("Invalid Region ID").optional(),
+//   districtId: z.string().uuid("Invalid District ID").optional(),
+// });

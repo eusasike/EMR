@@ -1,3 +1,4 @@
+import { VisitStatus } from "@prisma/client";
 import { getRabbitChannel } from "../../config/rabbitmq";
 import {
   EXCHANGES,
@@ -8,6 +9,7 @@ import {
 export const QUEUES = {
   TRIAGE_ROUTING: "q.visit.triage_routing",
   BILLING_INITIATION: "q.visit.billing_initiation",
+  BILLING_FINALIZATION: "q.visit.billing_finalization",
   VISIT_AUDIT_LOGS: "q.visit.audit_logs",
   DEAD_LETTER_QUEUE: "q.emr.dead_letters",
 } as const;
@@ -54,7 +56,15 @@ export const initializeVisitWorkers = async (): Promise<void> => {
     "visit.created",
   );
 
-  // 5. Queue C: Audit Logging Worker (Listens for all visit events: visit.*)
+  // 5. Queue C: Billing Finalization Worker (Listens for updated visit events)
+  await channel.assertQueue(QUEUES.BILLING_FINALIZATION, queueOptions);
+  await channel.bindQueue(
+    QUEUES.BILLING_FINALIZATION,
+    EXCHANGES.VISIT_EVENTS,
+    "visit.updated",
+  );
+
+  // 6. Queue D: Audit Logging Worker (Listens for all visit events: visit.*)
   await channel.assertQueue(QUEUES.VISIT_AUDIT_LOGS, queueOptions);
   await channel.bindQueue(
     QUEUES.VISIT_AUDIT_LOGS,
@@ -65,7 +75,7 @@ export const initializeVisitWorkers = async (): Promise<void> => {
   // Set Fair Dispatch (1 message per worker at a time)
   await channel.prefetch(1);
 
-  // Start Worker 1: Triage Router
+  // Worker 1: Triage Router
   console.log(`🎧 [Worker] Listening on queue: "${QUEUES.TRIAGE_ROUTING}"`);
   channel.consume(
     QUEUES.TRIAGE_ROUTING,
@@ -77,7 +87,7 @@ export const initializeVisitWorkers = async (): Promise<void> => {
           msg.content.toString(),
         );
         console.log(
-          `🏥 [Triage Worker] Routing Visit ID ${payload.data.visitId} (Priority: ${payload.data.priority}) to Nursing Desk...`,
+          `🏥 [Triage Worker] Routing Visit ID ${payload.data.visitId} [Status: ${payload.data.status}, Priority: ${payload.data.priority}] to Nursing Desk...`,
         );
 
         // Place business logic here (e.g., notify nursing desk websocket or create triage queue record)
@@ -94,7 +104,7 @@ export const initializeVisitWorkers = async (): Promise<void> => {
     { noAck: false },
   );
 
-  // Start Worker 2: Billing Initiator
+  // Worker 2: Billing Initiator
   console.log(`🎧 [Worker] Listening on queue: "${QUEUES.BILLING_INITIATION}"`);
   channel.consume(
     QUEUES.BILLING_INITIATION,
@@ -106,7 +116,7 @@ export const initializeVisitWorkers = async (): Promise<void> => {
           msg.content.toString(),
         );
         console.log(
-          `💳 [Billing Worker] Creating draft consultation charge for Visit ID: ${payload.data.visitId}`,
+          `💳 [Billing Worker] Creating draft consultation charge for Visit ID: ${payload.data.visitId} [Status: ${payload.data.status}]`,
         );
 
         // Place business logic here (e.g., generate pending invoice or check insurance balance)
@@ -123,7 +133,49 @@ export const initializeVisitWorkers = async (): Promise<void> => {
     { noAck: false },
   );
 
-  // Start Worker 3: Visit Audit Logger
+  // Worker 3: Billing Finalizer (Handles COMPLETED & CANCELLED status updates)
+  console.log(
+    `🎧 [Worker] Listening on queue: "${QUEUES.BILLING_FINALIZATION}"`,
+  );
+  channel.consume(
+    QUEUES.BILLING_FINALIZATION,
+    async (msg) => {
+      if (!msg) return;
+
+      try {
+        const payload: VisitUpdatedEventPayload = JSON.parse(
+          msg.content.toString(),
+        );
+
+        if (payload.data.status === VisitStatus.COMPLETED) {
+          console.log(
+            `🏁 [Billing Worker] Finalizing billing & closing invoices for COMPLETED Visit ID: ${payload.data.visitId}`,
+          );
+          // Place business logic for visit completion (e.g., finalize invoice, release lock)
+        } else if (payload.data.status === VisitStatus.CANCELLED) {
+          console.log(
+            `🚫 [Billing Worker] Voiding pending charges for CANCELLED Visit ID: ${payload.data.visitId}`,
+          );
+          // Place business logic for cancellation (e.g., void invoice items)
+        } else {
+          console.log(
+            `ℹ️ [Billing Worker] Ignored update for Visit ID: ${payload.data.visitId} with status: ${payload.data.status}`,
+          );
+        }
+
+        channel.ack(msg);
+      } catch (error: any) {
+        console.error(
+          `❌ [Billing Finalizer Worker] Failed. Moving to DLQ:`,
+          error.message,
+        );
+        channel.nack(msg, false, false);
+      }
+    },
+    { noAck: false },
+  );
+
+  // Worker 4: Visit Audit Logger
   console.log(`🎧 [Worker] Listening on queue: "${QUEUES.VISIT_AUDIT_LOGS}"`);
   channel.consume(
     QUEUES.VISIT_AUDIT_LOGS,
@@ -135,7 +187,7 @@ export const initializeVisitWorkers = async (): Promise<void> => {
           JSON.parse(msg.content.toString());
 
         console.log(
-          `📜 [Visit Audit Worker] Recorded event "${payload.eventType}" for Visit ID: ${payload.data.visitId}`,
+          `📜 [Visit Audit Worker] Recorded event "${payload.eventType}" for Visit ID: ${payload.data.visitId} [Status: ${payload.data.status}]`,
         );
 
         channel.ack(msg);

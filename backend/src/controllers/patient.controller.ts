@@ -10,6 +10,8 @@ import {
   Response,
   Security,
   Request,
+  Put,
+  Path,
 } from "tsoa";
 import { Request as ExpressRequest } from "express";
 import {
@@ -19,6 +21,7 @@ import {
   RegisterPatientZodSchema,
   PatientQueryZodSchema,
   PatientListResponse,
+  UpdatePatientDTO,
 } from "../models/patient/patient.model";
 import { PatientService } from "../service/patient/patient.service";
 import { JwtPayload } from "../middlewares/authenticate";
@@ -172,5 +175,41 @@ export class PatientController extends Controller {
 
     this.setStatus(200);
     return result;
+  }
+  //update patient
+  @Put(":id")
+  @SuccessResponse("200", "Patient Updated Successfully")
+  @Response("400", "Bad Request / Validation Error")
+  @Response("401", "Unauthorized")
+  @Response("500", "Internal Server Error")
+  public async updatePatient(
+    @Path() id: string,
+    @Body() requestBody: UpdatePatientDTO,
+  ): Promise<PatientResponseDTO> {
+    // Runtime validation
+    const validationResult = RegisterPatientZodSchema.safeParse(requestBody);
+    if (!validationResult.success) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: `Validation failed: ${validationResult.error.issues
+          .map((err) => `${err.path.join(".")}: ${err.message}`)
+          .join("; ")}`,
+        data: null as any,
+      };
+    }
+
+    // 3. Delegate execution with facility scope
+    const patient = await this.patientService.updatePatient(
+      id,
+      validationResult.data,
+    );
+
+    this.setStatus(200);
+    return {
+      success: true,
+      message: "Patient updated successfully",
+      data: patient,
+    };
   }
 }

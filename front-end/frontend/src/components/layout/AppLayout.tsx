@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   UserPlus,
+  Activity,
 } from "lucide-react";
 import "../../style/dashboard.css";
 
@@ -56,6 +57,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       to: "/dashboard",
       label: "Dashboard",
       icon: <LayoutDashboard size={18} />,
+    },
+    {
+      to: "/vital-signs",
+      label: "Vital Signs",
+      icon: <Activity size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "REGISTRATION_CLERK"],
     },
     {
       to: "/user-register",

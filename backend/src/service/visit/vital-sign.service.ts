@@ -1,4 +1,9 @@
-import { VitalSigns, TriagePriority, Prisma } from "@prisma/client";
+import {
+  VitalSigns,
+  TriagePriority,
+  Prisma,
+  VisitStatus,
+} from "@prisma/client";
 import { prisma } from "../../config/database";
 import { redisClient } from "../../config/redis";
 import {
@@ -11,7 +16,11 @@ import {
   UpdateVitalSignsInput,
   VitalSignsQueryInput,
 } from "../../models/visit/vital-sign.model";
-import { NotFoundError, ConflictError } from "../../util/custom-error";
+import {
+  NotFoundError,
+  ConflictError,
+  BadRequestError,
+} from "../../util/custom-error";
 
 const VITAL_SIGNS_CACHE_TTL = 3600; // 1 hour TTL
 
@@ -19,7 +28,7 @@ export class VitalSignsService {
   /**
    * Calculates Body Mass Index (BMI)
    */
-  private calculateBMI(weightKg: number, heightCm: number): number {
+  private calculateBMI(weightKg: number, heightCm?: number): number {
     if (!heightCm || heightCm <= 0) return 0;
     const heightMeters = heightCm / 100;
     return Math.round((weightKg / (heightMeters * heightMeters)) * 10) / 10;
@@ -47,17 +56,17 @@ export class VitalSignsService {
   }
 
   /**
-   * Records vital signs, updates visit priority, publishes events, and manages Redis cache
+   * Records vital signs, verifies active visit status, updates visit priority, publishes events, and manages Redis cache
    */
   async create(
     recordedById: string,
     input: CreateVitalSignsInput,
   ): Promise<VitalSigns> {
-    // 1. Parallel verification for active visit and duplicate vitals
+    // 1. Parallel verification for active visit, visit status, and duplicate vitals
     const [visit, existingVitals] = await Promise.all([
       prisma.patientVisit.findUnique({
         where: { id: input.visitId },
-        select: { id: true, patientId: true },
+        select: { id: true, patientId: true, status: true },
       }),
       prisma.vitalSigns.findUnique({
         where: { visitId: input.visitId },
@@ -67,6 +76,14 @@ export class VitalSignsService {
     if (!visit) {
       throw new NotFoundError(`PATIENT_VISIT_NOT_FOUND: ${input.visitId}`);
     }
+
+    // STRICT CHECK: Ensure vital signs can only be recorded if the patient visit is IN_PROGRESS
+    if (visit.status !== VisitStatus.IN_PROGRESS) {
+      throw new BadRequestError(
+        `CANNOT_RECORD_VITALS: Visit is not active (Current status: ${visit.status}). Vital signs can only be recorded for visits with status IN_PROGRESS.`,
+      );
+    }
+
     if (existingVitals) {
       throw new ConflictError(`VITAL_SIGNS_ALREADY_EXISTS: ${input.visitId}`);
     }
@@ -79,14 +96,20 @@ export class VitalSignsService {
       const createdVitals = await tx.vitalSigns.create({
         data: {
           visitId: input.visitId,
-          temperature: new Prisma.Decimal(input.temperature),
+          temperature:
+            input.temperature !== undefined
+              ? new Prisma.Decimal(input.temperature)
+              : undefined,
           systolicBP: input.systolicBP,
           diastolicBP: input.diastolicBP,
           pulseRate: input.pulseRate,
           respiratoryRate: input.respiratoryRate,
           spo2: input.spo2,
           weight: new Prisma.Decimal(input.weight),
-          height: new Prisma.Decimal(input.height),
+          height:
+            input.height !== undefined
+              ? new Prisma.Decimal(input.height)
+              : undefined,
           bmi: new Prisma.Decimal(computedBmi),
           priority: assignedPriority,
           notes: input.notes,
@@ -110,13 +133,12 @@ export class VitalSignsService {
       patientId: visit.patientId,
       recordedById,
       priority: assignedPriority,
-      spo2: input.spo2,
-      systolicBP: input.systolicBP,
-      diastolicBP: input.diastolicBP,
-      pulseRate: input.pulseRate,
+      spo2: input.spo2 ?? 0, // Fallback or ensure it matches the expected type
+      systolicBP: input.systolicBP ?? 0,
+      diastolicBP: input.diastolicBP ?? 0,
+      pulseRate: input.pulseRate ?? 0,
       timestamp: vitals.createdAt.toISOString(),
     };
-
     await Promise.all([
       publishVitalSignsRecordedEvent(eventPayload),
       publishRealtimeAlertEvent(eventPayload),
@@ -181,11 +203,17 @@ export class VitalSignsService {
   async update(id: string, input: UpdateVitalSignsInput): Promise<VitalSigns> {
     const currentVitals = await prisma.vitalSigns.findUnique({
       where: { id },
-      include: { visit: { select: { patientId: true } } },
+      include: { visit: { select: { patientId: true, status: true } } },
     });
 
     if (!currentVitals) {
       throw new NotFoundError(`VITAL_SIGNS_RECORD_NOT_FOUND: ${id}`);
+    }
+
+    if (currentVitals.visit.status !== VisitStatus.IN_PROGRESS) {
+      throw new BadRequestError(
+        `CANNOT_UPDATE_VITALS: Associated visit is no longer active (Status: ${currentVitals.visit.status}).`,
+      );
     }
 
     const weight = input.weight ?? Number(currentVitals.weight);
@@ -193,30 +221,45 @@ export class VitalSignsService {
     const computedBmi = this.calculateBMI(weight, height);
 
     const mergedInput = {
-      systolicBP: input.systolicBP ?? currentVitals.systolicBP,
-      pulseRate: input.pulseRate ?? currentVitals.pulseRate,
-      spo2: input.spo2 ?? currentVitals.spo2,
+      systolicBP:
+        input.systolicBP ??
+        (currentVitals.systolicBP
+          ? Number(currentVitals.systolicBP)
+          : undefined),
+      pulseRate:
+        input.pulseRate ??
+        (currentVitals.pulseRate ? Number(currentVitals.pulseRate) : undefined),
+      spo2:
+        input.spo2 ??
+        (currentVitals.spo2 ? Number(currentVitals.spo2) : undefined),
       priority: input.priority,
     };
-
     const newPriority = this.evaluateTriagePriority(mergedInput);
 
     const updatedVitals = await prisma.$transaction(async (tx) => {
       const vitals = await tx.vitalSigns.update({
         where: { id },
         data: {
-          ...(input.temperature && {
+          ...(input.temperature !== undefined && {
             temperature: new Prisma.Decimal(input.temperature),
           }),
-          ...(input.systolicBP && { systolicBP: input.systolicBP }),
-          ...(input.diastolicBP && { diastolicBP: input.diastolicBP }),
-          ...(input.pulseRate && { pulseRate: input.pulseRate }),
-          ...(input.respiratoryRate && {
+          ...(input.systolicBP !== undefined && {
+            systolicBP: input.systolicBP,
+          }),
+          ...(input.diastolicBP !== undefined && {
+            diastolicBP: input.diastolicBP,
+          }),
+          ...(input.pulseRate !== undefined && { pulseRate: input.pulseRate }),
+          ...(input.respiratoryRate !== undefined && {
             respiratoryRate: input.respiratoryRate,
           }),
-          ...(input.spo2 && { spo2: input.spo2 }),
-          ...(input.weight && { weight: new Prisma.Decimal(input.weight) }),
-          ...(input.height && { height: new Prisma.Decimal(input.height) }),
+          ...(input.spo2 !== undefined && { spo2: input.spo2 }),
+          ...(input.weight !== undefined && {
+            weight: new Prisma.Decimal(input.weight),
+          }),
+          ...(input.height !== undefined && {
+            height: new Prisma.Decimal(input.height),
+          }),
           bmi: new Prisma.Decimal(computedBmi),
           priority: newPriority,
           ...(input.notes !== undefined && { notes: input.notes }),
@@ -283,7 +326,14 @@ export class VitalSignsService {
         take: limit,
         orderBy: { createdAt: "desc" },
         include: {
-          visit: { select: { id: true, patientId: true, createdAt: true } },
+          visit: {
+            select: {
+              id: true,
+              patientId: true,
+              status: true,
+              createdAt: true,
+            },
+          },
           recordedBy: {
             select: { id: true, firstName: true, lastName: true, role: true },
           },

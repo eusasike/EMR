@@ -4,14 +4,14 @@ import { TriagePriority } from "@prisma/client";
 // 1. Pure TypeScript Interfaces for TSOA & OpenAPI generation
 export interface CreateVitalSignsInput {
   visitId: string;
-  temperature: number;
-  systolicBP: number;
-  diastolicBP: number;
-  pulseRate: number;
-  respiratoryRate: number;
-  spo2: number;
+  temperature?: number;
+  systolicBP?: number;
+  diastolicBP?: number;
+  pulseRate?: number;
+  respiratoryRate?: number;
+  spo2?: number;
   weight: number;
-  height: number;
+  height?: number;
   priority?: TriagePriority;
   notes?: string;
 }
@@ -36,30 +36,40 @@ export const createVitalSignsSchema = z.object({
   temperature: z
     .number()
     .min(30.0)
-    .max(45.0, "Temperature out of valid range (°C)"),
+    .max(45.0, "Temperature out of valid range (°C)")
+    .optional(),
   systolicBP: z
     .number()
     .int()
     .min(40)
-    .max(300, "Systolic BP out of valid range (mmHg)"),
+    .max(300, "Systolic BP out of valid range (mmHg)")
+    .optional(),
   diastolicBP: z
     .number()
     .int()
     .min(20)
-    .max(200, "Diastolic BP out of valid range (mmHg)"),
+    .max(200, "Diastolic BP out of valid range (mmHg)")
+    .optional(),
   pulseRate: z
     .number()
     .int()
     .min(20)
-    .max(250, "Pulse rate out of valid range (bpm)"),
+    .max(250, "Pulse rate out of valid range (bpm)")
+    .optional(),
   respiratoryRate: z
     .number()
     .int()
     .min(4)
-    .max(80, "Respiratory rate out of valid range (bpm)"),
-  spo2: z.number().int().min(0).max(100, "SpO2 must be between 0 and 100%"),
+    .max(80, "Respiratory rate out of valid range (bpm)")
+    .optional(),
+  spo2: z
+    .number()
+    .int()
+    .min(0)
+    .max(100, "SpO2 must be between 0 and 100%")
+    .optional(),
   weight: z.number().positive().max(500, "Weight must be in kg"),
-  height: z.number().positive().max(300, "Height must be in cm"),
+  height: z.number().positive().max(300, "Height must be in cm").optional(),
   priority: z.nativeEnum(TriagePriority).optional(),
   notes: z.string().max(1000).optional(),
 });
