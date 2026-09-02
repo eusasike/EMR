@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Role } from "@prisma/client";
+import { is } from "zod/locales";
 
 const phoneRegex = /^\+?[1-9]\d{8,14}$/;
 
@@ -12,7 +13,8 @@ export interface RegisterUserDTO {
   phone?: string;
   password: string;
   role: Role;
-  facilityId?: string; // Optional facility ID to create the initial FacilityUser relation
+  facilityId?: string;
+  isActive?: boolean;
 }
 
 // Zod Schema used inside the controller for runtime validation

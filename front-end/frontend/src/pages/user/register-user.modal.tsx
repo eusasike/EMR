@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   type RegisterUserPayload,
   type UserRole,
+  type UserItem,
   registerStaffUserApi,
+  updateUserApi,
 } from "../../api/user/user";
 import { api } from "../../api/axiosClient";
 import axios from "axios";
@@ -13,6 +15,7 @@ interface RegisterStaffModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  userToEdit?: UserItem | null;
 }
 
 interface FacilityOption {
@@ -35,26 +38,62 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  userToEdit,
 }) => {
-  const [formData, setFormData] = useState<RegisterUserPayload>({
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    email: "",
-    phone: "",
+  const isEditing = Boolean(userToEdit);
+
+  // 1. Track previous prop to detect changes during render
+  const [prevUserToEdit, setPrevUserToEdit] = useState<
+    UserItem | null | undefined
+  >(userToEdit);
+
+  // 2. Initialize state lazily
+  const [formData, setFormData] = useState<
+    RegisterUserPayload & { isActive: boolean }
+  >(() => ({
+    firstName: userToEdit?.firstName || "",
+    lastName: userToEdit?.lastName || "",
+    middleName: userToEdit?.middleName || "",
+    email: userToEdit?.email || "",
+    phone: userToEdit?.phone || "",
     password: "",
-    role: "NURSE",
-    facilityId: "",
-  });
+    role: (userToEdit?.role || "NURSE") as UserRole,
+    isActive: userToEdit?.isActive ?? true,
+  }));
 
   const [facilities, setFacilities] = useState<FacilityOption[]>([]);
-  const [facilitySearch, setFacilitySearch] = useState("");
+  const [facilitySearch, setFacilitySearch] = useState<string>(() =>
+    userToEdit?.facility
+      ? `${userToEdit.facility.name} (${userToEdit.facility.code})`
+      : "",
+  );
   const [searchingFacility, setSearchingFacility] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Facility autocomplete search effect (purely async)
-  useEffect(() => {
+  if (userToEdit !== prevUserToEdit) {
+    setPrevUserToEdit(userToEdit);
+    setFormData({
+      firstName: userToEdit?.firstName || "",
+      lastName: userToEdit?.lastName || "",
+      middleName: userToEdit?.middleName || "",
+      email: userToEdit?.email || "",
+      phone: userToEdit?.phone || "",
+      password: "",
+      role: (userToEdit?.role || "NURSE") as UserRole,
+      facilityId: userToEdit?.facility?.code || "",
+      isActive: userToEdit?.isActive ?? true,
+    });
+    setFacilitySearch(
+      userToEdit?.facility
+        ? `${userToEdit.facility.name} (${userToEdit.facility.code})`
+        : "",
+    );
+    setError(null);
+  }
+
+  // Facility autocomplete search effect (valid async API effect)
+  React.useEffect(() => {
     if (!facilitySearch.trim()) return;
 
     const timer = setTimeout(async () => {
@@ -81,6 +120,11 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: checked }));
   };
 
   const handleFacilitySearchChange = (
@@ -112,15 +156,25 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
         facilityId: formData.facilityId || undefined,
         phone: formData.phone || undefined,
         middleName: formData.middleName || undefined,
+        password: formData.password,
+        isActive: formData.isActive,
       };
 
-      await registerStaffUserApi(payload);
+      if (isEditing && userToEdit) {
+        await updateUserApi(userToEdit.id, payload);
+      } else {
+        await registerStaffUserApi(payload);
+      }
+
       onSuccess();
       onClose();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(
-          err.response?.data?.message || "Failed to register staff member.",
+          err.response?.data?.message ||
+            (isEditing
+              ? "Failed to update staff member."
+              : "Failed to register staff member."),
         );
       } else if (err instanceof Error) {
         setError(err.message);
@@ -138,9 +192,13 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
         <div className="modal-header">
           <div className="flex-items-center gap-2">
             <UserPlus size={20} />
-            <h2>Register Staff Member</h2>
+            <h2>
+              {isEditing
+                ? "Manage / Update Staff Member"
+                : "Register Staff Member"}
+            </h2>
           </div>
-          <button onClick={onClose} className="btn-icon">
+          <button onClick={onClose} className="btn-icon" type="button">
             <X size={18} />
           </button>
         </div>
@@ -148,6 +206,69 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
         {error && <div className="alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit} className="modal-form">
+          {/* Account Status Toggle (Shown when editing) */}
+          {isEditing && (
+            <div
+              style={{
+                backgroundColor: "#f8fafc",
+                border: "1px solid var(--emr-border)",
+                padding: "12px 16px",
+                borderRadius: "var(--emr-radius-sm)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <div>
+                <label
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    display: "block",
+                    color: "var(--emr-text-main)",
+                  }}
+                >
+                  Account Status
+                </label>
+                <small className="text-muted">
+                  {formData.isActive
+                    ? "User can log in and access system."
+                    : "User account is disabled."}
+                </small>
+              </div>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontWeight: 500,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  name="isActive"
+                  checked={formData.isActive}
+                  onChange={handleCheckboxChange}
+                  style={{
+                    width: "18px",
+                    height: "18px",
+                    accentColor: "var(--emr-primary)",
+                    cursor: "pointer",
+                  }}
+                />
+                <span
+                  style={{ color: formData.isActive ? "#047857" : "#dc2626" }}
+                >
+                  {formData.isActive
+                    ? "Active (Enabled)"
+                    : "Inactive (Disabled)"}
+                </span>
+              </label>
+            </div>
+          )}
+
           <div className="form-grid-2">
             <div className="form-group">
               <label className="form-label">First Name *</label>
@@ -231,14 +352,20 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">Temporary Password *</label>
+            <label className="form-label">
+              {isEditing
+                ? "New Password (leave blank to keep current)"
+                : "Temporary Password *"}
+            </label>
             <input
               type="password"
               name="password"
-              required
+              required={!isEditing}
               minLength={8}
               className="form-input"
-              placeholder="At least 8 characters"
+              placeholder={
+                isEditing ? "Optional new password" : "At least 8 characters"
+              }
               value={formData.password}
               onChange={handleChange}
             />
@@ -283,7 +410,13 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
               Cancel
             </button>
             <button type="submit" disabled={loading} className="btn-primary">
-              {loading ? "Registering..." : "Register Staff"}
+              {loading
+                ? isEditing
+                  ? "Saving Changes..."
+                  : "Registering..."
+                : isEditing
+                  ? "Save Changes"
+                  : "Register Staff"}
             </button>
           </div>
         </form>

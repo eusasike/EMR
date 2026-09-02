@@ -8,6 +8,8 @@ import {
   Security,
   Tags,
   Get,
+  Put,
+  Path,
 } from "tsoa";
 import { UserService } from "../service/user/register.service";
 import {
@@ -86,5 +88,15 @@ export class UserController extends Controller {
       message: "Users fetched successfully.",
       data: users,
     };
+  }
+
+  //update user
+  @Security("jwt", ["ADMIN"])
+  @SuccessResponse("200", "Users fetched successfully")
+  @Response("400", "Validation failed")
+  @Response("409", "Email already exists")
+  @Put("update/:id")
+  public async update(@Path() id: string, @Body() input: RegisterUserDTO) {
+    return this.userService.updateUser(id, input);
   }
 }

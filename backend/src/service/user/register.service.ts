@@ -59,4 +59,10 @@ export class UserService {
   async findByEmail(email: string) {
     return this.userRepository.findByEmail(email);
   }
+
+  //update user detail
+
+  async updateUser(id: string, input: RegisterUserDTO) {
+    return this.userRepository.updateUser(id, input);
+  }
 }

@@ -101,4 +101,15 @@ export class LabController extends Controller {
   public async getByVisit(@Path() visitId: string) {
     return await this.labService.getResultsByVisit(visitId);
   }
+  // 1. Add this endpoint to src/controllers/lab.controller.ts so lab personnel can search by MRN
+  /**
+   * Fetch lab orders and results for a patient using their MRN
+   */
+  @Get("patient/mrn/{mrn}")
+  @Security("jwt")
+  @SuccessResponse(200, "Lab results retrieved by MRN successfully")
+  public async getLabResultsByMrn(@Path() mrn: string, @Request() req: any) {
+    const facilityId = req.user?.facilityId;
+    return await this.labService.getLabResultsByMrn(mrn, facilityId);
+  }
 }

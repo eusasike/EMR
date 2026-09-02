@@ -467,6 +467,9 @@
 					},
 					"facilityId": {
 						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -922,10 +925,13 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateMedicalServiceInput": {
+			"Pick_CreateMedicalServiceInput.Exclude_keyofCreateMedicalServiceInput.facilityId__": {
 				"properties": {
 					"name": {
 						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
 					},
 					"category": {
 						"type": "string"
@@ -941,10 +947,17 @@
 					"price"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_CreateMedicalServiceInput.facilityId_": {
+				"$ref": "#/components/schemas/Pick_CreateMedicalServiceInput.Exclude_keyofCreateMedicalServiceInput.facilityId__",
+				"description": "Construct a type with the properties of T except for those in type K."
 			},
 			"Partial_CreateMedicalServiceInput_": {
 				"properties": {
+					"facilityId": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -954,6 +967,9 @@
 					"price": {
 						"type": "number",
 						"format": "double"
+					},
+					"isActive": {
+						"type": "boolean"
 					}
 				},
 				"type": "object",
@@ -984,6 +1000,81 @@
 			"Omit_ProvideServiceInput.providedById_": {
 				"$ref": "#/components/schemas/Pick_ProvideServiceInput.Exclude_keyofProvideServiceInput.providedById__",
 				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"Partial_ProvideServiceInput_": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"serviceId": {
+						"type": "string"
+					},
+					"providedById": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"_36_Enums.LabStatus": {
+				"type": "string",
+				"enum": [
+					"IN_PROGRESS",
+					"COMPLETED",
+					"CANCELLED",
+					"ORDERED",
+					"SAMPLE_COLLECTED",
+					"VERIFIED"
+				]
+			},
+			"CreatePrescriptionInput": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"items": {
+						"items": {
+							"properties": {
+								"duration": {
+									"type": "string"
+								},
+								"dosage": {
+									"type": "string"
+								},
+								"unitPrice": {
+									"type": "number",
+									"format": "double"
+								},
+								"quantity": {
+									"type": "number",
+									"format": "double"
+								},
+								"productId": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"unitPrice",
+								"quantity",
+								"productId"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"visitId",
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"DefaultSelection_Prisma._36_RegionPayload_": {
 				"properties": {
@@ -1107,16 +1198,6 @@
 				},
 				"type": "object",
 				"additionalProperties": false
-			},
-			"_36_Enums.LabStatus": {
-				"type": "string",
-				"enum": [
-					"IN_PROGRESS",
-					"COMPLETED",
-					"CANCELLED",
-					"ORDERED",
-					"SAMPLE_COLLECTED"
-				]
 			},
 			"OrderLabServiceDTO": {
 				"properties": {
@@ -1645,8 +1726,8 @@
 				"enum": [
 					"CANCELLED",
 					"PENDING",
-					"PARTIALLY_PAID",
-					"PAID"
+					"PAID",
+					"PARTIALLY_PAID"
 				]
 			},
 			"PaymentStatus": {
@@ -2975,6 +3056,200 @@
 				]
 			}
 		},
+		"/api/v1/users/update/{id}": {
+			"put": {
+				"operationId": "Update",
+				"responses": {
+					"200": {
+						"description": "Users fetched successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"properties": {
+												"facilities": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"facility": {
+																		"properties": {
+																			"districtId": {
+																				"type": "string"
+																			},
+																			"location": {
+																				"type": "string"
+																			},
+																			"isActive": {
+																				"type": "boolean"
+																			},
+																			"regionId": {
+																				"type": "string"
+																			},
+																			"code": {
+																				"type": "string"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"districtId",
+																			"location",
+																			"isActive",
+																			"regionId",
+																			"code",
+																			"updatedAt",
+																			"createdAt",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"facility"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"userId": {
+																		"type": "string"
+																	},
+																	"facilityId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"userId",
+																	"facilityId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"facilities"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"role": {
+													"$ref": "#/components/schemas/_36_Enums.Role"
+												},
+												"password": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"phone": {
+													"type": "string"
+												},
+												"middleName": {
+													"type": "string"
+												},
+												"lastName": {
+													"type": "string"
+												},
+												"firstName": {
+													"type": "string"
+												},
+												"isActive": {
+													"type": "boolean"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"role",
+												"password",
+												"email",
+												"phone",
+												"middleName",
+												"lastName",
+												"firstName",
+												"isActive",
+												"updatedAt",
+												"createdAt",
+												"id"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation failed"
+					},
+					"409": {
+						"description": "Email already exists"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterUserDTO"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/v1/prescriptions": {
 			"post": {
 				"operationId": "CreatePrescription",
@@ -3358,41 +3633,66 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"price": {
-											"$ref": "#/components/schemas/Decimal"
+									"anyOf": [
+										{
+											"properties": {
+												"price": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"category": {
+													"type": "string"
+												},
+												"facilityId": {
+													"type": "string"
+												},
+												"isActive": {
+													"type": "boolean"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"id": {
+													"type": "string"
+												},
+												"name": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"price",
+												"category",
+												"facilityId",
+												"isActive",
+												"updatedAt",
+												"createdAt",
+												"id",
+												"name"
+											],
+											"type": "object"
 										},
-										"category": {
-											"type": "string"
-										},
-										"facilityId": {
-											"type": "string"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"id": {
-											"type": "string"
-										},
-										"name": {
-											"type": "string"
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"price",
-										"category",
-										"facilityId",
-										"updatedAt",
-										"createdAt",
-										"id",
-										"name"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -3400,11 +3700,14 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"409": {
 						"description": "Service Already Exists"
 					}
 				},
-				"description": "Create a new medical service definition (Admin only)",
+				"description": "Create a new medical service definition (Admin only) - Automatically scoped to admin's facility",
 				"tags": [
 					"Medical Services"
 				],
@@ -3421,7 +3724,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateMedicalServiceInput"
+								"$ref": "#/components/schemas/Omit_CreateMedicalServiceInput.facilityId_"
 							}
 						}
 					}
@@ -3475,6 +3778,9 @@
 													"facilityId": {
 														"type": "string"
 													},
+													"isActive": {
+														"type": "boolean"
+													},
 													"updatedAt": {
 														"type": "string",
 														"format": "date-time"
@@ -3494,6 +3800,7 @@
 													"price",
 													"category",
 													"facilityId",
+													"isActive",
 													"updatedAt",
 													"createdAt",
 													"id",
@@ -3514,11 +3821,15 @@
 						}
 					}
 				},
-				"description": "Retrieve a paginated and searchable list of medical services",
+				"description": "Retrieve a paginated and searchable list of medical services for the user's facility",
 				"tags": [
 					"Medical Services"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -3576,6 +3887,9 @@
 										"facilityId": {
 											"type": "string"
 										},
+										"isActive": {
+											"type": "boolean"
+										},
 										"updatedAt": {
 											"type": "string",
 											"format": "date-time"
@@ -3595,6 +3909,7 @@
 										"price",
 										"category",
 										"facilityId",
+										"isActive",
 										"updatedAt",
 										"createdAt",
 										"id",
@@ -3613,7 +3928,11 @@
 				"tags": [
 					"Medical Services"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -3633,41 +3952,66 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"price": {
-											"$ref": "#/components/schemas/Decimal"
+									"anyOf": [
+										{
+											"properties": {
+												"price": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"category": {
+													"type": "string"
+												},
+												"facilityId": {
+													"type": "string"
+												},
+												"isActive": {
+													"type": "boolean"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"id": {
+													"type": "string"
+												},
+												"name": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"price",
+												"category",
+												"facilityId",
+												"isActive",
+												"updatedAt",
+												"createdAt",
+												"id",
+												"name"
+											],
+											"type": "object"
 										},
-										"category": {
-											"type": "string"
-										},
-										"facilityId": {
-											"type": "string"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"id": {
-											"type": "string"
-										},
-										"name": {
-											"type": "string"
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"price",
-										"category",
-										"facilityId",
-										"updatedAt",
-										"createdAt",
-										"id",
-										"name"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -3768,7 +4112,7 @@
 						"description": "Patient Visit or Medical Service Not Found"
 					}
 				},
-				"description": "Record a service provided to a patient visit",
+				"description": "Record a medical service provided to a patient visit",
 				"tags": [
 					"Medical Services"
 				],
@@ -3784,6 +4128,96 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/Omit_ProvideServiceInput.providedById_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/medical-services/provide/{id}": {
+			"put": {
+				"operationId": "UpdateProvidedService",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"providedById": {
+											"type": "string"
+										},
+										"serviceId": {
+											"type": "string"
+										},
+										"unitPrice": {
+											"$ref": "#/components/schemas/Decimal"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"notes": {
+											"type": "string"
+										},
+										"visitId": {
+											"type": "string"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"providedById",
+										"serviceId",
+										"unitPrice",
+										"updatedAt",
+										"createdAt",
+										"notes",
+										"visitId",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Provided Service Not Found"
+					}
+				},
+				"description": "Update an existing provided service item",
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_ProvideServiceInput_"
 							}
 						}
 					}
@@ -3924,7 +4358,7 @@
 				"operationId": "GetLatestVisitByMrn",
 				"responses": {
 					"200": {
-						"description": "Latest visit retrieved by MRN",
+						"description": "Latest active visit retrieved by MRN",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -3947,6 +4381,9 @@
 																			"facilityId": {
 																				"type": "string"
 																			},
+																			"isActive": {
+																				"type": "boolean"
+																			},
 																			"updatedAt": {
 																				"type": "string",
 																				"format": "date-time"
@@ -3966,16 +4403,79 @@
 																			"price",
 																			"category",
 																			"facilityId",
+																			"isActive",
 																			"updatedAt",
 																			"createdAt",
 																			"id",
 																			"name"
 																		],
 																		"type": "object"
+																	},
+																	"labResult": {
+																		"properties": {
+																			"verifiedById": {
+																				"type": "string"
+																			},
+																			"performedById": {
+																				"type": "string"
+																			},
+																			"findings": {
+																				"type": "string"
+																			},
+																			"referenceRange": {
+																				"type": "string"
+																			},
+																			"unit": {
+																				"type": "string"
+																			},
+																			"resultValue": {
+																				"type": "string"
+																			},
+																			"specimenType": {
+																				"type": "string"
+																			},
+																			"providedServiceId": {
+																				"type": "string"
+																			},
+																			"status": {
+																				"$ref": "#/components/schemas/_36_Enums.LabStatus"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"visitId": {
+																				"type": "string"
+																			},
+																			"id": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"verifiedById",
+																			"performedById",
+																			"findings",
+																			"referenceRange",
+																			"unit",
+																			"resultValue",
+																			"specimenType",
+																			"providedServiceId",
+																			"status",
+																			"updatedAt",
+																			"createdAt",
+																			"visitId",
+																			"id"
+																		],
+																		"type": "object"
 																	}
 																},
 																"required": [
-																	"service"
+																	"service",
+																	"labResult"
 																],
 																"type": "object"
 															},
@@ -4023,10 +4523,266 @@
 														]
 													},
 													"type": "array"
+												},
+												"prescriptions": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"items": {
+																		"items": {
+																			"allOf": [
+																				{
+																					"properties": {
+																						"product": {
+																							"properties": {
+																								"reorderLevel": {
+																									"type": "number",
+																									"format": "double"
+																								},
+																								"category": {
+																									"type": "string"
+																								},
+																								"unitPrice": {
+																									"$ref": "#/components/schemas/Decimal"
+																								},
+																								"description": {
+																									"type": "string"
+																								},
+																								"facilityId": {
+																									"type": "string"
+																								},
+																								"code": {
+																									"type": "string"
+																								},
+																								"updatedAt": {
+																									"type": "string",
+																									"format": "date-time"
+																								},
+																								"createdAt": {
+																									"type": "string",
+																									"format": "date-time"
+																								},
+																								"id": {
+																									"type": "string"
+																								},
+																								"name": {
+																									"type": "string"
+																								}
+																							},
+																							"required": [
+																								"reorderLevel",
+																								"category",
+																								"unitPrice",
+																								"description",
+																								"facilityId",
+																								"code",
+																								"updatedAt",
+																								"createdAt",
+																								"id",
+																								"name"
+																							],
+																							"type": "object"
+																						}
+																					},
+																					"required": [
+																						"product"
+																					],
+																					"type": "object"
+																				},
+																				{
+																					"properties": {
+																						"durationDays": {
+																							"type": "number",
+																							"format": "double"
+																						},
+																						"frequency": {
+																							"type": "string"
+																						},
+																						"dosage": {
+																							"type": "string"
+																						},
+																						"quantityOrdered": {
+																							"type": "number",
+																							"format": "double"
+																						},
+																						"productId": {
+																							"type": "string"
+																						},
+																						"prescriptionId": {
+																							"type": "string"
+																						},
+																						"unitPrice": {
+																							"$ref": "#/components/schemas/Decimal"
+																						},
+																						"updatedAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"createdAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"id": {
+																							"type": "string"
+																						}
+																					},
+																					"required": [
+																						"durationDays",
+																						"frequency",
+																						"dosage",
+																						"quantityOrdered",
+																						"productId",
+																						"prescriptionId",
+																						"unitPrice",
+																						"updatedAt",
+																						"createdAt",
+																						"id"
+																					],
+																					"type": "object"
+																				}
+																			]
+																		},
+																		"type": "array"
+																	}
+																},
+																"required": [
+																	"items"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"prescribedById": {
+																		"type": "string"
+																	},
+																	"prescriptionNumber": {
+																		"type": "string"
+																	},
+																	"status": {
+																		"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+																	},
+																	"facilityId": {
+																		"type": "string"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"notes": {
+																		"type": "string"
+																	},
+																	"visitId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"prescribedById",
+																	"prescriptionNumber",
+																	"status",
+																	"facilityId",
+																	"updatedAt",
+																	"createdAt",
+																	"notes",
+																	"visitId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												},
+												"vitalSigns": {
+													"properties": {
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"recordedById": {
+															"type": "string"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"priority": {
+															"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+														},
+														"bmi": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"height": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"weight": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"spo2": {
+															"type": "number",
+															"format": "double"
+														},
+														"respiratoryRate": {
+															"type": "number",
+															"format": "double"
+														},
+														"pulseRate": {
+															"type": "number",
+															"format": "double"
+														},
+														"diastolicBP": {
+															"type": "number",
+															"format": "double"
+														},
+														"systolicBP": {
+															"type": "number",
+															"format": "double"
+														},
+														"temperature": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"updatedAt",
+														"createdAt",
+														"recordedById",
+														"notes",
+														"priority",
+														"bmi",
+														"height",
+														"weight",
+														"spo2",
+														"respiratoryRate",
+														"pulseRate",
+														"diastolicBP",
+														"systolicBP",
+														"temperature",
+														"visitId",
+														"id"
+													],
+													"type": "object"
 												}
 											},
 											"required": [
-												"services"
+												"services",
+												"prescriptions",
+												"vitalSigns"
 											],
 											"type": "object"
 										},
@@ -4092,7 +4848,7 @@
 						}
 					}
 				},
-				"description": "Get the latest visit and its provided services by MRN",
+				"description": "Get the latest active visit and its provided services by MRN",
 				"tags": [
 					"Medical Services"
 				],
@@ -4111,6 +4867,233 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/v1/medical-services/prescriptions": {
+			"post": {
+				"operationId": "CreatePrescription",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"allOf": [
+												{
+													"properties": {
+														"items": {
+															"items": {
+																"allOf": [
+																	{
+																		"properties": {
+																			"product": {
+																				"properties": {
+																					"reorderLevel": {
+																						"type": "number",
+																						"format": "double"
+																					},
+																					"category": {
+																						"type": "string"
+																					},
+																					"unitPrice": {
+																						"$ref": "#/components/schemas/Decimal"
+																					},
+																					"description": {
+																						"type": "string"
+																					},
+																					"facilityId": {
+																						"type": "string"
+																					},
+																					"code": {
+																						"type": "string"
+																					},
+																					"updatedAt": {
+																						"type": "string",
+																						"format": "date-time"
+																					},
+																					"createdAt": {
+																						"type": "string",
+																						"format": "date-time"
+																					},
+																					"id": {
+																						"type": "string"
+																					},
+																					"name": {
+																						"type": "string"
+																					}
+																				},
+																				"required": [
+																					"reorderLevel",
+																					"category",
+																					"unitPrice",
+																					"description",
+																					"facilityId",
+																					"code",
+																					"updatedAt",
+																					"createdAt",
+																					"id",
+																					"name"
+																				],
+																				"type": "object"
+																			}
+																		},
+																		"required": [
+																			"product"
+																		],
+																		"type": "object"
+																	},
+																	{
+																		"properties": {
+																			"durationDays": {
+																				"type": "number",
+																				"format": "double"
+																			},
+																			"frequency": {
+																				"type": "string"
+																			},
+																			"dosage": {
+																				"type": "string"
+																			},
+																			"quantityOrdered": {
+																				"type": "number",
+																				"format": "double"
+																			},
+																			"productId": {
+																				"type": "string"
+																			},
+																			"prescriptionId": {
+																				"type": "string"
+																			},
+																			"unitPrice": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"durationDays",
+																			"frequency",
+																			"dosage",
+																			"quantityOrdered",
+																			"productId",
+																			"prescriptionId",
+																			"unitPrice",
+																			"updatedAt",
+																			"createdAt",
+																			"id"
+																		],
+																		"type": "object"
+																	}
+																]
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"items"
+													],
+													"type": "object"
+												},
+												{
+													"properties": {
+														"prescribedById": {
+															"type": "string"
+														},
+														"prescriptionNumber": {
+															"type": "string"
+														},
+														"status": {
+															"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+														},
+														"facilityId": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"prescribedById",
+														"prescriptionNumber",
+														"status",
+														"facilityId",
+														"updatedAt",
+														"createdAt",
+														"notes",
+														"visitId",
+														"id"
+													],
+													"type": "object"
+												}
+											]
+										},
+										{
+											"properties": {
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Medical Services"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePrescriptionInput"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/v1/admin/locations/regions": {
@@ -4622,65 +5605,100 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"verifiedById": {
-											"type": "string"
+									"allOf": [
+										{
+											"properties": {
+												"performedBy": {
+													"properties": {
+														"email": {
+															"type": "string"
+														},
+														"lastName": {
+															"type": "string"
+														},
+														"firstName": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"email",
+														"lastName",
+														"firstName",
+														"id"
+													],
+													"type": "object"
+												}
+											},
+											"required": [
+												"performedBy"
+											],
+											"type": "object"
 										},
-										"performedById": {
-											"type": "string"
-										},
-										"findings": {
-											"type": "string"
-										},
-										"referenceRange": {
-											"type": "string"
-										},
-										"unit": {
-											"type": "string"
-										},
-										"resultValue": {
-											"type": "string"
-										},
-										"specimenType": {
-											"type": "string"
-										},
-										"providedServiceId": {
-											"type": "string"
-										},
-										"status": {
-											"$ref": "#/components/schemas/_36_Enums.LabStatus"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"visitId": {
-											"type": "string"
-										},
-										"id": {
-											"type": "string"
+										{
+											"properties": {
+												"verifiedById": {
+													"type": "string"
+												},
+												"performedById": {
+													"type": "string"
+												},
+												"findings": {
+													"type": "string"
+												},
+												"referenceRange": {
+													"type": "string"
+												},
+												"unit": {
+													"type": "string"
+												},
+												"resultValue": {
+													"type": "string"
+												},
+												"specimenType": {
+													"type": "string"
+												},
+												"providedServiceId": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.LabStatus"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"verifiedById",
+												"performedById",
+												"findings",
+												"referenceRange",
+												"unit",
+												"resultValue",
+												"specimenType",
+												"providedServiceId",
+												"status",
+												"updatedAt",
+												"createdAt",
+												"visitId",
+												"id"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"verifiedById",
-										"performedById",
-										"findings",
-										"referenceRange",
-										"unit",
-										"resultValue",
-										"specimenType",
-										"providedServiceId",
-										"status",
-										"updatedAt",
-										"createdAt",
-										"visitId",
-										"id"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -4732,65 +5750,100 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"verifiedById": {
-											"type": "string"
+									"allOf": [
+										{
+											"properties": {
+												"verifiedBy": {
+													"properties": {
+														"email": {
+															"type": "string"
+														},
+														"lastName": {
+															"type": "string"
+														},
+														"firstName": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"email",
+														"lastName",
+														"firstName",
+														"id"
+													],
+													"type": "object"
+												}
+											},
+											"required": [
+												"verifiedBy"
+											],
+											"type": "object"
 										},
-										"performedById": {
-											"type": "string"
-										},
-										"findings": {
-											"type": "string"
-										},
-										"referenceRange": {
-											"type": "string"
-										},
-										"unit": {
-											"type": "string"
-										},
-										"resultValue": {
-											"type": "string"
-										},
-										"specimenType": {
-											"type": "string"
-										},
-										"providedServiceId": {
-											"type": "string"
-										},
-										"status": {
-											"$ref": "#/components/schemas/_36_Enums.LabStatus"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"visitId": {
-											"type": "string"
-										},
-										"id": {
-											"type": "string"
+										{
+											"properties": {
+												"verifiedById": {
+													"type": "string"
+												},
+												"performedById": {
+													"type": "string"
+												},
+												"findings": {
+													"type": "string"
+												},
+												"referenceRange": {
+													"type": "string"
+												},
+												"unit": {
+													"type": "string"
+												},
+												"resultValue": {
+													"type": "string"
+												},
+												"specimenType": {
+													"type": "string"
+												},
+												"providedServiceId": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.LabStatus"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"verifiedById",
+												"performedById",
+												"findings",
+												"referenceRange",
+												"unit",
+												"resultValue",
+												"specimenType",
+												"providedServiceId",
+												"status",
+												"updatedAt",
+												"createdAt",
+												"visitId",
+												"id"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"verifiedById",
-										"performedById",
-										"findings",
-										"referenceRange",
-										"unit",
-										"resultValue",
-										"specimenType",
-										"providedServiceId",
-										"status",
-										"updatedAt",
-										"createdAt",
-										"visitId",
-										"id"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -4869,6 +5922,260 @@
 				]
 			}
 		},
+		"/api/v1/labs/patient/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetLabResultsByMrn",
+				"responses": {
+					"200": {
+						"description": "Lab results retrieved by MRN successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"allOf": [
+											{
+												"properties": {
+													"verifiedBy": {
+														"properties": {
+															"email": {
+																"type": "string"
+															},
+															"lastName": {
+																"type": "string"
+															},
+															"firstName": {
+																"type": "string"
+															},
+															"id": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"email",
+															"lastName",
+															"firstName",
+															"id"
+														],
+														"type": "object"
+													},
+													"performedBy": {
+														"properties": {
+															"email": {
+																"type": "string"
+															},
+															"lastName": {
+																"type": "string"
+															},
+															"firstName": {
+																"type": "string"
+															},
+															"id": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"email",
+															"lastName",
+															"firstName",
+															"id"
+														],
+														"type": "object"
+													},
+													"visit": {
+														"properties": {
+															"status": {
+																"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+															},
+															"createdAt": {
+																"type": "string",
+																"format": "date-time"
+															},
+															"id": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"status",
+															"createdAt",
+															"id"
+														],
+														"type": "object"
+													},
+													"providedService": {
+														"allOf": [
+															{
+																"properties": {
+																	"service": {
+																		"properties": {
+																			"price": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"category": {
+																				"type": "string"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"price",
+																			"category",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"service"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"providedById": {
+																		"type": "string"
+																	},
+																	"serviceId": {
+																		"type": "string"
+																	},
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"notes": {
+																		"type": "string"
+																	},
+																	"visitId": {
+																		"type": "string"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"providedById",
+																	"serviceId",
+																	"unitPrice",
+																	"updatedAt",
+																	"createdAt",
+																	"notes",
+																	"visitId",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													}
+												},
+												"required": [
+													"verifiedBy",
+													"performedBy",
+													"visit",
+													"providedService"
+												],
+												"type": "object"
+											},
+											{
+												"properties": {
+													"verifiedById": {
+														"type": "string"
+													},
+													"performedById": {
+														"type": "string"
+													},
+													"findings": {
+														"type": "string"
+													},
+													"referenceRange": {
+														"type": "string"
+													},
+													"unit": {
+														"type": "string"
+													},
+													"resultValue": {
+														"type": "string"
+													},
+													"specimenType": {
+														"type": "string"
+													},
+													"providedServiceId": {
+														"type": "string"
+													},
+													"status": {
+														"$ref": "#/components/schemas/_36_Enums.LabStatus"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"createdAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"visitId": {
+														"type": "string"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"verifiedById",
+													"performedById",
+													"findings",
+													"referenceRange",
+													"unit",
+													"resultValue",
+													"specimenType",
+													"providedServiceId",
+													"status",
+													"updatedAt",
+													"createdAt",
+													"visitId",
+													"id"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Fetch lab orders and results for a patient using their MRN",
+				"tags": [
+					"Lab Results"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/v1/pharmacy/products": {
 			"post": {
 				"operationId": "CreateProduct",
@@ -4931,10 +6238,15 @@
 						}
 					},
 					"400": {
-						"description": "Bad Request - Validation Error"
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"409": {
+						"description": "Product Already Exists"
 					}
 				},
-				"description": "Create a new pharmacy product with a reorder level threshold.",
 				"tags": [
 					"Pharmacy"
 				],
@@ -4969,18 +6281,50 @@
 						}
 					}
 				},
-				"description": "Get all products along with their active batch inventory (Cached in Redis).",
 				"tags": [
 					"Pharmacy"
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "category",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/v1/pharmacy/products/{id}": {
@@ -4999,15 +6343,12 @@
 						"description": "Product Not Found"
 					}
 				},
-				"description": "Get a single product by ID (Cached in Redis).",
 				"tags": [
 					"Pharmacy"
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5029,54 +6370,73 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"reorderLevel": {
-											"type": "number",
-											"format": "double"
+									"anyOf": [
+										{
+											"properties": {
+												"reorderLevel": {
+													"type": "number",
+													"format": "double"
+												},
+												"category": {
+													"type": "string"
+												},
+												"unitPrice": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"description": {
+													"type": "string"
+												},
+												"facilityId": {
+													"type": "string"
+												},
+												"code": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"id": {
+													"type": "string"
+												},
+												"name": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"reorderLevel",
+												"category",
+												"unitPrice",
+												"description",
+												"facilityId",
+												"code",
+												"updatedAt",
+												"createdAt",
+												"id",
+												"name"
+											],
+											"type": "object"
 										},
-										"category": {
-											"type": "string"
-										},
-										"unitPrice": {
-											"$ref": "#/components/schemas/Decimal"
-										},
-										"description": {
-											"type": "string"
-										},
-										"facilityId": {
-											"type": "string"
-										},
-										"code": {
-											"type": "string"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"id": {
-											"type": "string"
-										},
-										"name": {
-											"type": "string"
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"reorderLevel",
-										"category",
-										"unitPrice",
-										"description",
-										"facilityId",
-										"code",
-										"updatedAt",
-										"createdAt",
-										"id",
-										"name"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -5088,15 +6448,12 @@
 						"description": "Product Not Found"
 					}
 				},
-				"description": "Update product details or adjust its reorder level.",
 				"tags": [
 					"Pharmacy"
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5130,52 +6487,71 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"costPrice": {
-											"$ref": "#/components/schemas/Decimal"
+									"anyOf": [
+										{
+											"properties": {
+												"costPrice": {
+													"$ref": "#/components/schemas/Decimal"
+												},
+												"initialQty": {
+													"type": "number",
+													"format": "double"
+												},
+												"batchNumber": {
+													"type": "string"
+												},
+												"quantity": {
+													"type": "number",
+													"format": "double"
+												},
+												"productId": {
+													"type": "string"
+												},
+												"expiryDate": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"costPrice",
+												"initialQty",
+												"batchNumber",
+												"quantity",
+												"productId",
+												"expiryDate",
+												"updatedAt",
+												"createdAt",
+												"id"
+											],
+											"type": "object"
 										},
-										"initialQty": {
-											"type": "number",
-											"format": "double"
-										},
-										"batchNumber": {
-											"type": "string"
-										},
-										"quantity": {
-											"type": "number",
-											"format": "double"
-										},
-										"productId": {
-											"type": "string"
-										},
-										"expiryDate": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"id": {
-											"type": "string"
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"costPrice",
-										"initialQty",
-										"batchNumber",
-										"quantity",
-										"productId",
-										"expiryDate",
-										"updatedAt",
-										"createdAt",
-										"id"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -5184,15 +6560,12 @@
 						"description": "Bad Request - Validation Error"
 					}
 				},
-				"description": "Add a new stock batch to a product and clear low-stock alert locks.",
 				"tags": [
 					"Pharmacy"
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [],
@@ -5220,17 +6593,21 @@
 									"anyOf": [
 										{
 											"properties": {
-												"prescriptionId": {
-													"type": "string"
-												},
 												"totalCost": {
 													"$ref": "#/components/schemas/Decimal"
 												},
 												"dispensedById": {
 													"type": "string"
 												},
+												"prescriptionId": {
+													"type": "string"
+												},
 												"facilityId": {
 													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
 												},
 												"createdAt": {
 													"type": "string",
@@ -5247,10 +6624,11 @@
 												}
 											},
 											"required": [
-												"prescriptionId",
 												"totalCost",
 												"dispensedById",
+												"prescriptionId",
 												"facilityId",
+												"updatedAt",
 												"createdAt",
 												"notes",
 												"visitId",
@@ -5284,7 +6662,6 @@
 						"description": "Bad Request - Insufficient Stock or Invalid Input"
 					}
 				},
-				"description": "Atomically dispense items, record transactions, emit RabbitMQ events,\nand evaluate reorder levels for low-stock notifications.",
 				"tags": [
 					"Pharmacy"
 				],
@@ -5304,6 +6681,842 @@
 						}
 					}
 				}
+			}
+		},
+		"/api/v1/pharmacy/dispense/prescriptions": {
+			"get": {
+				"operationId": "GetPendingPrescriptions",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"allOf": [
+											{
+												"properties": {
+													"items": {
+														"items": {
+															"allOf": [
+																{
+																	"properties": {
+																		"product": {
+																			"allOf": [
+																				{
+																					"properties": {
+																						"batches": {
+																							"items": {
+																								"properties": {
+																									"costPrice": {
+																										"$ref": "#/components/schemas/Decimal"
+																									},
+																									"initialQty": {
+																										"type": "number",
+																										"format": "double"
+																									},
+																									"batchNumber": {
+																										"type": "string"
+																									},
+																									"quantity": {
+																										"type": "number",
+																										"format": "double"
+																									},
+																									"productId": {
+																										"type": "string"
+																									},
+																									"expiryDate": {
+																										"type": "string",
+																										"format": "date-time"
+																									},
+																									"updatedAt": {
+																										"type": "string",
+																										"format": "date-time"
+																									},
+																									"createdAt": {
+																										"type": "string",
+																										"format": "date-time"
+																									},
+																									"id": {
+																										"type": "string"
+																									}
+																								},
+																								"required": [
+																									"costPrice",
+																									"initialQty",
+																									"batchNumber",
+																									"quantity",
+																									"productId",
+																									"expiryDate",
+																									"updatedAt",
+																									"createdAt",
+																									"id"
+																								],
+																								"type": "object"
+																							},
+																							"type": "array"
+																						}
+																					},
+																					"required": [
+																						"batches"
+																					],
+																					"type": "object"
+																				},
+																				{
+																					"properties": {
+																						"reorderLevel": {
+																							"type": "number",
+																							"format": "double"
+																						},
+																						"category": {
+																							"type": "string"
+																						},
+																						"unitPrice": {
+																							"$ref": "#/components/schemas/Decimal"
+																						},
+																						"description": {
+																							"type": "string"
+																						},
+																						"facilityId": {
+																							"type": "string"
+																						},
+																						"code": {
+																							"type": "string"
+																						},
+																						"updatedAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"createdAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"id": {
+																							"type": "string"
+																						},
+																						"name": {
+																							"type": "string"
+																						}
+																					},
+																					"required": [
+																						"reorderLevel",
+																						"category",
+																						"unitPrice",
+																						"description",
+																						"facilityId",
+																						"code",
+																						"updatedAt",
+																						"createdAt",
+																						"id",
+																						"name"
+																					],
+																					"type": "object"
+																				}
+																			]
+																		}
+																	},
+																	"required": [
+																		"product"
+																	],
+																	"type": "object"
+																},
+																{
+																	"properties": {
+																		"durationDays": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"frequency": {
+																			"type": "string"
+																		},
+																		"dosage": {
+																			"type": "string"
+																		},
+																		"quantityOrdered": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"productId": {
+																			"type": "string"
+																		},
+																		"prescriptionId": {
+																			"type": "string"
+																		},
+																		"unitPrice": {
+																			"$ref": "#/components/schemas/Decimal"
+																		},
+																		"updatedAt": {
+																			"type": "string",
+																			"format": "date-time"
+																		},
+																		"createdAt": {
+																			"type": "string",
+																			"format": "date-time"
+																		},
+																		"id": {
+																			"type": "string"
+																		}
+																	},
+																	"required": [
+																		"durationDays",
+																		"frequency",
+																		"dosage",
+																		"quantityOrdered",
+																		"productId",
+																		"prescriptionId",
+																		"unitPrice",
+																		"updatedAt",
+																		"createdAt",
+																		"id"
+																	],
+																	"type": "object"
+																}
+															]
+														},
+														"type": "array"
+													},
+													"visit": {
+														"allOf": [
+															{
+																"properties": {
+																	"patient": {
+																		"properties": {
+																			"emergencyContactPhone": {
+																				"type": "string"
+																			},
+																			"emergencyContactName": {
+																				"type": "string"
+																			},
+																			"address": {
+																				"type": "string"
+																			},
+																			"phone": {
+																				"type": "string"
+																			},
+																			"dateOfBirth": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"gender": {
+																				"$ref": "#/components/schemas/_36_Enums.Gender"
+																			},
+																			"middleName": {
+																				"type": "string"
+																			},
+																			"lastName": {
+																				"type": "string"
+																			},
+																			"firstName": {
+																				"type": "string"
+																			},
+																			"facilityId": {
+																				"type": "string"
+																			},
+																			"mrn": {
+																				"type": "string"
+																			},
+																			"districtId": {
+																				"type": "string"
+																			},
+																			"regionId": {
+																				"type": "string"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"emergencyContactPhone",
+																			"emergencyContactName",
+																			"address",
+																			"phone",
+																			"dateOfBirth",
+																			"gender",
+																			"middleName",
+																			"lastName",
+																			"firstName",
+																			"facilityId",
+																			"mrn",
+																			"districtId",
+																			"regionId",
+																			"updatedAt",
+																			"createdAt",
+																			"id"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"patient"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"status": {
+																		"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+																	},
+																	"triagePriority": {
+																		"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+																	},
+																	"visitType": {
+																		"$ref": "#/components/schemas/_36_Enums.VisitType"
+																	},
+																	"symptoms": {
+																		"type": "string"
+																	},
+																	"icdCode": {
+																		"type": "string"
+																	},
+																	"diagnosis": {
+																		"type": "string"
+																	},
+																	"attendingId": {
+																		"type": "string"
+																	},
+																	"patientId": {
+																		"type": "string"
+																	},
+																	"facilityId": {
+																		"type": "string"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"priority": {
+																		"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"status",
+																	"triagePriority",
+																	"visitType",
+																	"symptoms",
+																	"icdCode",
+																	"diagnosis",
+																	"attendingId",
+																	"patientId",
+																	"facilityId",
+																	"createdAt",
+																	"priority",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													}
+												},
+												"required": [
+													"items",
+													"visit"
+												],
+												"type": "object"
+											},
+											{
+												"properties": {
+													"prescribedById": {
+														"type": "string"
+													},
+													"prescriptionNumber": {
+														"type": "string"
+													},
+													"status": {
+														"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+													},
+													"facilityId": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"createdAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"notes": {
+														"type": "string"
+													},
+													"visitId": {
+														"type": "string"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"prescribedById",
+													"prescriptionNumber",
+													"status",
+													"facilityId",
+													"updatedAt",
+													"createdAt",
+													"notes",
+													"visitId",
+													"id"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "facilityId",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/pharmacy/dispense/prescriptions/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetPrescriptionsByMrn",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"allOf": [
+											{
+												"properties": {
+													"items": {
+														"items": {
+															"allOf": [
+																{
+																	"properties": {
+																		"product": {
+																			"allOf": [
+																				{
+																					"properties": {
+																						"batches": {
+																							"items": {
+																								"properties": {
+																									"costPrice": {
+																										"$ref": "#/components/schemas/Decimal"
+																									},
+																									"initialQty": {
+																										"type": "number",
+																										"format": "double"
+																									},
+																									"batchNumber": {
+																										"type": "string"
+																									},
+																									"quantity": {
+																										"type": "number",
+																										"format": "double"
+																									},
+																									"productId": {
+																										"type": "string"
+																									},
+																									"expiryDate": {
+																										"type": "string",
+																										"format": "date-time"
+																									},
+																									"updatedAt": {
+																										"type": "string",
+																										"format": "date-time"
+																									},
+																									"createdAt": {
+																										"type": "string",
+																										"format": "date-time"
+																									},
+																									"id": {
+																										"type": "string"
+																									}
+																								},
+																								"required": [
+																									"costPrice",
+																									"initialQty",
+																									"batchNumber",
+																									"quantity",
+																									"productId",
+																									"expiryDate",
+																									"updatedAt",
+																									"createdAt",
+																									"id"
+																								],
+																								"type": "object"
+																							},
+																							"type": "array"
+																						}
+																					},
+																					"required": [
+																						"batches"
+																					],
+																					"type": "object"
+																				},
+																				{
+																					"properties": {
+																						"reorderLevel": {
+																							"type": "number",
+																							"format": "double"
+																						},
+																						"category": {
+																							"type": "string"
+																						},
+																						"unitPrice": {
+																							"$ref": "#/components/schemas/Decimal"
+																						},
+																						"description": {
+																							"type": "string"
+																						},
+																						"facilityId": {
+																							"type": "string"
+																						},
+																						"code": {
+																							"type": "string"
+																						},
+																						"updatedAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"createdAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"id": {
+																							"type": "string"
+																						},
+																						"name": {
+																							"type": "string"
+																						}
+																					},
+																					"required": [
+																						"reorderLevel",
+																						"category",
+																						"unitPrice",
+																						"description",
+																						"facilityId",
+																						"code",
+																						"updatedAt",
+																						"createdAt",
+																						"id",
+																						"name"
+																					],
+																					"type": "object"
+																				}
+																			]
+																		}
+																	},
+																	"required": [
+																		"product"
+																	],
+																	"type": "object"
+																},
+																{
+																	"properties": {
+																		"durationDays": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"frequency": {
+																			"type": "string"
+																		},
+																		"dosage": {
+																			"type": "string"
+																		},
+																		"quantityOrdered": {
+																			"type": "number",
+																			"format": "double"
+																		},
+																		"productId": {
+																			"type": "string"
+																		},
+																		"prescriptionId": {
+																			"type": "string"
+																		},
+																		"unitPrice": {
+																			"$ref": "#/components/schemas/Decimal"
+																		},
+																		"updatedAt": {
+																			"type": "string",
+																			"format": "date-time"
+																		},
+																		"createdAt": {
+																			"type": "string",
+																			"format": "date-time"
+																		},
+																		"id": {
+																			"type": "string"
+																		}
+																	},
+																	"required": [
+																		"durationDays",
+																		"frequency",
+																		"dosage",
+																		"quantityOrdered",
+																		"productId",
+																		"prescriptionId",
+																		"unitPrice",
+																		"updatedAt",
+																		"createdAt",
+																		"id"
+																	],
+																	"type": "object"
+																}
+															]
+														},
+														"type": "array"
+													},
+													"visit": {
+														"allOf": [
+															{
+																"properties": {
+																	"patient": {
+																		"properties": {
+																			"emergencyContactPhone": {
+																				"type": "string"
+																			},
+																			"emergencyContactName": {
+																				"type": "string"
+																			},
+																			"address": {
+																				"type": "string"
+																			},
+																			"phone": {
+																				"type": "string"
+																			},
+																			"dateOfBirth": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"gender": {
+																				"$ref": "#/components/schemas/_36_Enums.Gender"
+																			},
+																			"middleName": {
+																				"type": "string"
+																			},
+																			"lastName": {
+																				"type": "string"
+																			},
+																			"firstName": {
+																				"type": "string"
+																			},
+																			"facilityId": {
+																				"type": "string"
+																			},
+																			"mrn": {
+																				"type": "string"
+																			},
+																			"districtId": {
+																				"type": "string"
+																			},
+																			"regionId": {
+																				"type": "string"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"emergencyContactPhone",
+																			"emergencyContactName",
+																			"address",
+																			"phone",
+																			"dateOfBirth",
+																			"gender",
+																			"middleName",
+																			"lastName",
+																			"firstName",
+																			"facilityId",
+																			"mrn",
+																			"districtId",
+																			"regionId",
+																			"updatedAt",
+																			"createdAt",
+																			"id"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"patient"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"status": {
+																		"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+																	},
+																	"triagePriority": {
+																		"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+																	},
+																	"visitType": {
+																		"$ref": "#/components/schemas/_36_Enums.VisitType"
+																	},
+																	"symptoms": {
+																		"type": "string"
+																	},
+																	"icdCode": {
+																		"type": "string"
+																	},
+																	"diagnosis": {
+																		"type": "string"
+																	},
+																	"attendingId": {
+																		"type": "string"
+																	},
+																	"patientId": {
+																		"type": "string"
+																	},
+																	"facilityId": {
+																		"type": "string"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"priority": {
+																		"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"status",
+																	"triagePriority",
+																	"visitType",
+																	"symptoms",
+																	"icdCode",
+																	"diagnosis",
+																	"attendingId",
+																	"patientId",
+																	"facilityId",
+																	"createdAt",
+																	"priority",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													}
+												},
+												"required": [
+													"items",
+													"visit"
+												],
+												"type": "object"
+											},
+											{
+												"properties": {
+													"prescribedById": {
+														"type": "string"
+													},
+													"prescriptionNumber": {
+														"type": "string"
+													},
+													"status": {
+														"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+													},
+													"facilityId": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"createdAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"notes": {
+														"type": "string"
+													},
+													"visitId": {
+														"type": "string"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"prescribedById",
+													"prescriptionNumber",
+													"status",
+													"facilityId",
+													"updatedAt",
+													"createdAt",
+													"notes",
+													"visitId",
+													"id"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "facilityId",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/v1/billing/insurance": {

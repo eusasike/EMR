@@ -5,7 +5,7 @@ import {
 } from "../../models/lab/lab.model";
 import { LabPublisher } from "../../message/publisher/lab.publisher";
 import { redisClient } from "../../config/redis";
-
+import { NotFoundError } from "../../util/custom-error";
 const prisma = new PrismaClient();
 
 export class LabService {
@@ -64,7 +64,9 @@ export class LabService {
         performedById: performedById,
       },
       include: {
-        performedBy: { select: { id: true, name: true, email: true } },
+        performedBy: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
       },
     });
 
@@ -96,7 +98,9 @@ export class LabService {
         ...(findings ? { findings } : {}),
       },
       include: {
-        verifiedBy: { select: { id: true, name: true, email: true } },
+        verifiedBy: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
       },
     });
 
@@ -127,13 +131,72 @@ export class LabService {
       where: { visitId },
       include: {
         providedService: true,
-        performedBy: { select: { id: true, name: true } },
-        verifiedBy: { select: { id: true, name: true } },
+        performedBy: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+        verifiedBy: {
+          select: { id: true, firstName: true, lastName: true },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
     await redisClient.setex(cacheKey, 300, JSON.stringify(results)); // Cache for 5 mins
     return results;
+  }
+
+  /**
+   * Fetch lab results and orders for a patient using their MRN
+   */
+  public async getLabResultsByMrn(mrn: string, facilityId?: string) {
+    const patient = await prisma.patient.findFirst({
+      where: {
+        mrn,
+        ...(facilityId && { facilityId }),
+      },
+      select: { id: true },
+    });
+
+    if (!patient) {
+      throw new NotFoundError(`PATIENT_NOT_FOUND_FOR_MRN: ${mrn}`);
+    }
+
+    return await prisma.labResult.findMany({
+      where: {
+        visit: {
+          patientId: patient.id,
+        },
+      },
+      include: {
+        providedService: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                category: true,
+                price: true,
+              },
+            },
+          },
+        },
+        visit: {
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
+          },
+        },
+        performedBy: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+        verifiedBy: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
   }
 }

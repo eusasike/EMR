@@ -16,6 +16,11 @@ export const UsersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // 🆕 State to track which user is being edited (null means creating a new user)
+  const [selectedUserToEdit, setSelectedUserToEdit] = useState<UserItem | null>(
+    null,
+  );
+
   // Manual refresh / callback trigger
   const loadUsers = useCallback(async () => {
     try {
@@ -51,8 +56,19 @@ export const UsersPage: React.FC = () => {
 
   const handleSuccess = () => {
     setIsModalOpen(false);
+    setSelectedUserToEdit(null); // Clear editing state after success
     setLoading(true);
     loadUsers();
+  };
+
+  const handleOpenRegisterModal = () => {
+    setSelectedUserToEdit(null); // Ensure it's in registration mode
+    setIsModalOpen(true);
+  };
+
+  const handleOpenManageModal = (user: UserItem) => {
+    setSelectedUserToEdit(user); // Set user data for editing mode
+    setIsModalOpen(true);
   };
 
   const filteredUsers = users.filter((u) => {
@@ -81,7 +97,7 @@ export const UsersPage: React.FC = () => {
         <button
           className="btn-primary"
           style={{ width: "auto" }}
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleOpenRegisterModal}
         >
           <Plus size={16} style={{ marginRight: 6 }} /> Register New Staff
         </button>
@@ -164,6 +180,7 @@ export const UsersPage: React.FC = () => {
                         <button
                           className="btn-secondary"
                           style={{ fontSize: 12, padding: "4px 8px" }}
+                          onClick={() => handleOpenManageModal(user)}
                         >
                           Manage
                         </button>
@@ -179,8 +196,12 @@ export const UsersPage: React.FC = () => {
 
       <RegisterStaffModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedUserToEdit(null);
+        }}
         onSuccess={handleSuccess}
+        userToEdit={selectedUserToEdit} // 🆕 Pass the user data into your modal
       />
     </AppLayout>
   );

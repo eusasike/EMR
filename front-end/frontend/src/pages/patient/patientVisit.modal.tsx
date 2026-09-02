@@ -548,7 +548,7 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
                       }))
                     }
                   >
-                    <option value="NOT_STARTED">⏱ Not Started / Pending</option>
+                    {/* <option value="NOT_STARTED">⏱ Not Started / Pending</option> */}
                     <option value="IN_PROGRESS">● In Progress</option>
                     <option value="COMPLETED">✓ Completed</option>
                     <option value="CANCELLED">✕ Cancelled</option>

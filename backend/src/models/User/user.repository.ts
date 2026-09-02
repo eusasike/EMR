@@ -1,5 +1,6 @@
 import { prisma } from "../../config/database";
 import { RegisterUserDTO } from "../../models/User/user.model";
+import bcrypt from "bcrypt";
 
 export class UserRepository {
   async findByEmail(email: string) {
@@ -55,6 +56,7 @@ export class UserRepository {
         firstName: true,
         lastName: true,
         middleName: true,
+        password: true,
         email: true,
         phone: true,
         role: true,
@@ -66,6 +68,54 @@ export class UserRepository {
         },
         createdAt: true,
       },
+    });
+  }
+
+  //update user
+  //
+  async updateUser(id: string, input: RegisterUserDTO) {
+    const { facilityId, password, ...restInput } = input;
+
+    // Prepare data object, hashing password only if provided
+    const updateData: any = { ...restInput };
+    if (password && password.trim() !== "") {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    return prisma.$transaction(async (tx) => {
+      // 1. Update core user details (with encrypted password if present)
+      await tx.user.update({
+        where: { id },
+        data: updateData,
+      });
+
+      // 2. Safely update facility links using transaction
+      if (facilityId !== undefined) {
+        await tx.facilityUser.deleteMany({
+          where: { userId: id },
+        });
+
+        if (facilityId) {
+          await tx.facilityUser.create({
+            data: {
+              userId: id,
+              facilityId: facilityId,
+            },
+          });
+        }
+      }
+
+      // 3. Return the fully updated user with relations
+      return tx.user.findUnique({
+        where: { id },
+        include: {
+          facilities: {
+            include: {
+              facility: true,
+            },
+          },
+        },
+      });
     });
   }
 }

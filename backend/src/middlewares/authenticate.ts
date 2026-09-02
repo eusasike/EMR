@@ -5,7 +5,8 @@ export interface JwtPayload {
   id: string;
   email: string;
   role: string;
-  facilityIds?: string[]; // 👈 Accessible facility IDs in token payload
+  facilityIds?: string[];
+  activeFacilityId?: string;
 }
 
 export async function expressAuthentication(

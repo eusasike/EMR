@@ -1,14 +1,20 @@
+// src/components/layout/AppLayout.tsx
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logoutApi } from "../../api/auth/auth";
 import {
   Users,
-  BedDouble,
+  // BedDouble,
   FileText,
   LayoutDashboard,
   LogOut,
   UserPlus,
   Activity,
+  Stethoscope,
+  Settings,
+  FlaskConical,
+  Package,
+  HandPlatter,
 } from "lucide-react";
 import "../../style/dashboard.css";
 
@@ -59,12 +65,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       icon: <LayoutDashboard size={18} />,
     },
     {
-      to: "/vital-signs",
-      label: "Vital Signs",
-      icon: <Activity size={18} />,
-      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "REGISTRATION_CLERK"],
-    },
-    {
       to: "/user-register",
       label: "Register User",
       icon: <UserPlus size={18} />,
@@ -77,16 +77,53 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "REGISTRATION_CLERK"],
     },
     {
-      to: "/wards",
-      label: "Ward & Beds",
-      icon: <BedDouble size={18} />,
-      allowedRoles: ["ADMIN", "DOCTOR", "NURSE"],
+      to: "/vital-signs",
+      label: "Vital Signs",
+      icon: <Activity size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "REGISTRATION_CLERK"],
     },
+    {
+      to: "/doctor-consultation",
+      label: "Doctor Consultation",
+      icon: <Stethoscope size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR"],
+    },
+
+    {
+      to: "/laboratory",
+      label: "Laboratory",
+      icon: <FlaskConical size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "LAB_TECH"],
+    },
+    {
+      to: "/inventory",
+      label: "inventory",
+      icon: <Package size={18} />,
+      allowedRoles: ["ADMIN"],
+    },
+    {
+      to: "/dispense",
+      label: "Dispense",
+      icon: <HandPlatter size={18} />,
+      allowedRoles: ["ADMIN"],
+    },
+    // {
+    //   to: "/wards",
+    //   label: "Ward & Beds",
+    //   icon: <BedDouble size={18} />,
+    //   allowedRoles: ["ADMIN", "DOCTOR", "NURSE"],
+    // },
     {
       to: "/billing",
       label: "Billing",
       icon: <FileText size={18} />,
       allowedRoles: ["ADMIN", "ACCOUNTANT", "BILLING_CLERK"],
+    },
+    {
+      to: "/medical-services",
+      label: "Services Settings",
+      icon: <Settings size={18} />,
+      allowedRoles: ["ADMIN", "FACILITY_ADMIN"],
     },
   ];
 

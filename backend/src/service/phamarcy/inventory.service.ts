@@ -1,4 +1,4 @@
-// service/pharmacy/pharmacy.service.ts
+// service/pharmacy/inventory.service.ts
 import { PrismaClient } from "@prisma/client";
 import { redisClient } from "../../config/redis";
 import { publishToQueue } from "../../config/rabbitmq";
@@ -17,7 +17,7 @@ const prisma = new PrismaClient();
 const PHARMACY_EXCHANGE = "pharmacy_exchange";
 
 const CACHE_KEYS = {
-  ALL_PRODUCTS: "products:all",
+  ALL_PRODUCTS: (facilityId: string) => `facility:${facilityId}:products:all`,
   PRODUCT_BY_ID: (id: string) => `product:${id}`,
   REORDER_ALERT_LOCK: (id: string) => `reorder_alert:${id}`,
 };
@@ -26,9 +26,39 @@ export class PharmacyService {
   // ----------------------------------------
   // Product Operations (Redis Cache-Aside)
   // ----------------------------------------
-  async createProduct(data: CreateProductDTO) {
+  async createProduct(facilityId: string, data: CreateProductDTO) {
+    if (data.code) {
+      const existingByCode = await prisma.product.findFirst({
+        where: {
+          facilityId,
+          code: data.code,
+        },
+      });
+
+      if (existingByCode) {
+        throw new Error(
+          `A product with code "${data.code}" already exists for this facility.`,
+        );
+      }
+    }
+
+    // Also check by name within the same facility to prevent duplicate names
+    const existingByName = await prisma.product.findFirst({
+      where: {
+        facilityId,
+        name: data.name,
+      },
+    });
+
+    if (existingByName) {
+      throw new Error(
+        `A product with the name "${data.name}" already exists for this facility.`,
+      );
+    }
+
     const product = await prisma.product.create({
       data: {
+        facilityId,
         code: data.code,
         name: data.name,
         description: data.description,
@@ -38,24 +68,22 @@ export class PharmacyService {
       },
     });
 
-    await redisClient.del(CACHE_KEYS.ALL_PRODUCTS);
+    await redisClient.del(CACHE_KEYS.ALL_PRODUCTS(facilityId));
     return product;
   }
 
-  async getAllProducts() {
-    const cached = await redisClient.get(CACHE_KEYS.ALL_PRODUCTS);
+  async getAllProducts(facilityId: string) {
+    const cacheKey = CACHE_KEYS.ALL_PRODUCTS(facilityId);
+    const cached = await redisClient.get(cacheKey);
     if (cached) return JSON.parse(cached);
 
     const products = await prisma.product.findMany({
+      where: { facilityId },
       include: { batches: true },
       orderBy: { createdAt: "desc" },
     });
 
-    await redisClient.setex(
-      CACHE_KEYS.ALL_PRODUCTS,
-      3600,
-      JSON.stringify(products),
-    );
+    await redisClient.setex(cacheKey, 3600, JSON.stringify(products));
     return products;
   }
 
@@ -75,7 +103,7 @@ export class PharmacyService {
     return product;
   }
 
-  async updateProduct(id: string, data: UpdateProductDTO) {
+  async updateProduct(id: string, facilityId: string, data: UpdateProductDTO) {
     const product = await prisma.product.update({
       where: { id },
       data,
@@ -83,7 +111,7 @@ export class PharmacyService {
 
     await redisClient.del([
       CACHE_KEYS.PRODUCT_BY_ID(id),
-      CACHE_KEYS.ALL_PRODUCTS,
+      CACHE_KEYS.ALL_PRODUCTS(facilityId),
     ]);
     return product;
   }
@@ -91,7 +119,30 @@ export class PharmacyService {
   // ----------------------------------------
   // Batch Operations
   // ----------------------------------------
-  async createBatch(data: CreateBatchDTO) {
+  async createBatch(facilityId: string, data: CreateBatchDTO) {
+    // Verify product exists and belongs to the facility
+    const product = await prisma.product.findFirst({
+      where: { id: data.productId, facilityId },
+    });
+
+    if (!product) {
+      throw new Error("Product not found or unauthorized for this facility");
+    }
+
+    // Check if a batch with the same batch number already exists for this product
+    const existingBatch = await prisma.productBatch.findFirst({
+      where: {
+        productId: data.productId,
+        batchNumber: data.batchNumber,
+      },
+    });
+
+    if (existingBatch) {
+      throw new Error(
+        `Batch number "${data.batchNumber}" already exists for this product.`,
+      );
+    }
+
     const batch = await prisma.productBatch.create({
       data: {
         productId: data.productId,
@@ -103,13 +154,11 @@ export class PharmacyService {
       },
     });
 
-    // Invalidate product caches to reflect updated batch stock
     await redisClient.del([
       CACHE_KEYS.PRODUCT_BY_ID(data.productId),
-      CACHE_KEYS.ALL_PRODUCTS,
+      CACHE_KEYS.ALL_PRODUCTS(facilityId),
     ]);
 
-    // Clear any existing reorder alert lock since new stock arrived
     await redisClient.del(CACHE_KEYS.REORDER_ALERT_LOCK(data.productId));
 
     return batch;
@@ -118,25 +167,27 @@ export class PharmacyService {
   // ----------------------------------------
   // Dispense Operations & Reorder Checks
   // ----------------------------------------
-  async dispenseProducts(data: CreateDispenseRecordDTO, userId: string) {
+  async dispenseProducts(
+    facilityId: string,
+    data: CreateDispenseRecordDTO,
+    userId: string,
+  ) {
     const totalCost = data.items.reduce(
       (sum, item) => sum + item.unitPrice * item.quantity,
       0,
     );
 
-    // Extract unique product IDs affected by this dispense operation
     const affectedProductIds = Array.from(
       new Set(data.items.map((i) => i.productId)),
     );
 
-    // 1. Transactional Database Operations
     const result = await prisma.$transaction(async (tx) => {
       for (const item of data.items) {
-        // Atomic stock deduction: ensures quantity >= item.quantity
         const updateResult = await tx.productBatch.updateMany({
           where: {
             id: item.batchId,
             quantity: { gte: item.quantity },
+            product: { facilityId },
           },
           data: {
             quantity: { decrement: item.quantity },
@@ -145,14 +196,14 @@ export class PharmacyService {
 
         if (updateResult.count === 0) {
           throw new Error(
-            `Insufficient stock or invalid Batch ID: ${item.batchId}`,
+            `Insufficient stock or invalid Batch ID / Facility scope: ${item.batchId}`,
           );
         }
       }
 
-      // Persist DispenseRecord along with DispensedItems
       return await tx.dispenseRecord.create({
         data: {
+          facilityId,
           visitId: data.visitId,
           dispensedById: userId,
           prescriptionId: data.prescriptionId,
@@ -171,16 +222,17 @@ export class PharmacyService {
       });
     });
 
-    // 2. Invalidate Product Caches
     const productCacheKeys = affectedProductIds.map((id) =>
       CACHE_KEYS.PRODUCT_BY_ID(id),
     );
-    const keysToInvalidate = [...productCacheKeys, CACHE_KEYS.ALL_PRODUCTS];
+    const keysToInvalidate = [
+      ...productCacheKeys,
+      CACHE_KEYS.ALL_PRODUCTS(facilityId),
+    ];
     if (keysToInvalidate.length > 0) {
       await redisClient.del(keysToInvalidate);
     }
 
-    // 3. Publish Dispense Event to RabbitMQ
     const dispenseEventPayload = productDispensedEventSchema.parse({
       dispenseRecordId: result.id,
       visitId: result.visitId ?? undefined,
@@ -196,11 +248,11 @@ export class PharmacyService {
       dispenseEventPayload,
     );
 
-    // 4. Asynchronously evaluate stock for reorder level alerts
     await this.checkAndPublishReorderAlerts(affectedProductIds);
 
     return result;
   }
+
   // ----------------------------------------
   // Reorder Level Check & Redis Lock Helper
   // ----------------------------------------
@@ -216,17 +268,14 @@ export class PharmacyService {
 
         if (!product) continue;
 
-        // Sum current remaining quantity across all batches
         const currentStock = product.batches.reduce(
           (sum, batch) => sum + batch.quantity,
           0,
         );
 
-        // Check if stock has reached or fallen below the threshold
         if (currentStock <= product.reorderLevel) {
           const alertLockKey = CACHE_KEYS.REORDER_ALERT_LOCK(productId);
 
-          // Atomic Redis Lock with 24-Hour TTL (86,400s) using "NX" (Only Set If Not Exists)
           const lockAcquired = await redisClient.set(
             alertLockKey,
             "ALERTED",
@@ -259,5 +308,60 @@ export class PharmacyService {
         );
       }
     }
+  }
+  public async getPendingPrescriptions(facilityId?: string) {
+    return await prisma.prescription.findMany({
+      where: {
+        ...(facilityId ? { visit: { facilityId } } : {}),
+      },
+      include: {
+        visit: {
+          include: {
+            patient: true,
+          },
+        },
+        items: {
+          include: {
+            product: {
+              include: {
+                batches: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  public async getPrescriptionsByMrn(mrn: string, facilityId?: string) {
+    return await prisma.prescription.findMany({
+      where: {
+        ...(facilityId ? { visit: { facilityId } } : {}),
+        visit: {
+          patient: {
+            mrn: {
+              equals: mrn,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+      include: {
+        visit: {
+          include: {
+            patient: true,
+          },
+        },
+        items: {
+          include: {
+            product: {
+              include: {
+                batches: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }
