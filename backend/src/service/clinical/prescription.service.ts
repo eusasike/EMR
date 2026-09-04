@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { CreatePrescriptionDTO } from "../../models/prescription/prescription.model";
 import { redisClient } from "../../config/redis";
 import { PrescriptionPublisher } from "../../message/publisher/prescription.publisher";
+import { recalculateVisitInvoice } from "../../helper/invoice.helper"; // <-- Import your invoice recalculation helper
 const prisma = new PrismaClient();
 
 export class PrescriptionService {
@@ -17,6 +18,7 @@ export class PrescriptionService {
     // 2. Persist to PostgreSQL via Prisma
     const prescription = await prisma.prescription.create({
       data: {
+        facilityId: data.facilityId,
         prescriptionNumber,
         visitId: data.visitId,
         prescribedById,
@@ -30,6 +32,7 @@ export class PrescriptionService {
             quantityOrdered: item.quantityOrdered,
             route: item.route,
             instructions: item.instructions,
+            unitPrice: item.unitPrice,
           })),
         },
       },
@@ -39,17 +42,21 @@ export class PrescriptionService {
       },
     });
 
-    // 3. Redis Caching & Cache Invalidation
-    // Invalidate pending queue cache so pharmacists see the updated queue immediately
+    // 3. Automatically Recalculate Visit Invoice
+    await recalculateVisitInvoice(
+      prescription.visitId,
+      prescription.facilityId,
+    );
+
+    // 4. Redis Caching & Cache Invalidation
     await redisClient.del("prescriptions:pending:all");
-    // Cache specific prescription details (TTL: 1 hour)
     await redisClient.setex(
       `prescription:${prescription.id}`,
       3600,
       JSON.stringify(prescription),
     );
 
-    // 4. Publish Async Event to RabbitMQ
+    // 5. Publish Async Event to RabbitMQ
     PrescriptionPublisher.publishPrescriptionCreated({
       prescriptionId: prescription.id,
       prescriptionNumber: prescription.prescriptionNumber,
@@ -67,13 +74,11 @@ export class PrescriptionService {
   public async getPendingPrescriptions() {
     const cacheKey = "prescriptions:pending:all";
 
-    // Try Redis Cache First
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
       return JSON.parse(cachedData);
     }
 
-    // DB Fallback
     const pendingPrescriptions = await prisma.prescription.findMany({
       where: { status: "PENDING" },
       include: {
@@ -83,7 +88,6 @@ export class PrescriptionService {
       orderBy: { createdAt: "desc" },
     });
 
-    // Store in Redis (TTL: 5 minutes)
     await redisClient.setex(
       cacheKey,
       300,

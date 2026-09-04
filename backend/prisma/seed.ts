@@ -1,9 +1,12 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting seed for Regions, Districts, and Facilities...");
+  console.log(
+    "🌱 Starting seed for Regions, Districts, Facilities, and Admin User...",
+  );
 
   // 1. Create Regions (Upsert by unique 'name')
   const regionData = [
@@ -83,6 +86,7 @@ async function main() {
   ];
 
   console.log("\n🏥 Created Facilities:");
+  const createdFacilities = [];
   for (const fac of facilityData) {
     const facility = await prisma.facility.upsert({
       where: { code: fac.code },
@@ -93,9 +97,44 @@ async function main() {
       },
       create: fac,
     });
+    createdFacilities.push(facility);
     console.log(`- ID: ${facility.id} | Name: ${facility.name}`);
   }
 
+  // 4. Create Admin User using the correct 'facilities' relation mapping
+  console.log("\n👤 Seeding Admin User...");
+  const hashedPassword = await bcrypt.hash("Admin@123456!", 10);
+
+  let adminUser = await prisma.user.findUnique({
+    where: { email: "admin@system.local" },
+  });
+
+  if (!adminUser) {
+    adminUser = await prisma.user.create({
+      data: {
+        email: "admin@system.local",
+        password: hashedPassword,
+        firstName: "System",
+        lastName: "Admin",
+        role: "ADMIN",
+        facilities: {
+          create: {
+            facilityId: createdFacilities[0].id,
+          },
+        },
+      },
+    });
+  } else {
+    adminUser = await prisma.user.update({
+      where: { email: "admin@system.local" },
+      data: {
+        password: hashedPassword,
+        role: "ADMIN",
+      },
+    });
+  }
+
+  console.log(`- Admin created/updated successfully: ${adminUser.email}`);
   console.log("\n✅ Seeding completed successfully!");
 }
 

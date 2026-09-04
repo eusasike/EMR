@@ -101,12 +101,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       icon: <Package size={18} />,
       allowedRoles: ["ADMIN"],
     },
-    {
-      to: "/dispense",
-      label: "Dispense",
-      icon: <HandPlatter size={18} />,
-      allowedRoles: ["ADMIN"],
-    },
+
     // {
     //   to: "/wards",
     //   label: "Ward & Beds",
@@ -118,6 +113,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       label: "Billing",
       icon: <FileText size={18} />,
       allowedRoles: ["ADMIN", "ACCOUNTANT", "BILLING_CLERK"],
+    },
+    {
+      to: "/dispense",
+      label: "Phamarcy",
+      icon: <HandPlatter size={18} />,
+      allowedRoles: ["ADMIN"],
     },
     {
       to: "/medical-services",

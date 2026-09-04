@@ -1,90 +1,147 @@
+// controllers/billing/billing.controller.ts
 import {
   Controller,
+  Route,
+  Tags,
   Get,
   Post,
-  Route,
   Path,
   Body,
-  Request,
-  Tags,
-  Response,
   SuccessResponse,
+  Response,
+  Security,
+  Request,
 } from "tsoa";
+import express from "express";
 import { BillingService } from "../service/billing/billing.service";
 import {
   CreateInvoiceDTO,
   CreatePaymentDTO,
+  createInvoiceSchema,
+  recordPaymentSchema,
   InvoiceResponseDTO,
 } from "../models/billing/billing.model";
+import { UnauthorizedError } from "../util/custom-error";
 
-interface AuthenticatedRequest extends Express.Request {
-  headers: any;
+interface AuthenticatedRequest extends express.Request {
   user?: {
+    id: string;
+    role: string;
     facilityId?: string;
   };
 }
 
 @Route("api/v1/invoices")
-@Tags("Billing & Invoices")
+@Tags("Billing")
 export class BillingController extends Controller {
   private billingService = new BillingService();
 
   /**
-   * Create a new itemized invoice for medical services or pharmacy items
+   * Create a new itemized invoice
    */
-  @Post()
-  @SuccessResponse(201, "Invoice Created Successfully")
-  @Response(400, "Invalid invoice payload")
+  @Security("jwt")
+  @SuccessResponse("201", "Created")
+  @Response("400", "Bad Request")
+  @Response("401", "Unauthorized")
+  @Post("")
   public async createInvoice(
     @Request() request: AuthenticatedRequest,
     @Body() requestBody: CreateInvoiceDTO,
-  ): Promise<InvoiceResponseDTO> {
+  ): Promise<any> {
     const facilityId =
       (request.headers["x-facility-id"] as string) || request.user?.facilityId;
 
     if (!facilityId) {
-      this.setStatus(401);
-      throw new Error("USER_FACILITY_NOT_FOUND_IN_SESSION");
+      throw new UnauthorizedError("USER_FACILITY_NOT_FOUND_IN_SESSION");
+    }
+
+    const payloadToValidate = {
+      ...requestBody,
+      facilityId,
+    };
+
+    const validation = createInvoiceSchema.safeParse(payloadToValidate);
+    if (!validation.success) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: `Validation failed: ${validation.error.issues
+          .map((err) => `${err.path.join(".")}: ${err.message}`)
+          .join("; ")}`,
+        data: null as any,
+      };
     }
 
     this.setStatus(201);
-    return this.billingService.createInvoice(facilityId, requestBody);
+    return await this.billingService.createInvoice(facilityId, validation.data);
   }
 
   /**
-   * Get invoice details by ID, including line items and payment history
+   * Retrieve invoice details by ID, including line items and payment history
    */
   @Get("{invoiceId}")
-  @Response(404, "Invoice not found")
-  public async getInvoice(
+  @Security("jwt")
+  @Response("404", "Invoice Not Found")
+  public async getInvoiceById(
     @Path() invoiceId: string,
   ): Promise<InvoiceResponseDTO> {
-    return this.billingService.getInvoiceById(invoiceId);
+    return await this.billingService.getInvoiceById(invoiceId);
   }
 
   /**
-   * Process a payment against an outstanding invoice
+   * Process a payment against an outstanding invoice using the authenticated user's ID
    */
+  @Security("jwt")
+  @SuccessResponse("201", "Created")
+  @Response("400", "Bad Request")
+  @Response("401", "Unauthorized")
+  @Response("404", "Invoice Not Found")
   @Post("{invoiceId}/payments")
-  @SuccessResponse(201, "Payment Processed Successfully")
-  @Response(400, "Invalid payment amount or invoice already paid")
-  @Response(404, "Invoice not found")
   public async recordPayment(
+    @Request() request: AuthenticatedRequest,
     @Path() invoiceId: string,
-    @Body() requestBody: CreatePaymentDTO,
-  ): Promise<InvoiceResponseDTO> {
-    this.setStatus(201);
-    return this.billingService.processPayment(invoiceId, requestBody);
-  }
+    @Body() requestBody: Omit<CreatePaymentDTO, "receivedById">,
+  ): Promise<InvoiceResponseDTO | any> {
+    const receivedById = request.user?.id;
 
+    if (!receivedById) {
+      throw new UnauthorizedError("AUTHENTICATION_REQUIRED");
+    }
+
+    const payloadToValidate = {
+      ...requestBody,
+      invoiceId,
+      receivedById,
+    };
+
+    const validation = recordPaymentSchema.safeParse(payloadToValidate);
+    if (!validation.success) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: `Validation failed: ${validation.error.issues
+          .map((err) => `${err.path.join(".")}: ${err.message}`)
+          .join("; ")}`,
+        data: null,
+      };
+    }
+
+    this.setStatus(201);
+    return await this.billingService.processPayment(
+      invoiceId,
+      validation.data,
+      receivedById,
+    );
+  }
   /**
    * Get all invoices for a patient using their MRN
    */
   @Get("patient/mrn/{mrn}")
-  @Response(404, "Invoices not found")
+  @Security("jwt")
+  @SuccessResponse(200, "Invoices retrieved by MRN")
   public async getInvoicesByMrn(
     @Path() mrn: string,
   ): Promise<InvoiceResponseDTO[]> {
-    return this.billingService.getInvoicesByMrn(mrn);
+    return await this.billingService.getInvoicesByMrn(mrn);
   }
 }

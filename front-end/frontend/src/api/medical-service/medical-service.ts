@@ -85,6 +85,8 @@ export interface Visit {
   id: string;
   mrn: string;
   status: string;
+  symptoms?: string;
+
   services?: ProvidedServiceItem[];
   vitalSigns?: VitalSignsResponse;
   prescriptions?: Array<{
@@ -100,6 +102,8 @@ export interface Visit {
       unitPrice: number;
       dosage?: string;
       duration?: string;
+      batchNumber?: string;
+      availableStock?: number;
     }>;
   }>;
 }

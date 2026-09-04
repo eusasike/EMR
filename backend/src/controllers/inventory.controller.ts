@@ -1,10 +1,10 @@
-// controllers/pharmacy.controller.ts
 import {
   Controller,
   Route,
   Get,
   Post,
   Put,
+  Patch,
   Body,
   Path,
   SuccessResponse,
@@ -196,6 +196,7 @@ export class PharmacyController extends Controller {
       userId,
     );
   }
+
   // ==========================================
   // Prescription Dispensing Endpoints
   // ==========================================
@@ -229,6 +230,43 @@ export class PharmacyController extends Controller {
     return await this.pharmacyService.getPrescriptionsByMrn(
       mrn,
       activeFacilityId,
+    );
+  }
+
+  @Security("jwt")
+  @Patch("prescriptions/{id}/status")
+  @Response(400, "Bad Request - Invalid Status")
+  @Response(404, "Prescription Not Found")
+  public async updatePrescriptionStatus(
+    @Path() id: string,
+    @Body() requestBody: { status: string },
+    @Request() request: AuthenticatedRequest,
+  ) {
+    const facilityId =
+      request.user?.facilityId ||
+      (request.headers?.["x-facility-id"] as string);
+
+    if (!facilityId) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Facility ID missing from token session or headers",
+      };
+    }
+
+    if (!requestBody.status) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Status field is required in request body",
+      };
+    }
+
+    // Assuming you implement updatePrescriptionStatus in your PharmacyService:
+    return await this.pharmacyService.updatePrescriptionStatus(
+      id,
+      requestBody.status,
+      facilityId,
     );
   }
 }

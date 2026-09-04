@@ -22,12 +22,25 @@ export const InvoiceBillingPage: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<
     "CASH" | "MOBILE_MONEY" | "CREDIT_CARD" | "BANK_TRANSFER" | "INSURANCE"
   >("CASH");
-  const [transactionRef, setTransactionRef] = useState("");
-  const [receivedById] = useState("00000000-0000-0000-0000-000000000001");
+  // const [transactionRef, setTransactionRef] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Retrieve logged-in user ID directly from localStorage where 'user' object is stored
+  const getLoggedInUserId = (): string => {
+    try {
+      const userJson = localStorage.getItem("user");
+      if (userJson) {
+        const userObj = JSON.parse(userJson);
+        return userObj.id || "";
+      }
+    } catch {
+      // Fallback if parsing fails
+    }
+    return "";
+  };
 
   const handleSearchPatient = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,9 +90,11 @@ export const InvoiceBillingPage: React.FC = () => {
 
   const handleOpenPaymentModal = (invoice: InvoiceResponseDTO) => {
     setSelectedInvoice(invoice);
-    setPaymentAmount(invoice.balanceDue.toString());
+    setPaymentAmount(
+      Number(invoice.balance ?? invoice.balance ?? 0).toString(),
+    );
     setPaymentMethod("CASH");
-    setTransactionRef("");
+    // setTransactionRef("");
     setError(null);
     setIsPaymentModalOpen(true);
   };
@@ -90,6 +105,14 @@ export const InvoiceBillingPage: React.FC = () => {
 
     setError(null);
     setSuccessMsg(null);
+
+    const receivedById = getLoggedInUserId();
+    if (!receivedById) {
+      setError(
+        "Authentication error: No active user session found in localStorage.",
+      );
+      return;
+    }
 
     const parsedAmount = parseFloat(paymentAmount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
@@ -103,8 +126,6 @@ export const InvoiceBillingPage: React.FC = () => {
         invoiceId: selectedInvoice.id,
         amount: parsedAmount,
         paymentMethod,
-        transactionRef: transactionRef.trim() || null,
-        receivedById,
       });
 
       setSuccessMsg("Payment recorded successfully!");
@@ -214,44 +235,51 @@ export const InvoiceBillingPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {invoicesList.map((inv) => (
-                  <tr key={inv.id}>
-                    <td className="font-medium text-slate-900">
-                      {inv.invoiceNumber}
-                    </td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          inv.status === "PAID"
-                            ? "badge-success"
-                            : inv.status === "PARTIALLY_PAID"
-                              ? "badge-warning"
-                              : "badge-in-progress"
-                        }`}
-                      >
-                        {inv.status}
-                      </span>
-                    </td>
-                    <td>${inv.totalAmount.toFixed(2)}</td>
-                    <td className="text-green-600 font-medium">
-                      ${inv.paidAmount.toFixed(2)}
-                    </td>
-                    <td className="font-bold text-red-600">
-                      ${inv.balanceDue.toFixed(2)}
-                    </td>
-                    <td className="text-right space-x-2">
-                      {inv.balanceDue > 0 && (
-                        <button
-                          onClick={() => handleOpenPaymentModal(inv)}
-                          className="btn-primary"
-                          style={{ fontSize: 12, padding: "4px 10px" }}
+                {invoicesList.map((inv) => {
+                  const total = Number(inv.grandTotal ?? inv.grandTotal ?? 0);
+                  const paid = Number(inv.amountPaid ?? inv.amountPaid ?? 0);
+                  const balance = Number(inv.balance ?? inv.balance ?? 0);
+                  const isFullyPaid = inv.status === "PAID" || balance <= 0;
+
+                  return (
+                    <tr key={inv.id}>
+                      <td className="font-medium text-slate-900">
+                        {inv.invoiceNumber}
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            inv.status === "PAID"
+                              ? "badge-success"
+                              : inv.status === "PARTIALLY_PAID"
+                                ? "badge-warning"
+                                : "badge-in-progress"
+                          }`}
                         >
-                          Process Payment
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                          {inv.status}
+                        </span>
+                      </td>
+                      <td>${total.toFixed(2)}</td>
+                      <td className="text-green-600 font-medium">
+                        ${paid.toFixed(2)}
+                      </td>
+                      <td className="font-bold text-red-600">
+                        ${balance.toFixed(2)}
+                      </td>
+                      <td className="text-right space-x-2">
+                        {!isFullyPaid && balance > 0 && (
+                          <button
+                            onClick={() => handleOpenPaymentModal(inv)}
+                            className="btn-primary"
+                            style={{ fontSize: 12, padding: "4px 10px" }}
+                          >
+                            Process Payment
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -293,12 +321,17 @@ export const InvoiceBillingPage: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">
                     Payment Amount (Max: $
-                    {selectedInvoice.balanceDue.toFixed(2)})
+                    {Number(
+                      selectedInvoice.balance ?? selectedInvoice.balance ?? 0,
+                    ).toFixed(2)}
+                    )
                   </label>
                   <input
                     type="number"
                     step="0.01"
-                    max={selectedInvoice.balanceDue}
+                    max={Number(
+                      selectedInvoice.balance ?? selectedInvoice.balance ?? 0,
+                    )}
                     value={paymentAmount}
                     onChange={(e) => setPaymentAmount(e.target.value)}
                     className="form-input"
@@ -330,7 +363,7 @@ export const InvoiceBillingPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label className="form-label">
                     Transaction Reference / Receipt Ref (Optional)
                   </label>
@@ -341,7 +374,7 @@ export const InvoiceBillingPage: React.FC = () => {
                     className="form-input"
                     placeholder="e.g., TXN-987654321"
                   />
-                </div>
+                </div> */}
 
                 <div
                   style={{ display: "flex", gap: "10px", marginTop: "15px" }}

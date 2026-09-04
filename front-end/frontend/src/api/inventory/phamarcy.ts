@@ -49,6 +49,12 @@ export interface Prescription {
   id: string;
   notes?: string;
   visit?: PatientVisit;
+  status:
+    | "PENDING"
+    | "DISPENSED"
+    | "COMPLETED"
+    | "PARTIALLY_DISPENSED"
+    | "CANCELLED";
   items: PrescriptionItem[];
 }
 
@@ -60,6 +66,8 @@ export interface DispenseFormItem {
   batchId: string;
   maxQty: number;
   batches: PrescriptionBatch[];
+  dosage?: string;
+  duration?: string;
 }
 
 export interface Product {
@@ -182,5 +190,15 @@ export const createDispenseRecordApi = async (
   dto: CreateDispenseRecordDTO,
 ): Promise<unknown> => {
   const response = await api.post("/pharmacy/dispense", dto);
+  return response.data;
+};
+export const updatePrescriptionStatusApi = async (
+  prescriptionId: string,
+  status: string,
+) => {
+  const response = await api.patch(
+    `/pharmacy/prescriptions/${prescriptionId}/status`,
+    { status },
+  );
   return response.data;
 };

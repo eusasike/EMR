@@ -29,7 +29,6 @@ export class BillingPublisher {
     amount: number;
     balanceRemaining: number;
     paymentMethod: string;
-    receivedById: string;
     timestamp: string;
   }) {
     return await publishToQueue(

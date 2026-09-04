@@ -18,6 +18,7 @@ import {
   CreatePrescriptionInput,
 } from "../../models/clinical/medical-service.model";
 import { NotFoundError, ConflictError } from "../../util/custom-error";
+import { recalculateVisitInvoice } from "../../helper/invoice.helper"; // <-- Import your invoice recalculation helper
 
 const MEDICAL_SERVICE_CACHE_TTL = 3600; // 1 hour TTL
 
@@ -224,76 +225,6 @@ export class MedicalServiceService {
   /**
    * [DOCTOR]: Records a service provided to a patient visit
    */
-  // async provideService(
-  //   providedById: string,
-  //   input: ProvideServiceInput,
-  // ): Promise<ProvidedService> {
-  //   const validatedData = provideServiceSchema.parse({
-  //     ...input,
-  //     providedById: input.providedById || providedById,
-  //   });
-
-  //   // 1. Parallel check for visit and service existence
-  //   const [visit, service] = await Promise.all([
-  //     prisma.patientVisit.findUnique({
-  //       where: { id: validatedData.visitId },
-  //       select: {
-  //         id: true,
-  //         patientId: true,
-  //         patient: { select: { mrn: true } },
-  //       },
-  //     }),
-  //     prisma.medicalService.findUnique({
-  //       where: { id: validatedData.serviceId },
-  //     }),
-  //   ]);
-
-  //   if (!visit) {
-  //     throw new NotFoundError(
-  //       `PATIENT_VISIT_NOT_FOUND: ${validatedData.visitId}`,
-  //     );
-  //   }
-  //   if (!service) {
-  //     throw new NotFoundError(
-  //       `MEDICAL_SERVICE_NOT_FOUND: ${validatedData.serviceId}`,
-  //     );
-  //   }
-
-  //   // 2. Transactional persistence
-  //   const record = await prisma.$transaction(async (tx) => {
-  //     return await tx.providedService.create({
-  //       data: {
-  //         visitId: validatedData.visitId,
-  //         serviceId: validatedData.serviceId,
-  //         unitPrice: service.price,
-  //         notes: validatedData.notes,
-  //         providedById: validatedData.providedById,
-  //       },
-  //     });
-  //   });
-
-  //   // 3. Publish asynchronous event
-  //   await publishServiceProvidedEvent({
-  //     providedServiceId: record.id,
-  //     visitId: record.visitId,
-  //     serviceId: record.serviceId,
-  //     providedById: record.providedById,
-  //     unitPrice: Number(record.unitPrice),
-  //     timestamp: record.createdAt.toISOString(),
-  //   });
-
-  //   // 4. Redis Cache Invalidation
-  //   if (redisClient.status === "ready" || redisClient.status === "connect") {
-  //     await Promise.all([
-  //       redisClient.del(`visit:${validatedData.visitId}`),
-  //       redisClient.del(`patient:mrn:${visit.patient.mrn}:visits`),
-  //     ]);
-  //   }
-
-  //   return record;
-  // }
-  // Update in src/service/clinical/medical-service.service.ts inside provideService method:
-
   async provideService(
     providedById: string,
     input: ProvideServiceInput,
@@ -310,6 +241,7 @@ export class MedicalServiceService {
         select: {
           id: true,
           patientId: true,
+          facilityId: true, // <-- Ensure facilityId is retrieved for invoice recalculation
           patient: { select: { mrn: true } },
         },
       }),
@@ -359,7 +291,10 @@ export class MedicalServiceService {
       return providedService;
     });
 
-    // 3. Publish asynchronous event
+    // 3. Automatically Recalculate Visit Invoice
+    await recalculateVisitInvoice(validatedData.visitId, visit.facilityId);
+
+    // 4. Publish asynchronous event
     await publishServiceProvidedEvent({
       providedServiceId: record.id,
       visitId: record.visitId,
@@ -369,7 +304,7 @@ export class MedicalServiceService {
       timestamp: record.createdAt.toISOString(),
     });
 
-    // 4. Redis Cache Invalidation
+    // 5. Redis Cache Invalidation
     if (redisClient.status === "ready" || redisClient.status === "connect") {
       await Promise.all([
         redisClient.del(`visit:${validatedData.visitId}`),
@@ -380,15 +315,15 @@ export class MedicalServiceService {
 
     return record;
   }
+
   /**
    * [DOCTOR]: Fetch provided services for a patient using MRN
    */
   async getProvidedServicesByMrn(mrn: string, facilityId?: string) {
-    // 1. Find the patient by MRN (using findFirst because mrn is part of a compound unique)
     const patient = await prisma.patient.findFirst({
       where: {
         mrn,
-        ...(facilityId && { facilityId }), // Optional facility scope if available
+        ...(facilityId && { facilityId }),
       },
       select: { id: true },
     });
@@ -397,7 +332,6 @@ export class MedicalServiceService {
       throw new NotFoundError(`PATIENT_NOT_FOUND_FOR_MRN: ${mrn}`);
     }
 
-    // 2. Query provided services across all visits for this patient
     return await prisma.providedService.findMany({
       where: {
         visit: {
@@ -427,35 +361,6 @@ export class MedicalServiceService {
   }
 
   /**
-   * [DOCTOR]: Fetch the most recent visit by MRN
-   */
-  /**
-   * [DOCTOR]: Fetch the most recent active/in-progress visit by MRN
-   */
-  // async getLatestVisitByMrn(mrn: string) {
-  //   const visit = await prisma.patientVisit.findFirst({
-  //     where: {
-  //       patient: { mrn },
-  //       // Enforce that the visit must be in progress
-  //       // (Adjust the field name 'status' and value 'IN_PROGRESS' to match your exact schema enum/string)
-  //       status: "IN_PROGRESS",
-  //     },
-  //     include: {
-  //       services: {
-  //         include: { service: true },
-  //       },
-  //     },
-  //     orderBy: { createdAt: "desc" },
-  //   });
-
-  //   if (!visit) {
-  //     throw new NotFoundError(`NO_ACTIVE_VISIT_FOUND_FOR_MRN: ${mrn}`);
-  //   }
-
-  //   return visit;
-  // }
-
-  /**
    * [DOCTOR]: Updates an existing provided service item
    */
   async updateProvidedService(
@@ -467,6 +372,8 @@ export class MedicalServiceService {
       include: {
         visit: {
           select: {
+            id: true,
+            facilityId: true, // <-- Include facilityId for invoice recalculation
             patient: { select: { mrn: true } },
           },
         },
@@ -513,6 +420,12 @@ export class MedicalServiceService {
       });
     });
 
+    // Automatically Recalculate Visit Invoice after service update
+    await recalculateVisitInvoice(
+      updatedRecord.visitId,
+      existingRecord.visit.facilityId,
+    );
+
     if (redisClient.status === "ready" || redisClient.status === "connect") {
       await Promise.all([
         redisClient.del(`visit:${updatedRecord.visitId}`),
@@ -525,9 +438,6 @@ export class MedicalServiceService {
     return updatedRecord;
   }
 
-  // 2. Update getLatestVisitByMrn in src/service/clinical/medical-service.service.ts
-  // so the doctor can see the lab results/status attached to the visit services:
-
   async getLatestVisitByMrn(mrn: string) {
     const visit = await prisma.patientVisit.findFirst({
       where: {
@@ -535,14 +445,13 @@ export class MedicalServiceService {
         status: "IN_PROGRESS",
       },
       include: {
-        vitalSigns: true, // <-- Include vital signs relation
+        vitalSigns: true,
         services: {
           include: {
             service: true,
             labResult: true,
           },
         },
-        // Include prescriptions at the PatientVisit level
         prescriptions: {
           include: {
             items: {
@@ -600,7 +509,6 @@ export class MedicalServiceService {
     }
 
     const prescription = await prisma.$transaction(async (tx) => {
-      // Generate the auto-incremented prescription number safely inside the transaction
       const prescriptionNumber = await this.generatePrescriptionNumber(
         visit.patient.facilityId,
         tx,
@@ -632,6 +540,9 @@ export class MedicalServiceService {
         },
       });
     });
+
+    // Automatically Recalculate Visit Invoice for prescription additions
+    await recalculateVisitInvoice(input.visitId, visit.patient.facilityId);
 
     if (redisClient.status === "ready" || redisClient.status === "connect") {
       await Promise.all([

@@ -118,7 +118,7 @@ export class AdmissionService {
     });
 
     // Invalidate caches
-    await redisClient.del(`ward:${admission.bed.wardId}:beds`);
+    await redisClient.del(`ward:${admission.bedId}:beds`);
     await redisClient.del("wards:all");
 
     // Publish event via AdmissionPublisher
@@ -128,7 +128,7 @@ export class AdmissionService {
       visitId: admission.visitId,
       patientId: admission.patientId,
       bedId: admission.bedId,
-      wardId: admission.bed.wardId,
+      wardId: admission.wardId,
       dailyRate: Number(admission.bed.ward.dailyRate),
       admittedAt: admission.admittedAt.toISOString(),
     });

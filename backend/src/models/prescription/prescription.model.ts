@@ -15,9 +15,11 @@ export interface CreatePrescriptionItemDTO {
   quantityOrdered: number;
   route?: string;
   instructions?: string;
+  unitPrice: number; // <-- New required field
 }
 
 export interface CreatePrescriptionDTO {
+  facilityId: string;
   visitId: string;
   notes?: string;
   items: CreatePrescriptionItemDTO[];
@@ -36,9 +38,11 @@ export const createPrescriptionItemSchema = z.object({
     .positive("Quantity ordered must be at least 1"),
   route: z.string().optional(),
   instructions: z.string().optional(),
+  unitPrice: z.number().positive("Unit price must be a positive number"), // <-- New required field
 });
 
 export const createPrescriptionSchema = z.object({
+  facilityId: z.string().uuid("Invalid Facility ID"),
   visitId: z.string().uuid("Invalid Visit ID"),
   notes: z.string().optional(),
   items: z

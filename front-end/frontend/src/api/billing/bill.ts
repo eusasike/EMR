@@ -1,3 +1,4 @@
+// src/api/billing/bill.ts
 import { api } from "../axiosClient";
 
 export type ChargeType =
@@ -6,20 +7,22 @@ export type ChargeType =
   | "LAB"
   | "RADIOLOGY"
   | "OTHER";
+
 export type PaymentMethod =
   | "CASH"
   | "MOBILE_MONEY"
   | "CREDIT_CARD"
   | "BANK_TRANSFER"
   | "INSURANCE";
+
 export type InvoiceStatus =
   | "PENDING"
   | "PARTIALLY_PAID"
   | "PAID"
   | "CANCELLED"
   | "REFUNDED";
+
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "CANCELLED";
-export type InvoiceType = "FINAL" | "PROVISIONAL";
 
 export interface CreateInvoiceItemDTO {
   chargeType: ChargeType;
@@ -31,6 +34,7 @@ export interface CreateInvoiceItemDTO {
 
 export interface CreateInvoiceDTO {
   visitId: string;
+  facilityId: string;
   notes?: string | null;
   items?: CreateInvoiceItemDTO[];
 }
@@ -39,8 +43,6 @@ export interface CreatePaymentDTO {
   invoiceId: string;
   amount: number;
   paymentMethod: PaymentMethod;
-  transactionRef?: string | null;
-  receivedById: string;
 }
 
 export interface InvoiceItemResponseDTO {
@@ -50,40 +52,54 @@ export interface InvoiceItemResponseDTO {
   referenceId: string | null;
   description: string;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+  unitPrice: string | number;
+  totalPrice: string | number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface PaymentResponseDTO {
   id: string;
-  receiptNumber: string;
-  invoiceId: string;
-  amount: number;
+  receiptNumber?: string;
+  invoiceId?: string;
+  amount: string | number;
   paymentMethod: PaymentMethod;
-  status: PaymentStatus;
+  status?: PaymentStatus;
   transactionRef: string | null;
-  receivedById: string;
+  receivedById?: string;
   createdAt: string;
-  updatedAt: string;
+}
+
+export interface PatientSummaryDTO {
+  id: string;
+  mrn: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface VisitSummaryDTO {
+  id: string;
+  visitDate: string;
+  patient: PatientSummaryDTO | null;
 }
 
 export interface InvoiceResponseDTO {
   id: string;
-  facilityId: string;
-  visitId: string | null;
   invoiceNumber: string;
-  totalAmount: number;
-  paidAmount: number;
-  balanceDue: number;
+  visitId?: string;
+  serviceTotal: string | number;
+  medicationTotal: string | number;
+  grandTotal: string | number;
+  amountPaid: string | number;
+  balance: string | number;
   status: InvoiceStatus;
-  type: InvoiceType;
+  type: string;
   notes?: string | null;
   items?: InvoiceItemResponseDTO[];
   payments?: PaymentResponseDTO[];
+  visit?: VisitSummaryDTO | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 interface WrappedResponse<T> {
@@ -105,7 +121,6 @@ const unwrapResponse = <T>(responsePayload: ApiResponse<T>): T => {
   return responsePayload as T;
 };
 
-// 1. Create a new itemized invoice (Services, Pharmacy items, etc.)
 export const createInvoiceApi = async (
   data: CreateInvoiceDTO,
 ): Promise<InvoiceResponseDTO> => {
@@ -116,7 +131,6 @@ export const createInvoiceApi = async (
   return unwrapResponse(response.data);
 };
 
-// 2. Fetch invoice details by ID, including line items and payment history
 export const getInvoiceByIdApi = async (
   invoiceId: string,
 ): Promise<InvoiceResponseDTO> => {
@@ -126,7 +140,6 @@ export const getInvoiceByIdApi = async (
   return unwrapResponse(response.data);
 };
 
-// 3. Process a payment against an outstanding invoice
 export const recordPaymentApi = async (
   invoiceId: string,
   data: CreatePaymentDTO,

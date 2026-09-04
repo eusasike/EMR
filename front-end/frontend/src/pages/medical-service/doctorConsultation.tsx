@@ -1,3 +1,4 @@
+// src/pages/doctor/DoctorConsultationPage.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { searchPatientApi, type Patient } from "../../api/patient/patient";
 import {
@@ -14,46 +15,15 @@ import { verifyLabResultApi } from "../../api/lab/lab";
 import { getPharmacyProductsApi } from "../../api/inventory/phamarcy";
 import axios from "axios";
 import { AppLayout } from "../../components/layout/AppLayout";
-
-export interface LabResultItem {
-  id: string;
-  status: string;
-  specimenType?: string;
-  resultValue?: string;
-  unit?: string;
-  referenceRange?: string;
-  findings?: string;
-}
-
-export interface ExtendedProvidedServiceItem extends ProvidedServiceItem {
-  labResult?: LabResultItem;
-}
-
-export interface PharmacyPrescriptionItem {
-  productId: string;
-  productName: string;
-  unitPrice: number;
-  quantity: number;
-  dosage: string;
-  duration: string;
-  selected: boolean;
-}
-
-export interface PrescriptionSummaryItem {
-  id?: string;
-  productId: string;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-  dosage?: string;
-  duration?: string;
-}
-
-export interface PrescriptionSummary {
-  id: string;
-  notes?: string;
-  items: PrescriptionSummaryItem[];
-}
+import {
+  type LabResultItem,
+  type ExtendedProvidedServiceItem,
+  type PrescriptionBatch,
+  type PharmacyProduct,
+  type PharmacyPrescriptionItem,
+  type PrescriptionSummaryItem,
+  type PrescriptionSummary,
+} from "../../api/medical-service/doctorConsultation"; // Adjust path to types file if necessary
 
 export const DoctorConsultationPage: React.FC = () => {
   const [mrnQuery, setMrnQuery] = useState("");
@@ -96,17 +66,32 @@ export const DoctorConsultationPage: React.FC = () => {
 
   const loadPharmacyCatalog = useCallback(async () => {
     try {
-      const products = await getPharmacyProductsApi();
+      const rawProducts = (await getPharmacyProductsApi()) as PharmacyProduct[];
+      const products = Array.isArray(rawProducts) ? rawProducts : [];
       setPrescriptionItems(
-        products.map((p) => ({
-          productId: p.id,
-          productName: p.name,
-          unitPrice: Number(p.unitPrice) || 0,
-          quantity: 1,
-          dosage: "1 tab daily",
-          duration: "5",
-          selected: false,
-        })),
+        products.map((p) => {
+          let parsedBatches: PrescriptionBatch[] = [];
+          if (Array.isArray(p.batches)) {
+            parsedBatches = p.batches;
+          } else if (typeof p.batches === "string") {
+            try {
+              const parsed = JSON.parse(p.batches as unknown as string);
+              if (Array.isArray(parsed)) parsedBatches = parsed;
+            } catch {
+              parsedBatches = [];
+            }
+          }
+          return {
+            productId: p.id,
+            productName: p.name,
+            unitPrice: Number(p.unitPrice) || 0,
+            quantity: 1,
+            dosage: "1 tab daily",
+            duration: "5",
+            selected: false,
+            batches: parsedBatches,
+          };
+        }),
       );
     } catch {
       // Non-blocking fallback if pharmacy catalog fails to fetch
@@ -151,7 +136,9 @@ export const DoctorConsultationPage: React.FC = () => {
 
       setActiveVisit(visitData);
       setServicesList(
-        catalogServices.filter((s: MedicalService) => s.isActive ?? true),
+        (Array.isArray(catalogServices) ? catalogServices : []).filter(
+          (s: MedicalService) => s.isActive ?? true,
+        ),
       );
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -224,8 +211,9 @@ export const DoctorConsultationPage: React.FC = () => {
 
     try {
       setLoading(true);
+
       await verifyLabResultApi(selectedLabResult.id, {
-        findings: selectedLabResult.findings,
+        findings: selectedLabResult.findings?.trim() || undefined,
       });
 
       setSuccessMsg("Lab results verified and approved successfully!");
@@ -307,11 +295,20 @@ export const DoctorConsultationPage: React.FC = () => {
 
   const handlePharmacyQtyChange = (productId: string, qty: number) => {
     setPrescriptionItems((prev) =>
-      prev.map((item) =>
-        item.productId === productId
-          ? { ...item, quantity: Math.max(1, qty) }
-          : item,
-      ),
+      prev.map((item) => {
+        if (item.productId === productId) {
+          const totalStock = item.batches.reduce(
+            (sum, b) => sum + (b.quantity || 0),
+            0,
+          );
+          const clampedQty = Math.max(
+            1,
+            totalStock > 0 ? Math.min(qty, totalStock) : qty,
+          );
+          return { ...item, quantity: clampedQty };
+        }
+        return item;
+      }),
     );
   };
 
@@ -341,7 +338,13 @@ export const DoctorConsultationPage: React.FC = () => {
   ) => {
     setEditablePrescriptionItems((prev) => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
+      if (field === "quantity") {
+        const item = updated[index];
+        const enteredVal = Number(value);
+        updated[index] = { ...item, [field]: Math.max(1, enteredVal) };
+      } else {
+        updated[index] = { ...updated[index], [field]: value };
+      }
       return updated;
     });
   };
@@ -371,6 +374,19 @@ export const DoctorConsultationPage: React.FC = () => {
     if (selectedProducts.length === 0) {
       setError("Please select at least one pharmacy product.");
       return;
+    }
+
+    for (const item of selectedProducts) {
+      const totalStock = item.batches.reduce(
+        (sum, b) => sum + (b.quantity || 0),
+        0,
+      );
+      if (item.quantity > totalStock) {
+        setError(
+          `Quantity for "${item.productName}" exceeds available stock (${totalStock} left).`,
+        );
+        return;
+      }
     }
 
     setError(null);
@@ -553,6 +569,12 @@ export const DoctorConsultationPage: React.FC = () => {
                   </span>
                 </div>
                 <div>
+                  <span className="text-muted">Symptoms:</span>{" "}
+                  <span className="font-medium text-slate-800">
+                    {activeVisit.symptoms}
+                  </span>
+                </div>
+                <div>
                   <span className="text-muted">Visit Status:</span>{" "}
                   <span className="badge badge-in-progress">
                     {activeVisit.status?.toUpperCase()}
@@ -565,6 +587,7 @@ export const DoctorConsultationPage: React.FC = () => {
             <div className="flex justify-between items-center gap-3">
               <div style={{ display: "flex", gap: "2cm" }}>
                 <button
+                  type="button"
                   onClick={handleOpenPharmacyModal}
                   className="btn-primary text-sm py-2 px-4"
                   style={{ backgroundColor: "#033909" }}
@@ -573,6 +596,7 @@ export const DoctorConsultationPage: React.FC = () => {
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleOpenCreateModal}
                   className="btn-primary text-sm py-2 px-4"
                 >
@@ -581,7 +605,7 @@ export const DoctorConsultationPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Prescriptions Table (Ordered Medications) */}
+            {/* Prescriptions Table */}
             {activeVisit.prescriptions &&
               activeVisit.prescriptions.length > 0 && (
                 <div className="table-card mb-6">
@@ -599,62 +623,82 @@ export const DoctorConsultationPage: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {activeVisit.prescriptions.map((rx) => (
-                        <tr key={rx.id}>
-                          <td className="font-medium text-slate-900 code-badge">
-                            {rx.id.substring(0, 8)}...
-                          </td>
-                          <td className="text-muted text-xs">
-                            {rx.notes || "—"}
-                          </td>
-                          <td>
-                            {rx.items?.map((item) => (
-                              <div
-                                key={item.id || item.productId}
-                                className="text-xs"
+                      {activeVisit.prescriptions.map((rx) => {
+                        const isCompleted =
+                          rx.status?.toUpperCase() === "COMPLETED";
+
+                        return (
+                          <tr key={rx.id}>
+                            <td className="font-medium text-slate-900 code-badge">
+                              {rx.id.substring(0, 8)}...
+                            </td>
+                            <td className="text-muted text-xs">
+                              {rx.notes || "—"}
+                            </td>
+                            <td>
+                              {Array.isArray(rx.items) &&
+                                rx.items.map((item) => {
+                                  const typedItem =
+                                    item as PrescriptionSummaryItem;
+                                  return (
+                                    <div
+                                      key={typedItem.id || typedItem.productId}
+                                      className="text-xs"
+                                    >
+                                      <span className="font-medium">
+                                        {typedItem.productName || "Product"}
+                                      </span>{" "}
+                                      ({typedItem.quantity} units)
+                                    </div>
+                                  );
+                                })}
+                            </td>
+                            <td>
+                              <span
+                                className={`badge ${isCompleted ? "badge-success" : "badge-in-progress"}`}
                               >
-                                <span className="font-medium">
-                                  {item.product?.name ||
-                                    item.productName ||
-                                    "Product"}
-                                </span>{" "}
-                                ({item.quantity} units)
-                              </div>
-                            ))}
-                          </td>
-                          <td>
-                            <span className="badge badge-success">
-                              {rx.status || "PRESCRIBED"}
-                            </span>
-                          </td>
-                          <td className="text-right">
-                            <button
-                              onClick={() =>
-                                handleOpenEditPrescriptionModal({
-                                  id: rx.id,
-                                  notes: rx.notes,
-                                  items: (rx.items || []).map((i) => ({
-                                    id: i.id,
-                                    productId: i.productId,
-                                    productName:
-                                      i.product?.name ||
-                                      i.productName ||
-                                      "Product",
-                                    quantity: i.quantity,
-                                    unitPrice: Number(i.unitPrice || 0),
-                                    dosage: i.dosage,
-                                    duration: i.duration,
-                                  })),
-                                })
-                              }
-                              className="btn-logout"
-                              style={{ fontSize: 12, padding: "4px 10px" }}
-                            >
-                              Edit Order
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                                {rx.status || "PRESCRIBED"}
+                              </span>
+                            </td>
+                            <td className="text-right">
+                              {!isCompleted && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleOpenEditPrescriptionModal({
+                                      id: rx.id,
+                                      notes: rx.notes,
+                                      items: (Array.isArray(rx.items)
+                                        ? rx.items
+                                        : []
+                                      ).map((i) => {
+                                        const typedI =
+                                          i as PrescriptionSummaryItem;
+                                        return {
+                                          id: typedI.id,
+                                          productId: typedI.productId,
+                                          productName:
+                                            typedI.productName || "Product",
+                                          quantity: typedI.quantity,
+                                          unitPrice: Number(
+                                            typedI.unitPrice || 0,
+                                          ),
+                                          dosage: typedI.dosage,
+                                          duration: typedI.duration,
+                                        };
+                                      }),
+                                    })
+                                  }
+                                  className="btn-logout"
+                                  style={{ fontSize: 12, padding: "4px 10px" }}
+                                >
+                                  Edit Order
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -721,6 +765,7 @@ export const DoctorConsultationPage: React.FC = () => {
                             <td className="text-right space-x-2">
                               {isLab && item.labResult && (
                                 <button
+                                  type="button"
                                   onClick={() =>
                                     handleOpenLabModal(
                                       item.labResult as LabResultItem,
@@ -738,6 +783,7 @@ export const DoctorConsultationPage: React.FC = () => {
                               )}
                               {labStatus !== "VERIFIED" && !isPharm && (
                                 <button
+                                  type="button"
                                   onClick={() => handleOpenEditModal(item)}
                                   className="btn-logout"
                                   style={{ fontSize: 12, padding: "4px 10px" }}
@@ -764,12 +810,203 @@ export const DoctorConsultationPage: React.FC = () => {
           </div>
         )}
 
+        {/* Pharmacy Order Modal with Batch Balances */}
+        {isPharmacyModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-card" style={{ maxWidth: "950px" }}>
+              <div className="modal-header">
+                <h3 style={{ margin: 0 }}>Order Pharmacy Products</h3>
+                <button
+                  type="button"
+                  onClick={() => setIsPharmacyModalOpen(false)}
+                  className="modal-close-btn"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {error && (
+                <div
+                  style={{
+                    color: "#ef4444",
+                    fontSize: "13px",
+                    marginTop: "10px",
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+
+              <div className="my-3">
+                <input
+                  type="text"
+                  placeholder="Search medication catalog..."
+                  value={pharmacySearchQuery}
+                  onChange={(e) => setPharmacySearchQuery(e.target.value)}
+                  className="search-input w-full"
+                  style={{ width: "100%" }}
+                />
+              </div>
+
+              <form onSubmit={handlePharmacySubmit}>
+                <div
+                  className="overflow-y-auto border border-slate-200 rounded-md my-3 p-2 bg-slate-50"
+                  style={{ maxHeight: "350px" }}
+                >
+                  <table
+                    className="w-full text-sm"
+                    border={1}
+                    cellPadding={4}
+                    cellSpacing={0}
+                  >
+                    <thead>
+                      <tr className="border-b border-slate-200 text-left text-muted text-xs">
+                        <th className="p-2">Select</th>
+                        <th className="p-2">Product Name</th>
+                        <th className="p-2">Available Batch Balances</th>
+                        <th className="p-2">Unit Price</th>
+                        <th className="p-2">Order Qty</th>
+                        <th className="p-2">Dosage</th>
+                        <th className="p-2">Duration</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPharmacyItems.map((item) => {
+                        const totalStock = item.batches.reduce(
+                          (sum, b) => sum + (b.quantity || 0),
+                          0,
+                        );
+
+                        return (
+                          <tr
+                            key={item.productId}
+                            className="border-b border-slate-100 hover:bg-white"
+                          >
+                            <td className="p-2">
+                              <input
+                                type="checkbox"
+                                checked={item.selected}
+                                onChange={() =>
+                                  handlePharmacyItemToggle(item.productId)
+                                }
+                              />
+                            </td>
+                            <td className="p-2 font-medium text-slate-800">
+                              {item.productName}
+                            </td>
+                            <td className="p-2 text-xs text-slate-600">
+                              {item.batches && item.batches.length > 0 ? (
+                                <div className="space-y-1">
+                                  {item.batches.map((b) => (
+                                    <div
+                                      key={b.id}
+                                      className="flex items-center gap-2"
+                                    >
+                                      <span>Qty: {b.quantity}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-red-500">No stock</span>
+                              )}
+                            </td>
+                            <td className="p-2">
+                              ${item.unitPrice.toFixed(2)}
+                            </td>
+                            <td className="p-2">
+                              <input
+                                type="number"
+                                min="1"
+                                max={totalStock > 0 ? totalStock : undefined}
+                                value={item.quantity}
+                                onChange={(e) =>
+                                  handlePharmacyQtyChange(
+                                    item.productId,
+                                    parseInt(e.target.value) || 1,
+                                  )
+                                }
+                                className="form-input text-xs"
+                                style={{ width: "60px" }}
+                                disabled={!item.selected}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <input
+                                type="text"
+                                value={item.dosage}
+                                onChange={(e) =>
+                                  handlePharmacyDosageChange(
+                                    item.productId,
+                                    e.target.value,
+                                  )
+                                }
+                                className="form-input text-xs"
+                                style={{ width: "90px" }}
+                                disabled={!item.selected}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <input
+                                type="text"
+                                value={item.duration}
+                                onChange={(e) =>
+                                  handlePharmacyDurationChange(
+                                    item.productId,
+                                    e.target.value,
+                                  )
+                                }
+                                className="form-input text-xs"
+                                style={{ width: "60px" }}
+                                disabled={!item.selected}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex justify-between items-center mt-4">
+                  <div className="font-semibold text-sm">
+                    Total Estimated Cost:{" "}
+                    <span className="text-green-600">
+                      ${calculateTotalPharmacyCost().toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsPharmacyModalOpen(false)}
+                      className="btn-logout text-sm py-2 px-4"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="btn-primary text-sm py-2 px-4"
+                      style={{ backgroundColor: "#033909" }}
+                    >
+                      {loading
+                        ? "Ordering..."
+                        : "Confirm & Order Prescriptions"}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Edit Prescription Modal */}
         {isEditPrescriptionModalOpen && activePrescription && (
           <div className="modal-overlay">
-            <div className="modal-card" style={{ maxWidth: "850px" }}>
+            <div className="modal-card" style={{ maxWidth: "800px" }}>
               <div className="modal-header">
-                <h3 style={{ margin: 0 }}>Edit Ordered Prescription</h3>
+                <h3 style={{ margin: 0 }}>
+                  Edit Prescription #{activePrescription.id.substring(0, 8)}
+                </h3>
                 <button
                   type="button"
                   onClick={() => setIsEditPrescriptionModalOpen(false)}
@@ -792,8 +1029,16 @@ export const DoctorConsultationPage: React.FC = () => {
               )}
 
               <form onSubmit={handleUpdatePrescriptionSubmit}>
-                <div className="max-h-80 overflow-y-auto border border-slate-200 rounded-md my-3 p-2 bg-slate-50">
-                  <table className="w-full text-sm">
+                <div
+                  className="overflow-y-auto border border-slate-200 rounded-md my-3 p-2 bg-slate-50"
+                  style={{ maxHeight: "350px" }}
+                >
+                  <table
+                    className="w-full text-sm"
+                    border={1}
+                    cellPadding={4}
+                    cellSpacing={0}
+                  >
                     <thead>
                       <tr className="border-b border-slate-200 text-left text-muted text-xs">
                         <th className="p-2">Product Name</th>
@@ -801,131 +1046,120 @@ export const DoctorConsultationPage: React.FC = () => {
                         <th className="p-2">Qty</th>
                         <th className="p-2">Dosage</th>
                         <th className="p-2">Duration</th>
-                        <th className="p-2 text-right">Subtotal</th>
-                        <th className="p-2 text-center">Action</th>
+                        <th className="p-2 text-right">Remove</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {editablePrescriptionItems.map((item, index) => {
-                        const subtotal = item.unitPrice * item.quantity;
-                        return (
-                          <tr
-                            key={item.productId || index}
-                            className="border-b border-slate-100 hover:bg-white"
-                          >
-                            <td className="p-2 font-medium text-slate-800">
-                              {item.productName}
-                            </td>
-                            <td className="p-2">
-                              ${Number(item.unitPrice).toFixed(2)}
-                            </td>
-                            <td className="p-2">
-                              <input
-                                type="number"
-                                min={1}
-                                value={item.quantity}
-                                onChange={(e) =>
-                                  handleEditableItemChange(
-                                    index,
-                                    "quantity",
-                                    Number(e.target.value),
-                                  )
-                                }
-                                className="form-input text-center"
-                                style={{ width: "60px", padding: "2px 4px" }}
-                                required
-                              />
-                            </td>
-                            <td className="p-2">
-                              <input
-                                type="text"
-                                value={item.dosage || ""}
-                                onChange={(e) =>
-                                  handleEditableItemChange(
-                                    index,
-                                    "dosage",
-                                    e.target.value,
-                                  )
-                                }
-                                className="form-input"
-                                style={{ width: "110px", padding: "2px 6px" }}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <input
-                                type="text"
-                                value={item.duration || ""}
-                                onChange={(e) =>
-                                  handleEditableItemChange(
-                                    index,
-                                    "duration",
-                                    e.target.value,
-                                  )
-                                }
-                                className="form-input"
-                                style={{ width: "90px", padding: "2px 6px" }}
-                              />
-                            </td>
-                            <td className="p-2 text-right font-semibold">
-                              ${subtotal.toFixed(2)}
-                            </td>
-                            <td className="p-2 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveEditableItem(index)}
-                                className="text-red-600 hover:text-red-800 text-xs font-bold"
-                              >
-                                Remove
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {editablePrescriptionItems.map((item, index) => (
+                        <tr
+                          key={item.id || item.productId}
+                          className="border-b border-slate-100 hover:bg-white"
+                        >
+                          <td className="p-2 font-medium text-slate-800">
+                            {item.productName || "Product"}
+                          </td>
+                          <td className="p-2">
+                            ${Number(item.unitPrice).toFixed(2)}
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleEditableItemChange(
+                                  index,
+                                  "quantity",
+                                  e.target.value,
+                                )
+                              }
+                              className="form-input text-xs"
+                              style={{ width: "60px" }}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={item.dosage || ""}
+                              onChange={(e) =>
+                                handleEditableItemChange(
+                                  index,
+                                  "dosage",
+                                  e.target.value,
+                                )
+                              }
+                              className="form-input text-xs"
+                              style={{ width: "90px" }}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={item.duration || ""}
+                              onChange={(e) =>
+                                handleEditableItemChange(
+                                  index,
+                                  "duration",
+                                  e.target.value,
+                                )
+                              }
+                              className="form-input text-xs"
+                              style={{ width: "60px" }}
+                            />
+                          </td>
+                          <td className="p-2 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveEditableItem(index)}
+                              className="text-red-600 hover:text-red-800 text-xs font-semibold"
+                            >
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
 
-                <div className="bg-sky-50 p-3 rounded-md flex justify-between items-center mb-4">
-                  <span className="font-semibold text-slate-800">
-                    Total Prescription Cost:
-                  </span>
-                  <span className="text-lg font-bold text-sky-700">
-                    ${calculateEditableTotalCost().toFixed(2)}
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditPrescriptionModalOpen(false)}
-                    className="btn-logout"
-                    style={{ flex: 1 }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-primary"
-                    style={{ flex: 1 }}
-                  >
-                    {loading ? "Updating..." : "Save Prescription Changes"}
-                  </button>
+                <div className="flex justify-between items-center mt-4">
+                  <div className="font-semibold text-sm">
+                    Updated Total Cost:{" "}
+                    <span className="text-green-600">
+                      ${calculateEditableTotalCost().toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditPrescriptionModalOpen(false)}
+                      className="btn-logout text-sm py-2 px-4"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="btn-primary text-sm py-2 px-4"
+                    >
+                      {loading ? "Saving..." : "Save Changes"}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        {/* Order New Service Modal */}
+        {/* Modal for Creating/Editing Service Order */}
         {isModalOpen && (
           <div className="modal-overlay">
-            <div className="modal-card">
+            <div className="modal-card" style={{ maxWidth: "500px" }}>
               <div className="modal-header">
                 <h3 style={{ margin: 0 }}>
                   {editingProvidedServiceId
-                    ? "Edit Service Order"
-                    : "Order New Service"}
+                    ? "Edit Medical Service Order"
+                    : "Order New Medical Service"}
                 </h3>
                 <button
                   type="button"
@@ -948,20 +1182,19 @@ export const DoctorConsultationPage: React.FC = () => {
                 </div>
               )}
 
-              <form onSubmit={handleFormSubmit} className="auth-form">
+              <form onSubmit={handleFormSubmit} className="auth-form space-y-4">
                 <div className="form-group">
-                  <label className="form-label">Medical Service</label>
+                  <label className="form-label">Select Medical Service</label>
                   <select
                     value={selectedServiceId}
                     onChange={(e) => setSelectedServiceId(e.target.value)}
                     className="form-input"
                     required
                   >
-                    <option value="">-- Select Service --</option>
-                    {servicesList.map((svc) => (
-                      <option key={svc.id} value={svc.id}>
-                        {svc.name} (${Number(svc.price).toFixed(2)}) -{" "}
-                        {svc.category}
+                    <option value="">-- Choose Service --</option>
+                    {servicesList.map((service) => (
+                      <option key={service.id} value={service.id}>
+                        {service.name} (${Number(service.price).toFixed(2)})
                       </option>
                     ))}
                   </select>
@@ -973,8 +1206,8 @@ export const DoctorConsultationPage: React.FC = () => {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     className="form-input"
-                    placeholder="Optional clinical notes..."
                     rows={3}
+                    placeholder="Optional clinical notes..."
                   />
                 </div>
 
@@ -995,11 +1228,7 @@ export const DoctorConsultationPage: React.FC = () => {
                     className="btn-primary"
                     style={{ flex: 1 }}
                   >
-                    {loading
-                      ? "Saving..."
-                      : editingProvidedServiceId
-                        ? "Update Order"
-                        : "Submit Order"}
+                    {loading ? "Saving..." : "Save Order"}
                   </button>
                 </div>
               </form>
@@ -1007,179 +1236,12 @@ export const DoctorConsultationPage: React.FC = () => {
           </div>
         )}
 
-        {/* Order Pharmacy Products Modal */}
-        {isPharmacyModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal-card" style={{ maxWidth: "850px" }}>
-              <div className="modal-header">
-                <h3 style={{ margin: 0 }}>Order Pharmacy Products</h3>
-                <button
-                  type="button"
-                  onClick={() => setIsPharmacyModalOpen(false)}
-                  className="modal-close-btn"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {error && (
-                <div
-                  style={{
-                    color: "#ef4444",
-                    fontSize: "13px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {error}
-                </div>
-              )}
-
-              <div className="my-3">
-                <input
-                  type="text"
-                  value={pharmacySearchQuery}
-                  onChange={(e) => setPharmacySearchQuery(e.target.value)}
-                  placeholder="Search pharmacy products..."
-                  className="search-input w-full mb-3"
-                />
-
-                <div className="max-h-80 overflow-y-auto border border-slate-200 rounded-md p-2 bg-slate-50">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 text-left text-muted text-xs">
-                        <th className="p-2 text-center w-10">Select</th>
-                        <th className="p-2">Product Name</th>
-                        <th className="p-2">Unit Price</th>
-                        <th className="p-2">Qty</th>
-                        <th className="p-2">Dosage</th>
-                        <th className="p-2">Duration</th>
-                        <th className="p-2 text-right">Subtotal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredPharmacyItems.map((item) => {
-                        const subtotal = item.unitPrice * item.quantity;
-                        return (
-                          <tr
-                            key={item.productId}
-                            className={`border-b border-slate-100 hover:bg-white ${item.selected ? "bg-sky-50/60" : ""}`}
-                          >
-                            <td className="p-2 text-center">
-                              <input
-                                type="checkbox"
-                                checked={item.selected}
-                                onChange={() =>
-                                  handlePharmacyItemToggle(item.productId)
-                                }
-                                style={{
-                                  width: "16px",
-                                  height: "16px",
-                                  cursor: "pointer",
-                                }}
-                              />
-                            </td>
-                            <td className="p-2 font-medium text-slate-800">
-                              {item.productName}
-                            </td>
-                            <td className="p-2">
-                              ${Number(item.unitPrice).toFixed(2)}
-                            </td>
-                            <td className="p-2">
-                              <input
-                                type="number"
-                                min={1}
-                                value={item.quantity}
-                                disabled={!item.selected}
-                                onChange={(e) =>
-                                  handlePharmacyQtyChange(
-                                    item.productId,
-                                    Number(e.target.value),
-                                  )
-                                }
-                                className="form-input text-center disabled:opacity-50"
-                                style={{ width: "60px", padding: "2px 4px" }}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <input
-                                type="text"
-                                value={item.dosage}
-                                disabled={!item.selected}
-                                onChange={(e) =>
-                                  handlePharmacyDosageChange(
-                                    item.productId,
-                                    e.target.value,
-                                  )
-                                }
-                                className="form-input disabled:opacity-50"
-                                style={{ width: "110px", padding: "2px 6px" }}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <input
-                                type="text"
-                                value={item.duration}
-                                disabled={!item.selected}
-                                onChange={(e) =>
-                                  handlePharmacyDurationChange(
-                                    item.productId,
-                                    e.target.value,
-                                  )
-                                }
-                                className="form-input disabled:opacity-50"
-                                style={{ width: "90px", padding: "2px 6px" }}
-                              />
-                            </td>
-                            <td className="p-2 text-right font-semibold">
-                              ${subtotal.toFixed(2)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="bg-sky-50 p-3 rounded-md flex justify-between items-center mb-4">
-                <span className="font-semibold text-slate-800">
-                  Total Prescription Cost:
-                </span>
-                <span className="text-lg font-bold text-sky-700">
-                  ${calculateTotalPharmacyCost().toFixed(2)}
-                </span>
-              </div>
-
-              <form onSubmit={handlePharmacySubmit}>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsPharmacyModalOpen(false)}
-                    className="btn-logout"
-                    style={{ flex: 1 }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-primary"
-                    style={{ flex: 1, backgroundColor: "#033909" }}
-                  >
-                    {loading ? "Submitting..." : "Submit Prescription"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* View/Verify Lab Result Modal */}
+        {/* Lab Result View Modal */}
         {isLabModalOpen && selectedLabResult && (
           <div className="modal-overlay">
-            <div className="modal-card">
+            <div className="modal-card" style={{ maxWidth: "600px" }}>
               <div className="modal-header">
-                <h3 style={{ margin: 0 }}>Laboratory Results Review</h3>
+                <h3 style={{ margin: 0 }}>Laboratory Test Results</h3>
                 <button
                   type="button"
                   onClick={() => setIsLabModalOpen(false)}
@@ -1201,7 +1263,13 @@ export const DoctorConsultationPage: React.FC = () => {
                 </div>
               )}
 
-              <div className="space-y-3 text-sm my-4 bg-slate-50 p-4 rounded-md border border-slate-200">
+              <div className="space-y-4 my-4 text-sm">
+                <div>
+                  <span className="text-muted">Result:</span>{" "}
+                  <span className="font-semibold text-slate-800">
+                    {selectedLabResult.resultValue || "Laboratory Analysis"}
+                  </span>
+                </div>
                 <div>
                   <span className="text-muted">Status:</span>{" "}
                   <span className="badge badge-success">
@@ -1209,31 +1277,14 @@ export const DoctorConsultationPage: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted">Specimen Type:</span>{" "}
-                  <span className="font-medium">
-                    {selectedLabResult.specimenType || "—"}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-muted">Result Value:</span>{" "}
-                  <span className="font-semibold text-slate-900">
-                    {selectedLabResult.resultValue || "—"}{" "}
-                    {selectedLabResult.unit || ""}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-muted">Reference Range:</span>{" "}
-                  <span>{selectedLabResult.referenceRange || "—"}</span>
-                </div>
-                <div>
-                  <span className="text-muted">Findings / Notes:</span>
-                  <p className="mt-1 font-medium text-slate-800 bg-white p-2 rounded border border-slate-200">
-                    {selectedLabResult.findings || "No findings recorded."}
-                  </p>
+                  <span className="text-muted">Findings / Results:</span>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-md mt-1 text-slate-800 whitespace-pre-wrap">
+                    {selectedLabResult.findings || "No findings recorded yet."}
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
                 <button
                   type="button"
                   onClick={() => setIsLabModalOpen(false)}
@@ -1248,9 +1299,9 @@ export const DoctorConsultationPage: React.FC = () => {
                     onClick={handleVerifyLabResult}
                     disabled={loading}
                     className="btn-primary"
-                    style={{ flex: 1, backgroundColor: "#16a34a" }}
+                    style={{ flex: 1, backgroundColor: "#059669" }}
                   >
-                    {loading ? "Verifying..." : "Verify & Approve Result"}
+                    {loading ? "Verifying..." : "Verify & Approve Results"}
                   </button>
                 )}
               </div>

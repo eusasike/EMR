@@ -125,7 +125,7 @@ export const serviceProvidedEventSchema = z.object({
   serviceId: z.string(),
   providedById: z.string(),
   unitPrice: z.number(),
-  isActive: z.boolean(),
+  isActive: z.boolean().optional().default(true),
   timestamp: z.string(),
 });
 

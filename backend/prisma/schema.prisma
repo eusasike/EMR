@@ -156,13 +156,14 @@ model PatientVisit {
   attending      User             @relation(fields: [attendingId], references: [id])
   patient        Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
   admission      AdmissionRecord?
-  dispenseRecord DispenseRecord?
+  dispenseRecord DispenseRecord[]
   claims         InsuranceClaim[]
   invoice        Invoice?
   labResults     LabResult[]
   prescriptions  Prescription[]
   services       ProvidedService[]
   vitalSigns     VitalSigns?
+  
 
   @@index([facilityId])
   @@map("patient_visits")
@@ -287,7 +288,7 @@ model DispensedItem {
 model DispenseRecord {
   id             String         @id @default(uuid())
   facilityId     String         @map("facility_id")
-  visitId        String?        @unique @map("visit_id")
+  visitId        String?        @map("visit_id")
   prescriptionId String?        @unique @map("prescription_id")
   dispensedById  String         @map("dispensed_by_id")
   totalCost      Decimal        @default(0) @map("total_cost") @db.Decimal(10, 2)
@@ -296,7 +297,7 @@ model DispenseRecord {
   updatedAt      DateTime       @updatedAt @map("updated_at")
 
   facility       Facility       @relation(fields: [facilityId], references: [id], onDelete: Cascade)
-  visit          PatientVisit?  @relation(fields: [visitId], references: [id], onDelete: Cascade)
+visit          PatientVisit?  @relation(fields: [visitId], references: [id], onDelete: Cascade)
   prescription   Prescription?  @relation(fields: [prescriptionId], references: [id])
   dispensedBy    User           @relation(fields: [dispensedById], references: [id])
   items          DispensedItem[]
@@ -309,8 +310,11 @@ model Invoice {
   facilityId     String          @map("facility_id")
   visitId        String?         @unique @map("visit_id")
   invoiceNumber  String          @map("invoice_number")
-  totalAmount    Decimal         @map("total_amount") @db.Decimal(10, 2)
-  paidAmount     Decimal         @default(0) @map("paid_amount") @db.Decimal(10, 2)
+  serviceTotal    Decimal        @default(0) @map("service_total")
+  medicationTotal Decimal        @default(0) @map("medication_total")
+  grandTotal      Decimal         @default(0) @map("grand_total")
+  amountPaid      Decimal         @default(0) @map("amount_paid")
+  balance         Decimal         @default(0) @map("balance")
   status         InvoiceStatus   @default(PENDING)
   type           InvoiceType     @default(FINAL)
   createdAt      DateTime        @default(now()) @map("created_at")
@@ -606,6 +610,7 @@ enum PrescriptionStatus {
   PARTIALLY_DISPENSED
   COMPLETED
   CANCELLED
+  DISPENSED
 }
 
 enum LabStatus {

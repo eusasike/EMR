@@ -57,7 +57,7 @@ export class BillingService {
         invoiceId: invoice.id,
         visitId: invoice.visitId || "",
         invoiceNumber: invoice.invoiceNumber,
-        grandTotal: Number(invoice.totalAmount),
+        grandTotal: Number(invoice.grandTotal),
         timestamp: invoice.createdAt.toISOString(),
       });
 
@@ -90,19 +90,20 @@ export class BillingService {
   async processPayment(
     invoiceId: string,
     dto: CreatePaymentDTO,
+    receivedById: string, // 👈 Passed as a separate argument from the controller session
   ): Promise<InvoiceResponseDTO> {
     return await prisma.$transaction(async (tx) => {
       const invoice = await tx.invoice.findUnique({
         where: { id: invoiceId },
-        include: { items: true, payments: true },
+        include: { payments: true },
       });
 
       if (!invoice) {
         throw new Error("Invoice not found");
       }
 
-      const totalAmount = Number(invoice.totalAmount);
-      const paidAmount = Number(invoice.paidAmount);
+      const totalAmount = Number(invoice.grandTotal);
+      const paidAmount = Number(invoice.amountPaid);
       const balanceDue = totalAmount - paidAmount;
 
       if (balanceDue <= 0 || invoice.status === InvoiceStatus.PAID) {
@@ -115,16 +116,13 @@ export class BillingService {
         );
       }
 
-      const receiptNumber = `REC-${Date.now()}`;
       const payment = await tx.payment.create({
         data: {
-          receiptNumber,
           invoiceId,
           amount: dto.amount,
           paymentMethod: dto.paymentMethod,
-          transactionRef: dto.transactionRef,
-          receivedById: dto.receivedById,
-          status: PaymentStatus.PAID,
+          // transactionRef: dto.transactionRef,
+          receivedById,
         },
       });
 
@@ -139,12 +137,16 @@ export class BillingService {
       const updatedInvoice = await tx.invoice.update({
         where: { id: invoiceId },
         data: {
-          paidAmount: newPaidAmount,
+          amountPaid: newPaidAmount,
           status: newStatus,
         },
         include: {
-          items: true,
           payments: true,
+          visit: {
+            include: {
+              patient: true,
+            },
+          },
         },
       });
 
@@ -154,33 +156,47 @@ export class BillingService {
         amount: dto.amount,
         balanceRemaining: newBalanceDue,
         paymentMethod: dto.paymentMethod,
-        receivedById: dto.receivedById,
         timestamp: payment.createdAt.toISOString(),
       });
 
       return this.mapToInvoiceDTO(updatedInvoice);
     });
   }
-
   private mapToInvoiceDTO(invoice: any): InvoiceResponseDTO {
-    const totalAmount = Number(invoice.totalAmount);
-    const amountPaid = Number(invoice.paidAmount);
-    const balanceDue = totalAmount - amountPaid;
-
     return {
-      ...invoice,
-      totalAmount,
-      amountPaid,
-      balanceDue,
-      items: invoice.items.map((item: any) => ({
-        ...item,
-        unitPrice: Number(item.unitPrice),
-        totalPrice: Number(item.totalPrice),
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      serviceTotal: invoice.serviceTotal?.toString() || "0",
+      medicationTotal: invoice.medicationTotal?.toString() || "0",
+      grandTotal: invoice.grandTotal?.toString() || "0",
+      amountPaid: invoice.amountPaid?.toString() || "0",
+      balance: invoice.balance?.toString() || "0",
+      status: invoice.status,
+      type: invoice.type,
+      createdAt: invoice.createdAt,
+
+      // Guard nested arrays with (invoice.relation || []) to prevent undefined .map() crashes
+      payments: (invoice.payments || []).map((payment: any) => ({
+        id: payment.id,
+        amount: payment.amount?.toString() || "0",
+        method: payment.method,
+        createdAt: payment.createdAt,
       })),
-      payments: invoice.payments.map((payment: any) => ({
-        ...payment,
-        amount: Number(payment.amount),
-      })),
+
+      visit: invoice.visit
+        ? {
+            id: invoice.visit.id,
+            visitDate: invoice.visit.visitDate,
+            patient: invoice.visit.patient
+              ? {
+                  id: invoice.visit.patient.id,
+                  mrn: invoice.visit.patient.mrn,
+                  firstName: invoice.visit.patient.firstName,
+                  lastName: invoice.visit.patient.lastName,
+                }
+              : null,
+          }
+        : null,
     };
   }
 
@@ -197,12 +213,17 @@ export class BillingService {
         },
       },
       include: {
-        items: true,
+        visit: {
+          include: {
+            patient: true,
+          },
+        },
         payments: true,
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return invoices.map((invoice) => this.mapToInvoiceDTO(invoice));
+    // Fallback to an empty array if invoices is undefined or null
+    return (invoices || []).map((invoice) => this.mapToInvoiceDTO(invoice));
   }
 }

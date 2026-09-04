@@ -22,7 +22,7 @@ export interface CreateInvoiceItemDTO {
 
 export interface CreateInvoiceDTO {
   visitId: string;
-  patientId: string;
+  facilityId: string;
   notes?: string | null;
   items?: CreateInvoiceItemDTO[];
 }
@@ -31,8 +31,6 @@ export interface RecordPaymentDTO {
   invoiceId: string;
   amount: number;
   paymentMethod: PaymentMethod;
-  transactionRef?: string | null;
-  receivedById: string;
 }
 
 export type CreatePaymentDTO = RecordPaymentDTO;
@@ -48,44 +46,52 @@ export interface InvoiceItemResponseDTO {
   referenceId: string | null;
   description: string;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+  unitPrice: string | number;
+  totalPrice: string | number;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface PaymentResponseDTO {
   id: string;
-  receiptNumber: string;
-  invoiceId: string;
-  amount: number;
+  receiptNumber?: string;
+  invoiceId?: string;
+  amount: string | number;
   paymentMethod: PaymentMethod;
-  status: PaymentStatus;
-  transactionRef: string | null;
-  receivedById: string;
+  status?: PaymentStatus;
   createdAt: Date;
-  updatedAt: Date;
+}
+
+export interface PatientSummaryDTO {
+  id: string;
+  mrn: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface VisitSummaryDTO {
+  id: string;
+  visitDate: Date;
+  patient: PatientSummaryDTO | null;
 }
 
 export interface InvoiceResponseDTO {
   id: string;
   invoiceNumber: string;
-  visitId: string;
-  patientId: string;
-  subtotal: number;
-  tax: number;
-  discount: number;
-  insurancePay: number;
-  patientPay: number;
-  totalAmount: number;
-  amountPaid: number;
-  balanceDue: number;
+  visitId?: string;
+  serviceTotal: string | number;
+  medicationTotal: string | number;
+  grandTotal: string | number;
+  amountPaid: string | number;
+  balance: string | number;
   status: InvoiceStatus;
-  notes: string | null;
+  type: string;
+  notes?: string | null;
   items?: InvoiceItemResponseDTO[];
   payments?: PaymentResponseDTO[];
+  visit?: VisitSummaryDTO | null;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 // ==========================================
@@ -102,7 +108,7 @@ export const createInvoiceItemSchema = z.object({
 
 export const createInvoiceSchema = z.object({
   visitId: z.string().uuid("Invalid Visit ID"),
-  patientId: z.string().uuid("Invalid Patient ID"),
+  facilityId: z.string().uuid("Invalid Facility ID"),
   notes: z.string().optional().nullable(),
   items: z.array(createInvoiceItemSchema).optional().default([]),
 });
@@ -111,6 +117,4 @@ export const recordPaymentSchema = z.object({
   invoiceId: z.string().uuid("Invalid Invoice ID"),
   amount: z.number().positive("Payment amount must be greater than 0"),
   paymentMethod: z.nativeEnum(PaymentMethod),
-  transactionRef: z.string().optional().nullable(),
-  receivedById: z.string().uuid("Invalid Staff/User ID"),
 });

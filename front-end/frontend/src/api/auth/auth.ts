@@ -15,7 +15,7 @@ export interface UserProfile {
   lastName: string;
   email: string;
   role: string;
-  facilities?: FacilitySummary[]; // 👈 Updated to Array
+  facilities?: FacilitySummary[];
 }
 
 export interface LoginResponse {

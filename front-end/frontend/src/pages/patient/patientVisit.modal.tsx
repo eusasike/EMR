@@ -149,7 +149,6 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
   const [visitError, setVisitError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const [fetchedVisits, setFetchedVisits] = useState<Visit[]>([]);
   const [isLoadingVisits, setIsLoadingVisits] = useState(false);
 
   const [visitFormData, setVisitFormData] = useState<
@@ -157,14 +156,12 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
   >({
     visitType: "OPD",
     priority: "NORMAL",
-    status: "NOT_STARTED",
+    status: "IN_PROGRESS",
     symptoms: "",
     diagnosis: "",
     icdCode: "",
   });
 
-  // Fetch patient visits whenever modal opens
-  // Track active record in state so it updates when fetchedVisits changes
   const [activeRecord, setActiveRecord] = useState<Visit | null>(
     activeVisit || null,
   );
@@ -176,10 +173,7 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
         setIsLoadingVisits(true);
         try {
           const visits = await getVisitsByPatientIdApi(patient.mrn);
-          console.log("📥 Fetched Visits API Response:", visits);
-          setFetchedVisits(visits);
 
-          // Determine active/latest visit from fetched data
           const combined = [...(patient.visits || []), ...visits].sort(
             (a, b) =>
               new Date(b.createdAt || 0).getTime() -
@@ -208,29 +202,14 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
 
   if (!isOpen || !patient) return null;
 
-  // Combine and sort all visits
-  const allVisits = [...(patient.visits || []), ...fetchedVisits].sort(
-    (a, b) =>
-      new Date(b.createdAt || 0).getTime() -
-      new Date(a.createdAt || 0).getTime(),
-  );
-
   const hasActiveInProgressVisit = activeRecord?.status === "IN_PROGRESS";
 
-  // Effective status calculation
+  // Effective status calculation for the top badge
   const effectiveStatus: VisitStatus = isLoadingVisits
     ? "NOT_STARTED"
     : activeRecord?.status
       ? activeRecord.status
       : (visitFormData.status as VisitStatus);
-
-  console.group("🔍 PatientVisitModal Status Debug Logger");
-  console.log("Patient Object:", patient);
-  console.log("Fetched Visits State:", fetchedVisits);
-  console.log("Combined & Sorted allVisits:", allVisits);
-  console.log("Selected activeRecord:", activeRecord);
-  console.log("Effective Status Calculated:", effectiveStatus);
-  console.groupEnd();
 
   const currentStatusConfig = isLoadingVisits
     ? {
@@ -241,7 +220,7 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
       }
     : getStatusBadgeConfig(effectiveStatus);
 
-  // Handle marking the current active visit as COMPLETED so a new one can start
+  // Handle marking the current active visit as COMPLETED
   const handleCompleteActiveVisit = async () => {
     if (!activeRecord?.id) return;
 
@@ -253,9 +232,7 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
       });
       setSuccessMessage("Previous visit marked as completed!");
 
-      // Refresh list
-      const visits = await getVisitsByPatientIdApi(patient.id);
-      setFetchedVisits(visits);
+      await getVisitsByPatientIdApi(patient.id);
 
       if (onSuccess) onSuccess();
 
@@ -272,7 +249,6 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
       setSubmittingVisit(false);
     }
   };
-
   const handleCheckInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -296,6 +272,18 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
     }
 
     try {
+      // 1. If there is an active/in-progress visit, complete it first
+      if (
+        activeRecord &&
+        activeRecord.id &&
+        activeRecord.status === "IN_PROGRESS"
+      ) {
+        await updateVisitApi(activeRecord.id, {
+          status: "COMPLETED",
+        });
+      }
+
+      // 2. Then proceed to create the new visit session
       const payload: CheckInVisitDTO = {
         ...visitFormData,
         patientId: patient.id,
@@ -305,7 +293,9 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
 
       await createVisitApi(payload);
 
-      setSuccessMessage("New visit session opened successfully!");
+      setSuccessMessage(
+        "Previous visit completed and new visit session opened successfully!",
+      );
 
       if (onSuccess) {
         onSuccess();
@@ -316,8 +306,8 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
         onClose();
       }, 1500);
     } catch (err: unknown) {
-      console.error("Failed to open visit session:", err);
-      let msg = "Failed to open visit session.";
+      console.error("Failed to process visit session:", err);
+      let msg = "Failed to process visit session.";
 
       if (err instanceof AxiosError && err.response?.data?.message) {
         msg = err.response.data.message as string;
@@ -372,7 +362,6 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
           </div>
         ) : (
           <>
-            {/* Active Visit Banner with Management Options */}
             {hasActiveInProgressVisit && activeRecord && (
               <div
                 style={{
@@ -540,7 +529,7 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
                   <select
                     className="form-input"
                     disabled={submittingVisit || !!successMessage}
-                    value={visitFormData.status || "NOT_STARTED"}
+                    value={visitFormData.status || "IN_PROGRESS"}
                     onChange={(e) =>
                       setVisitFormData((prev) => ({
                         ...prev,
@@ -548,7 +537,7 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
                       }))
                     }
                   >
-                    {/* <option value="NOT_STARTED">⏱ Not Started / Pending</option> */}
+                    <option value="NOT_STARTED">⏱ Not Started / Pending</option>
                     <option value="IN_PROGRESS">● In Progress</option>
                     <option value="COMPLETED">✓ Completed</option>
                     <option value="CANCELLED">✕ Cancelled</option>

@@ -515,6 +515,10 @@
 					},
 					"instructions": {
 						"type": "string"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -522,13 +526,17 @@
 					"dosage",
 					"frequency",
 					"durationDays",
-					"quantityOrdered"
+					"quantityOrdered",
+					"unitPrice"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
 			"CreatePrescriptionDTO": {
 				"properties": {
+					"facilityId": {
+						"type": "string"
+					},
 					"visitId": {
 						"type": "string"
 					},
@@ -543,6 +551,7 @@
 					}
 				},
 				"required": [
+					"facilityId",
 					"visitId",
 					"items"
 				],
@@ -1632,17 +1641,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"_36_Enums.InvoiceStatus": {
-				"type": "string",
-				"enum": [
-					"CANCELLED",
-					"PENDING",
-					"PAID"
-				]
-			},
-			"InvoiceStatus": {
-				"$ref": "#/components/schemas/_36_Enums.InvoiceStatus"
-			},
 			"_36_Enums.ChargeType": {
 				"type": "string",
 				"enum": [
@@ -1654,6 +1652,72 @@
 			},
 			"ChargeType": {
 				"$ref": "#/components/schemas/_36_Enums.ChargeType"
+			},
+			"CreateInvoiceItemDTO": {
+				"properties": {
+					"chargeType": {
+						"$ref": "#/components/schemas/ChargeType"
+					},
+					"referenceId": {
+						"type": "string",
+						"nullable": true
+					},
+					"description": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unitPrice": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"chargeType",
+					"description",
+					"unitPrice"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateInvoiceDTO": {
+				"properties": {
+					"visitId": {
+						"type": "string"
+					},
+					"facilityId": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/CreateInvoiceItemDTO"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"visitId",
+					"facilityId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"_36_Enums.InvoiceStatus": {
+				"type": "string",
+				"enum": [
+					"CANCELLED",
+					"PENDING",
+					"PAID"
+				]
+			},
+			"InvoiceStatus": {
+				"$ref": "#/components/schemas/_36_Enums.InvoiceStatus"
 			},
 			"InvoiceItemResponseDTO": {
 				"properties": {
@@ -1678,12 +1742,26 @@
 						"format": "double"
 					},
 					"unitPrice": {
-						"type": "number",
-						"format": "double"
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
 					"totalPrice": {
-						"type": "number",
-						"format": "double"
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
 					"createdAt": {
 						"type": "string",
@@ -1745,8 +1823,15 @@
 						"type": "string"
 					},
 					"amount": {
-						"type": "number",
-						"format": "double"
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
 					"paymentMethod": {
 						"$ref": "#/components/schemas/PaymentMethod"
@@ -1754,33 +1839,66 @@
 					"status": {
 						"$ref": "#/components/schemas/PaymentStatus"
 					},
-					"transactionRef": {
-						"type": "string",
-						"nullable": true
-					},
-					"receivedById": {
-						"type": "string"
-					},
 					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
 					}
 				},
 				"required": [
 					"id",
-					"receiptNumber",
-					"invoiceId",
 					"amount",
 					"paymentMethod",
-					"status",
-					"transactionRef",
-					"receivedById",
-					"createdAt",
-					"updatedAt"
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PatientSummaryDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"mrn": {
+						"type": "string"
+					},
+					"firstName": {
+						"type": "string"
+					},
+					"lastName": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"mrn",
+					"firstName",
+					"lastName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"VisitSummaryDTO": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"visitDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"patient": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/PatientSummaryDTO"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"visitDate",
+					"patient"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1796,43 +1914,66 @@
 					"visitId": {
 						"type": "string"
 					},
-					"patientId": {
-						"type": "string"
+					"serviceTotal": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
-					"subtotal": {
-						"type": "number",
-						"format": "double"
+					"medicationTotal": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
-					"tax": {
-						"type": "number",
-						"format": "double"
-					},
-					"discount": {
-						"type": "number",
-						"format": "double"
-					},
-					"insurancePay": {
-						"type": "number",
-						"format": "double"
-					},
-					"patientPay": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalAmount": {
-						"type": "number",
-						"format": "double"
+					"grandTotal": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
 					"amountPaid": {
-						"type": "number",
-						"format": "double"
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
-					"balanceDue": {
-						"type": "number",
-						"format": "double"
+					"balance": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
 					},
 					"status": {
 						"$ref": "#/components/schemas/InvoiceStatus"
+					},
+					"type": {
+						"type": "string"
 					},
 					"notes": {
 						"type": "string",
@@ -1850,6 +1991,14 @@
 						},
 						"type": "array"
 					},
+					"visit": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/VisitSummaryDTO"
+							}
+						],
+						"nullable": true
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1862,25 +2011,19 @@
 				"required": [
 					"id",
 					"invoiceNumber",
-					"visitId",
-					"patientId",
-					"subtotal",
-					"tax",
-					"discount",
-					"insurancePay",
-					"patientPay",
-					"totalAmount",
+					"serviceTotal",
+					"medicationTotal",
+					"grandTotal",
 					"amountPaid",
-					"balanceDue",
+					"balance",
 					"status",
-					"notes",
-					"createdAt",
-					"updatedAt"
+					"type",
+					"createdAt"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"RecordPaymentDTO": {
+			"Pick_CreatePaymentDTO.Exclude_keyofCreatePaymentDTO.receivedById__": {
 				"properties": {
 					"invoiceId": {
 						"type": "string"
@@ -1890,27 +2033,20 @@
 						"format": "double"
 					},
 					"paymentMethod": {
-						"$ref": "#/components/schemas/PaymentMethod"
-					},
-					"transactionRef": {
-						"type": "string",
-						"nullable": true
-					},
-					"receivedById": {
-						"type": "string"
+						"$ref": "#/components/schemas/_36_Enums.PaymentMethod"
 					}
 				},
 				"required": [
 					"invoiceId",
 					"amount",
-					"paymentMethod",
-					"receivedById"
+					"paymentMethod"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"CreatePaymentDTO": {
-				"$ref": "#/components/schemas/RecordPaymentDTO"
+			"Omit_CreatePaymentDTO.receivedById_": {
+				"$ref": "#/components/schemas/Pick_CreatePaymentDTO.Exclude_keyofCreatePaymentDTO.receivedById__",
+				"description": "Construct a type with the properties of T except for those in type K."
 			},
 			"AuthFacilityData": {
 				"properties": {
@@ -3259,49 +3395,193 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"prescribedById": {
-											"type": "string"
+									"allOf": [
+										{
+											"properties": {
+												"prescribedBy": {
+													"properties": {
+														"email": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"email",
+														"id"
+													],
+													"type": "object"
+												},
+												"items": {
+													"items": {
+														"allOf": [
+															{
+																"properties": {
+																	"product": {
+																		"properties": {
+																			"reorderLevel": {
+																				"type": "number",
+																				"format": "double"
+																			},
+																			"category": {
+																				"type": "string"
+																			},
+																			"unitPrice": {
+																				"$ref": "#/components/schemas/Decimal"
+																			},
+																			"description": {
+																				"type": "string"
+																			},
+																			"facilityId": {
+																				"type": "string"
+																			},
+																			"code": {
+																				"type": "string"
+																			},
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"reorderLevel",
+																			"category",
+																			"unitPrice",
+																			"description",
+																			"facilityId",
+																			"code",
+																			"updatedAt",
+																			"createdAt",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"product"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"durationDays": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"frequency": {
+																		"type": "string"
+																	},
+																	"dosage": {
+																		"type": "string"
+																	},
+																	"quantityOrdered": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"productId": {
+																		"type": "string"
+																	},
+																	"prescriptionId": {
+																		"type": "string"
+																	},
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"durationDays",
+																	"frequency",
+																	"dosage",
+																	"quantityOrdered",
+																	"productId",
+																	"prescriptionId",
+																	"unitPrice",
+																	"updatedAt",
+																	"createdAt",
+																	"id"
+																],
+																"type": "object"
+															}
+														]
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"prescribedBy",
+												"items"
+											],
+											"type": "object"
 										},
-										"prescriptionNumber": {
-											"type": "string"
-										},
-										"status": {
-											"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
-										},
-										"facilityId": {
-											"type": "string"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"notes": {
-											"type": "string"
-										},
-										"visitId": {
-											"type": "string"
-										},
-										"id": {
-											"type": "string"
+										{
+											"properties": {
+												"prescribedById": {
+													"type": "string"
+												},
+												"prescriptionNumber": {
+													"type": "string"
+												},
+												"status": {
+													"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+												},
+												"facilityId": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"createdAt": {
+													"type": "string",
+													"format": "date-time"
+												},
+												"notes": {
+													"type": "string"
+												},
+												"visitId": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"prescribedById",
+												"prescriptionNumber",
+												"status",
+												"facilityId",
+												"updatedAt",
+												"createdAt",
+												"notes",
+												"visitId",
+												"id"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"prescribedById",
-										"prescriptionNumber",
-										"status",
-										"facilityId",
-										"updatedAt",
-										"createdAt",
-										"notes",
-										"visitId",
-										"id"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}
@@ -6592,49 +6872,110 @@
 								"schema": {
 									"anyOf": [
 										{
-											"properties": {
-												"totalCost": {
-													"$ref": "#/components/schemas/Decimal"
+											"allOf": [
+												{
+													"properties": {
+														"items": {
+															"items": {
+																"properties": {
+																	"totalPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"quantity": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"batchId": {
+																		"type": "string"
+																	},
+																	"productId": {
+																		"type": "string"
+																	},
+																	"dispenseId": {
+																		"type": "string"
+																	},
+																	"unitPrice": {
+																		"$ref": "#/components/schemas/Decimal"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"id": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"totalPrice",
+																	"quantity",
+																	"batchId",
+																	"productId",
+																	"dispenseId",
+																	"unitPrice",
+																	"updatedAt",
+																	"createdAt",
+																	"id"
+																],
+																"type": "object"
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"items"
+													],
+													"type": "object"
 												},
-												"dispensedById": {
-													"type": "string"
-												},
-												"prescriptionId": {
-													"type": "string"
-												},
-												"facilityId": {
-													"type": "string"
-												},
-												"updatedAt": {
-													"type": "string",
-													"format": "date-time"
-												},
-												"createdAt": {
-													"type": "string",
-													"format": "date-time"
-												},
-												"notes": {
-													"type": "string"
-												},
-												"visitId": {
-													"type": "string"
-												},
-												"id": {
-													"type": "string"
+												{
+													"properties": {
+														"totalCost": {
+															"$ref": "#/components/schemas/Decimal"
+														},
+														"dispensedById": {
+															"type": "string"
+														},
+														"prescriptionId": {
+															"type": "string"
+														},
+														"facilityId": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"createdAt": {
+															"type": "string",
+															"format": "date-time"
+														},
+														"notes": {
+															"type": "string"
+														},
+														"visitId": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"totalCost",
+														"dispensedById",
+														"prescriptionId",
+														"facilityId",
+														"updatedAt",
+														"createdAt",
+														"notes",
+														"visitId",
+														"id"
+													],
+													"type": "object"
 												}
-											},
-											"required": [
-												"totalCost",
-												"dispensedById",
-												"prescriptionId",
-												"facilityId",
-												"updatedAt",
-												"createdAt",
-												"notes",
-												"visitId",
-												"id"
-											],
-											"type": "object"
+											]
 										},
 										{
 											"properties": {
@@ -7519,6 +7860,413 @@
 				]
 			}
 		},
+		"/api/v1/pharmacy/prescriptions/{id}/status": {
+			"patch": {
+				"operationId": "UpdatePrescriptionStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"data": {
+													"allOf": [
+														{
+															"properties": {
+																"items": {
+																	"items": {
+																		"allOf": [
+																			{
+																				"properties": {
+																					"product": {
+																						"properties": {
+																							"reorderLevel": {
+																								"type": "number",
+																								"format": "double"
+																							},
+																							"category": {
+																								"type": "string"
+																							},
+																							"unitPrice": {
+																								"$ref": "#/components/schemas/Decimal"
+																							},
+																							"description": {
+																								"type": "string"
+																							},
+																							"facilityId": {
+																								"type": "string"
+																							},
+																							"code": {
+																								"type": "string"
+																							},
+																							"updatedAt": {
+																								"type": "string",
+																								"format": "date-time"
+																							},
+																							"createdAt": {
+																								"type": "string",
+																								"format": "date-time"
+																							},
+																							"id": {
+																								"type": "string"
+																							},
+																							"name": {
+																								"type": "string"
+																							}
+																						},
+																						"required": [
+																							"reorderLevel",
+																							"category",
+																							"unitPrice",
+																							"description",
+																							"facilityId",
+																							"code",
+																							"updatedAt",
+																							"createdAt",
+																							"id",
+																							"name"
+																						],
+																						"type": "object"
+																					}
+																				},
+																				"required": [
+																					"product"
+																				],
+																				"type": "object"
+																			},
+																			{
+																				"properties": {
+																					"durationDays": {
+																						"type": "number",
+																						"format": "double"
+																					},
+																					"frequency": {
+																						"type": "string"
+																					},
+																					"dosage": {
+																						"type": "string"
+																					},
+																					"quantityOrdered": {
+																						"type": "number",
+																						"format": "double"
+																					},
+																					"productId": {
+																						"type": "string"
+																					},
+																					"prescriptionId": {
+																						"type": "string"
+																					},
+																					"unitPrice": {
+																						"$ref": "#/components/schemas/Decimal"
+																					},
+																					"updatedAt": {
+																						"type": "string",
+																						"format": "date-time"
+																					},
+																					"createdAt": {
+																						"type": "string",
+																						"format": "date-time"
+																					},
+																					"id": {
+																						"type": "string"
+																					}
+																				},
+																				"required": [
+																					"durationDays",
+																					"frequency",
+																					"dosage",
+																					"quantityOrdered",
+																					"productId",
+																					"prescriptionId",
+																					"unitPrice",
+																					"updatedAt",
+																					"createdAt",
+																					"id"
+																				],
+																				"type": "object"
+																			}
+																		]
+																	},
+																	"type": "array"
+																},
+																"visit": {
+																	"allOf": [
+																		{
+																			"properties": {
+																				"patient": {
+																					"properties": {
+																						"emergencyContactPhone": {
+																							"type": "string"
+																						},
+																						"emergencyContactName": {
+																							"type": "string"
+																						},
+																						"address": {
+																							"type": "string"
+																						},
+																						"phone": {
+																							"type": "string"
+																						},
+																						"dateOfBirth": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"gender": {
+																							"$ref": "#/components/schemas/_36_Enums.Gender"
+																						},
+																						"middleName": {
+																							"type": "string"
+																						},
+																						"lastName": {
+																							"type": "string"
+																						},
+																						"firstName": {
+																							"type": "string"
+																						},
+																						"facilityId": {
+																							"type": "string"
+																						},
+																						"mrn": {
+																							"type": "string"
+																						},
+																						"districtId": {
+																							"type": "string"
+																						},
+																						"regionId": {
+																							"type": "string"
+																						},
+																						"updatedAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"createdAt": {
+																							"type": "string",
+																							"format": "date-time"
+																						},
+																						"id": {
+																							"type": "string"
+																						}
+																					},
+																					"required": [
+																						"emergencyContactPhone",
+																						"emergencyContactName",
+																						"address",
+																						"phone",
+																						"dateOfBirth",
+																						"gender",
+																						"middleName",
+																						"lastName",
+																						"firstName",
+																						"facilityId",
+																						"mrn",
+																						"districtId",
+																						"regionId",
+																						"updatedAt",
+																						"createdAt",
+																						"id"
+																					],
+																					"type": "object"
+																				}
+																			},
+																			"required": [
+																				"patient"
+																			],
+																			"type": "object"
+																		},
+																		{
+																			"properties": {
+																				"status": {
+																					"$ref": "#/components/schemas/_36_Enums.VisitStatus"
+																				},
+																				"triagePriority": {
+																					"$ref": "#/components/schemas/_36_Enums.TriagePriority"
+																				},
+																				"visitType": {
+																					"$ref": "#/components/schemas/_36_Enums.VisitType"
+																				},
+																				"symptoms": {
+																					"type": "string"
+																				},
+																				"icdCode": {
+																					"type": "string"
+																				},
+																				"diagnosis": {
+																					"type": "string"
+																				},
+																				"attendingId": {
+																					"type": "string"
+																				},
+																				"patientId": {
+																					"type": "string"
+																				},
+																				"facilityId": {
+																					"type": "string"
+																				},
+																				"createdAt": {
+																					"type": "string",
+																					"format": "date-time"
+																				},
+																				"priority": {
+																					"$ref": "#/components/schemas/_36_Enums.VisitPriority"
+																				},
+																				"id": {
+																					"type": "string"
+																				}
+																			},
+																			"required": [
+																				"status",
+																				"triagePriority",
+																				"visitType",
+																				"symptoms",
+																				"icdCode",
+																				"diagnosis",
+																				"attendingId",
+																				"patientId",
+																				"facilityId",
+																				"createdAt",
+																				"priority",
+																				"id"
+																			],
+																			"type": "object"
+																		}
+																	]
+																}
+															},
+															"required": [
+																"items",
+																"visit"
+															],
+															"type": "object"
+														},
+														{
+															"properties": {
+																"prescribedById": {
+																	"type": "string"
+																},
+																"prescriptionNumber": {
+																	"type": "string"
+																},
+																"status": {
+																	"$ref": "#/components/schemas/_36_Enums.PrescriptionStatus"
+																},
+																"facilityId": {
+																	"type": "string"
+																},
+																"updatedAt": {
+																	"type": "string",
+																	"format": "date-time"
+																},
+																"createdAt": {
+																	"type": "string",
+																	"format": "date-time"
+																},
+																"notes": {
+																	"type": "string"
+																},
+																"visitId": {
+																	"type": "string"
+																},
+																"id": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"prescribedById",
+																"prescriptionNumber",
+																"status",
+																"facilityId",
+																"updatedAt",
+																"createdAt",
+																"notes",
+																"visitId",
+																"id"
+															],
+															"type": "object"
+														}
+													]
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid Status"
+					},
+					"404": {
+						"description": "Prescription Not Found"
+					}
+				},
+				"tags": [
+					"Pharmacy"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"status": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"status"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/v1/billing/insurance": {
 			"post": {
 				"operationId": "RegisterInsurance",
@@ -7999,9 +8747,50 @@
 				]
 			}
 		},
+		"/api/v1/invoices": {
+			"post": {
+				"operationId": "CreateInvoice",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"description": "Create a new itemized invoice",
+				"tags": [
+					"Billing"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceDTO"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/v1/invoices/{invoiceId}": {
 			"get": {
-				"operationId": "GetInvoice",
+				"operationId": "GetInvoiceById",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -8014,14 +8803,18 @@
 						}
 					},
 					"404": {
-						"description": "Invoice not found"
+						"description": "Invoice Not Found"
 					}
 				},
-				"description": "Get invoice details by ID, including line items and payment history",
+				"description": "Retrieve invoice details by ID, including line items and payment history",
 				"tags": [
-					"Billing & Invoices"
+					"Billing"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -8039,27 +8832,39 @@
 				"operationId": "RecordPayment",
 				"responses": {
 					"201": {
-						"description": "Payment Processed Successfully",
+						"description": "Created",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/InvoiceResponseDTO"
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/InvoiceResponseDTO"
+										},
+										{}
+									]
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "Invalid payment amount or invoice already paid"
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
-						"description": "Invoice not found"
+						"description": "Invoice Not Found"
 					}
 				},
-				"description": "Process a payment against an outstanding invoice",
+				"description": "Process a payment against an outstanding invoice using the authenticated user's ID",
 				"tags": [
-					"Billing & Invoices"
+					"Billing"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -8075,11 +8880,50 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreatePaymentDTO"
+								"$ref": "#/components/schemas/Omit_CreatePaymentDTO.receivedById_"
 							}
 						}
 					}
 				}
+			}
+		},
+		"/api/v1/invoices/patient/mrn/{mrn}": {
+			"get": {
+				"operationId": "GetInvoicesByMrn",
+				"responses": {
+					"200": {
+						"description": "Invoices retrieved by MRN",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/InvoiceResponseDTO"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all invoices for a patient using their MRN",
+				"tags": [
+					"Billing"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mrn",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/v1/auth/login": {

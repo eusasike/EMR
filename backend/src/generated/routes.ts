@@ -241,6 +241,7 @@ const models: TsoaRoute.Models = {
             "quantityOrdered": {"dataType":"double","required":true},
             "route": {"dataType":"string"},
             "instructions": {"dataType":"string"},
+            "unitPrice": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -248,6 +249,7 @@ const models: TsoaRoute.Models = {
     "CreatePrescriptionDTO": {
         "dataType": "refObject",
         "properties": {
+            "facilityId": {"dataType":"string","required":true},
             "visitId": {"dataType":"string","required":true},
             "notes": {"dataType":"string"},
             "items": {"dataType":"array","array":{"dataType":"refObject","ref":"CreatePrescriptionItemDTO"},"required":true},
@@ -667,16 +669,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "_36_Enums.InvoiceStatus": {
-        "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PAID"]}],"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "InvoiceStatus": {
-        "dataType": "refAlias",
-        "type": {"ref":"_36_Enums.InvoiceStatus","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.ChargeType": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CONSULTATION"]},{"dataType":"enum","enums":["LABORATORY"]},{"dataType":"enum","enums":["PHARMACY"]},{"dataType":"enum","enums":["PROCEDURE"]}],"validators":{}},
@@ -685,6 +677,39 @@ const models: TsoaRoute.Models = {
     "ChargeType": {
         "dataType": "refAlias",
         "type": {"ref":"_36_Enums.ChargeType","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateInvoiceItemDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "chargeType": {"ref":"ChargeType","required":true},
+            "referenceId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "description": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double"},
+            "unitPrice": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateInvoiceDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "visitId": {"dataType":"string","required":true},
+            "facilityId": {"dataType":"string","required":true},
+            "notes": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"CreateInvoiceItemDTO"}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.InvoiceStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PAID"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "InvoiceStatus": {
+        "dataType": "refAlias",
+        "type": {"ref":"_36_Enums.InvoiceStatus","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "InvoiceItemResponseDTO": {
@@ -696,8 +721,8 @@ const models: TsoaRoute.Models = {
             "referenceId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "description": {"dataType":"string","required":true},
             "quantity": {"dataType":"double","required":true},
-            "unitPrice": {"dataType":"double","required":true},
-            "totalPrice": {"dataType":"double","required":true},
+            "unitPrice": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
+            "totalPrice": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
         },
@@ -728,15 +753,33 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"string","required":true},
-            "receiptNumber": {"dataType":"string","required":true},
-            "invoiceId": {"dataType":"string","required":true},
-            "amount": {"dataType":"double","required":true},
+            "receiptNumber": {"dataType":"string"},
+            "invoiceId": {"dataType":"string"},
+            "amount": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
             "paymentMethod": {"ref":"PaymentMethod","required":true},
-            "status": {"ref":"PaymentStatus","required":true},
-            "transactionRef": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "receivedById": {"dataType":"string","required":true},
+            "status": {"ref":"PaymentStatus"},
             "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PatientSummaryDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "mrn": {"dataType":"string","required":true},
+            "firstName": {"dataType":"string","required":true},
+            "lastName": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "VisitSummaryDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "visitDate": {"dataType":"datetime","required":true},
+            "patient": {"dataType":"union","subSchemas":[{"ref":"PatientSummaryDTO"},{"dataType":"enum","enums":[null]}],"required":true},
         },
         "additionalProperties": false,
     },
@@ -746,41 +789,32 @@ const models: TsoaRoute.Models = {
         "properties": {
             "id": {"dataType":"string","required":true},
             "invoiceNumber": {"dataType":"string","required":true},
-            "visitId": {"dataType":"string","required":true},
-            "patientId": {"dataType":"string","required":true},
-            "subtotal": {"dataType":"double","required":true},
-            "tax": {"dataType":"double","required":true},
-            "discount": {"dataType":"double","required":true},
-            "insurancePay": {"dataType":"double","required":true},
-            "patientPay": {"dataType":"double","required":true},
-            "totalAmount": {"dataType":"double","required":true},
-            "amountPaid": {"dataType":"double","required":true},
-            "balanceDue": {"dataType":"double","required":true},
+            "visitId": {"dataType":"string"},
+            "serviceTotal": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
+            "medicationTotal": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
+            "grandTotal": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
+            "amountPaid": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
+            "balance": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"double"}],"required":true},
             "status": {"ref":"InvoiceStatus","required":true},
-            "notes": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "type": {"dataType":"string","required":true},
+            "notes": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "items": {"dataType":"array","array":{"dataType":"refObject","ref":"InvoiceItemResponseDTO"}},
             "payments": {"dataType":"array","array":{"dataType":"refObject","ref":"PaymentResponseDTO"}},
+            "visit": {"dataType":"union","subSchemas":[{"ref":"VisitSummaryDTO"},{"dataType":"enum","enums":[null]}]},
             "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime"},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "RecordPaymentDTO": {
-        "dataType": "refObject",
-        "properties": {
-            "invoiceId": {"dataType":"string","required":true},
-            "amount": {"dataType":"double","required":true},
-            "paymentMethod": {"ref":"PaymentMethod","required":true},
-            "transactionRef": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
-            "receivedById": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreatePaymentDTO": {
+    "Pick_CreatePaymentDTO.Exclude_keyofCreatePaymentDTO.receivedById__": {
         "dataType": "refAlias",
-        "type": {"ref":"RecordPaymentDTO","validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"invoiceId":{"dataType":"string","required":true},"amount":{"dataType":"double","required":true},"paymentMethod":{"ref":"_36_Enums.PaymentMethod","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_CreatePaymentDTO.receivedById_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_CreatePaymentDTO.Exclude_keyofCreatePaymentDTO.receivedById__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "AuthFacilityData": {
@@ -2494,6 +2528,39 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_updatePrescriptionStatus: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"status":{"dataType":"string","required":true}}},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
+        app.patch('/api/v1/pharmacy/prescriptions/:id/status',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.updatePrescriptionStatus)),
+
+            async function PharmacyController_updatePrescriptionStatus(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_updatePrescriptionStatus, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'updatePrescriptionStatus',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsInsuranceController_registerInsurance: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreatePatientInsuranceDTO"},
         };
@@ -2708,25 +2775,58 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsBillingController_getInvoice: Record<string, TsoaRoute.ParameterSchema> = {
-                invoiceId: {"in":"path","name":"invoiceId","required":true,"dataType":"string"},
+        const argsBillingController_createInvoice: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateInvoiceDTO"},
         };
-        app.get('/api/v1/invoices/:invoiceId',
+        app.post('/api/v1/invoices',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(BillingController)),
-            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.getInvoice)),
+            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.createInvoice)),
 
-            async function BillingController_getInvoice(request: ExRequest, response: ExResponse, next: any) {
+            async function BillingController_createInvoice(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_getInvoice, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_createInvoice, request, response });
 
                 const controller = new BillingController();
 
               await templateService.apiHandler({
-                methodName: 'getInvoice',
+                methodName: 'createInvoice',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsBillingController_getInvoiceById: Record<string, TsoaRoute.ParameterSchema> = {
+                invoiceId: {"in":"path","name":"invoiceId","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/invoices/:invoiceId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(BillingController)),
+            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.getInvoiceById)),
+
+            async function BillingController_getInvoiceById(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_getInvoiceById, request, response });
+
+                const controller = new BillingController();
+
+              await templateService.apiHandler({
+                methodName: 'getInvoiceById',
                 controller,
                 response,
                 next,
@@ -2739,10 +2839,12 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsBillingController_recordPayment: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
                 invoiceId: {"in":"path","name":"invoiceId","required":true,"dataType":"string"},
-                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreatePaymentDTO"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Omit_CreatePaymentDTO.receivedById_"},
         };
         app.post('/api/v1/invoices/:invoiceId/payments',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(BillingController)),
             ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.recordPayment)),
 
@@ -2763,6 +2865,37 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsBillingController_getInvoicesByMrn: Record<string, TsoaRoute.ParameterSchema> = {
+                mrn: {"in":"path","name":"mrn","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/invoices/patient/mrn/:mrn',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(BillingController)),
+            ...(fetchMiddlewares<RequestHandler>(BillingController.prototype.getInvoicesByMrn)),
+
+            async function BillingController_getInvoicesByMrn(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsBillingController_getInvoicesByMrn, request, response });
+
+                const controller = new BillingController();
+
+              await templateService.apiHandler({
+                methodName: 'getInvoicesByMrn',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);

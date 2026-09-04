@@ -4,6 +4,7 @@ import { searchPatientApi, type Patient } from "../../api/patient/patient";
 import {
   getPrescriptionsByMrnApi,
   createDispenseRecordApi,
+  updatePrescriptionStatusApi,
   type Prescription,
   type PrescriptionItem,
   type PrescriptionBatch,
@@ -19,6 +20,10 @@ interface DispenseFormItem {
   batchId: string;
   maxQty: number;
   batches: PrescriptionBatch[];
+  dosage?: string;
+  frequency?: string;
+  durationDays?: number;
+  instructions?: string;
 }
 
 export const PharmacyDispensePage: React.FC = () => {
@@ -59,9 +64,13 @@ export const PharmacyDispensePage: React.FC = () => {
       setPatient(foundPatient);
 
       const rxList = await getPrescriptionsByMrnApi(foundPatient.mrn);
-      setPrescriptions(rxList);
+      const activeRxList = rxList.filter(
+        (rx: Prescription) =>
+          rx.status !== "DISPENSED" && rx.status !== "COMPLETED",
+      );
+      setPrescriptions(activeRxList);
 
-      if (rxList.length === 0) {
+      if (activeRxList.length === 0) {
         setError("No active prescriptions found for this patient.");
       }
     } catch (err: unknown) {
@@ -83,17 +92,32 @@ export const PharmacyDispensePage: React.FC = () => {
   const handleSelectPrescription = (rx: Prescription) => {
     setSelectedPrescription(rx);
     const initialItems: DispenseFormItem[] = rx.items.map(
-      (item: PrescriptionItem) => {
+      (
+        item: PrescriptionItem & {
+          quantityOrdered?: number;
+          dosage?: string;
+          frequency?: string;
+          durationDays?: number;
+          instructions?: string;
+        },
+      ) => {
         const availableBatch: PrescriptionBatch | undefined =
           item.product.batches?.[0];
         return {
           productId: item.productId,
           productName: item.product.name,
-          quantity: item.quantity,
-          unitPrice: Number(item.product.unitPrice || 0),
+          // 👈 Mapped to quantityOrdered from your backend payload
+          quantity: item.quantityOrdered ?? item.quantity ?? 1,
+          unitPrice: Number(
+            item.product.unitPrice || item.product.unitPrice || 0,
+          ),
           batchId: availableBatch?.id || "",
           maxQty: availableBatch?.quantity || 999,
           batches: item.product.batches || [],
+          dosage: item.dosage || "",
+          frequency: item.frequency || "",
+          durationDays: item.durationDays,
+          instructions: item.instructions || "",
         };
       },
     );
@@ -143,7 +167,6 @@ export const PharmacyDispensePage: React.FC = () => {
 
     try {
       setLoading(true);
-      // Omit facilityId and dispensedById from the body payload as they are handled via headers
       const payload = {
         visitId: selectedPrescription.visit?.id,
         prescriptionId: selectedPrescription.id,
@@ -156,14 +179,26 @@ export const PharmacyDispensePage: React.FC = () => {
         })),
       };
 
+      // 1. Create the dispense record and decrease batch quantities
       await createDispenseRecordApi(payload);
 
-      setSuccessMsg("Items successfully dispensed and visit closed!");
+      // 2. Explicitly update the prescription status to DISPENSED
+      // (Skip this if your backend automatically updates prescription status inside createDispenseRecordApi)
+      await updatePrescriptionStatusApi(selectedPrescription.id, "COMPLETED");
+
+      setSuccessMsg(
+        "Items successfully dispensed and prescription status updated!",
+      );
       setSelectedPrescription(null);
       setDispenseItems([]);
 
+      // Refresh the active prescriptions list for the patient
       const updatedRxList = await getPrescriptionsByMrnApi(patient.mrn);
-      setPrescriptions(updatedRxList);
+      const activeUpdatedList = updatedRxList.filter(
+        (rx: Prescription) =>
+          rx.status !== "DISPENSED" && rx.status !== "COMPLETED",
+      );
+      setPrescriptions(activeUpdatedList);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(
@@ -178,6 +213,7 @@ export const PharmacyDispensePage: React.FC = () => {
       setLoading(false);
     }
   };
+
   return (
     <AppLayout pageTitle="Pharmacy Dispensing Portal">
       <div className="p-6 max-w-5xl mx-auto">
@@ -232,7 +268,7 @@ export const PharmacyDispensePage: React.FC = () => {
                 </span>
               </div>
               <div>
-                <span className="text-muted">Total Prescriptions:</span>{" "}
+                <span className="text-muted">Active Prescriptions:</span>{" "}
                 <span className="font-semibold text-slate-900">
                   {prescriptions.length}
                 </span>
@@ -249,7 +285,7 @@ export const PharmacyDispensePage: React.FC = () => {
             <table className="emr-table">
               <thead>
                 <tr>
-                  <th>Prescription ID</th>
+                  <th>Prescription #</th>
                   <th>Notes</th>
                   <th>Items Count</th>
                   <th className="text-right">Action</th>
@@ -259,7 +295,7 @@ export const PharmacyDispensePage: React.FC = () => {
                 {prescriptions.map((rx) => (
                   <tr key={rx.id}>
                     <td className="font-medium text-slate-900 code-badge">
-                      {rx.id.substring(0, 8)}...
+                      {rx.id || rx.id.substring(0, 8)}
                     </td>
                     <td>{rx.notes || "—"}</td>
                     <td>{rx.items?.length || 0} items</td>
@@ -284,7 +320,8 @@ export const PharmacyDispensePage: React.FC = () => {
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-lg font-bold text-slate-900">
-                  Dispense Prescribed Items
+                  Dispense Prescribed Items (
+                  {selectedPrescription.id.substring(0, 8)})
                 </h3>
                 <p className="text-xs text-muted">
                   Prescription ID: {selectedPrescription.id}
@@ -299,6 +336,7 @@ export const PharmacyDispensePage: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Product</th>
+                      <th>Doctor's Instructions</th>
                       <th>Prescribed Qty</th>
                       <th>Batch & Stock</th>
                       <th>Dispense Qty</th>
@@ -311,7 +349,31 @@ export const PharmacyDispensePage: React.FC = () => {
                         <td className="font-medium text-slate-900">
                           {item.productName}
                         </td>
-                        <td className="text-xs text-muted">
+                        <td>
+                          <div
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: 500,
+                              color: "#1e293b",
+                            }}
+                          >
+                            {item.dosage ? `Dosage: ${item.dosage}` : ""}
+                            {item.frequency ? ` • ${item.frequency}` : ""}
+                          </div>
+                          <div style={{ fontSize: "12px", color: "#64748b" }}>
+                            {item.durationDays
+                              ? `Duration: ${item.durationDays} days`
+                              : ""}
+                            {item.instructions
+                              ? ` | Note: ${item.instructions}`
+                              : ""}
+                            {!item.dosage &&
+                              !item.durationDays &&
+                              !item.instructions &&
+                              "—"}
+                          </div>
+                        </td>
+                        <td className="text-xs text-muted font-medium">
                           {item.quantity} units
                         </td>
                         <td>

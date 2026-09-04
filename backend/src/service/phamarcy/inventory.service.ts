@@ -1,5 +1,5 @@
 // service/pharmacy/inventory.service.ts
-import { PrismaClient } from "@prisma/client";
+import { PrescriptionStatus, PrismaClient } from "@prisma/client";
 import { redisClient } from "../../config/redis";
 import { publishToQueue } from "../../config/rabbitmq";
 import {
@@ -215,6 +215,7 @@ export class PharmacyService {
               batchId: item.batchId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
+              totalPrice: item.unitPrice * item.quantity,
             })),
           },
         },
@@ -252,7 +253,6 @@ export class PharmacyService {
 
     return result;
   }
-
   // ----------------------------------------
   // Reorder Level Check & Redis Lock Helper
   // ----------------------------------------
@@ -363,5 +363,64 @@ export class PharmacyService {
         },
       },
     });
+  }
+
+  // ... inside your PharmacyService class:
+
+  public async updatePrescriptionStatus(
+    prescriptionId: string,
+    status: string,
+    facilityId: string,
+  ) {
+    const upperStatus = status.toUpperCase() as PrescriptionStatus;
+
+    // Validate against the enum values
+    const validStatuses = Object.values(PrescriptionStatus);
+    if (!validStatuses.includes(upperStatus)) {
+      throw new Error(
+        `Invalid status value. Must be one of: ${validStatuses.join(", ")}`,
+      );
+    }
+
+    const existingPrescription = await prisma.prescription.findFirst({
+      where: {
+        id: prescriptionId,
+        facilityId: facilityId,
+      },
+    });
+
+    if (!existingPrescription) {
+      throw new Error(
+        "Prescription not found or does not belong to this facility",
+      );
+    }
+
+    const updatedPrescription = await prisma.prescription.update({
+      where: {
+        id: prescriptionId,
+      },
+      data: {
+        status: upperStatus, // 👈 Now typed correctly as PrescriptionStatus enum
+        updatedAt: new Date(),
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        visit: {
+          include: {
+            patient: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Prescription status updated successfully",
+      data: updatedPrescription,
+    };
   }
 }
