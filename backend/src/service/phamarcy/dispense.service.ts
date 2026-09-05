@@ -101,7 +101,7 @@ export class DispenseService {
   }
 
   /**
-   * Creates a dispense record, decrements stock per batch, completes the visit,
+   * Creates a dispense record, decrements stock per batch,
    * updates Redis caches, and publishes an event.
    */
   async dispensePrescription(data: CreateDispenseRecordDTO) {
@@ -112,18 +112,21 @@ export class DispenseService {
         const subtotal = Number(item.unitPrice) * item.quantity;
         calculatedTotal += subtotal;
         return {
-          productId: item.productId,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
+          totalPrice: subtotal,
           batchId: item.batchId,
+          product: {
+            connect: { id: item.productId },
+          },
         };
       });
 
       let dispenseRecord;
 
-      // 1. Explicitly check if a record already exists for this visit
+      // 1. Explicitly check if a record already exists for this visit using findFirst
       if (data.visitId) {
-        const existingRecord = await tx.dispenseRecord.findUnique({
+        const existingRecord = await tx.dispenseRecord.findFirst({
           where: { visitId: data.visitId },
         });
 
@@ -188,15 +191,6 @@ export class DispenseService {
             quantity: {
               decrement: item.quantity,
             },
-          },
-        });
-      }
-
-      if (data.visitId) {
-        await tx.patientVisit.update({
-          where: { id: data.visitId },
-          data: {
-            status: VisitStatus.COMPLETED,
           },
         });
       }

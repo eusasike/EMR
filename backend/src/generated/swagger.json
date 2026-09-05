@@ -488,7 +488,8 @@
 					"COMPLETED",
 					"CANCELLED",
 					"PENDING",
-					"PARTIALLY_DISPENSED"
+					"PARTIALLY_DISPENSED",
+					"DISPENSED"
 				]
 			},
 			"CreatePrescriptionItemDTO": {
@@ -1268,10 +1269,10 @@
 					"category": {
 						"type": "string",
 						"enum": [
-							"MEDICINE",
-							"EQUIPMENT",
-							"CONSUMABLE",
-							"SUPPLEMENT"
+							"PILLS",
+							"SYRINGES",
+							"CAPSULE",
+							"SYRUP"
 						]
 					},
 					"unitPrice": {
@@ -1304,10 +1305,10 @@
 					"category": {
 						"type": "string",
 						"enum": [
-							"MEDICINE",
-							"EQUIPMENT",
-							"CONSUMABLE",
-							"SUPPLEMENT"
+							"PILLS",
+							"SYRINGES",
+							"CAPSULE",
+							"SYRUP"
 						]
 					},
 					"unitPrice": {
@@ -8745,6 +8746,37 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/v1/dashboard/overview": {
+			"get": {
+				"operationId": "GetDashboardOverview",
+				"responses": {
+					"200": {
+						"description": "Dashboard overview retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"description": "Get facility-based dashboard operational metrics, stock summary, and recent visits",
+				"tags": [
+					"Dashboard"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/api/v1/invoices": {

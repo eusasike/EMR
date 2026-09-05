@@ -232,12 +232,16 @@ export const PatientVisitModal: React.FC<PatientVisitModalProps> = ({
       });
       setSuccessMessage("Previous visit marked as completed!");
 
-      await getVisitsByPatientIdApi(patient.id);
+      // Refresh patient visits list
+      if (patient?.mrn) {
+        await getVisitsByPatientIdApi(patient.mrn);
+      }
 
       if (onSuccess) onSuccess();
 
       setTimeout(() => {
         setSuccessMessage("");
+        onClose(); // <--- Automatically close the modal here
       }, 1500);
     } catch (err: unknown) {
       let msg = "Failed to update visit status.";

@@ -233,7 +233,7 @@ model Product {
   name              String
   description       String?
   unitPrice         Decimal            @map("unit_price") @db.Decimal(10, 2)
-  category          String             @default("MEDICINE")
+  category          String             @default("PILLS")
   code              String?
   reorderLevel      Int                @default(10) @map("reorder_level")
   createdAt         DateTime           @default(now()) @map("created_at")

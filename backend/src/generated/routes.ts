@@ -28,6 +28,8 @@ import { HealthController } from './../controllers/health.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { FacilityController } from './../controllers/facility.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { DashboardController } from './../controllers/dashboard.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { BillingController } from './../controllers/billing.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './../controllers/auth.controller';
@@ -228,7 +230,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PrescriptionStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["COMPLETED"]},{"dataType":"enum","enums":["CANCELLED"]},{"dataType":"enum","enums":["PENDING"]},{"dataType":"enum","enums":["PARTIALLY_DISPENSED"]},{"dataType":"enum","enums":["DISPENSED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreatePrescriptionItemDTO": {
@@ -530,7 +532,7 @@ const models: TsoaRoute.Models = {
             "code": {"dataType":"string"},
             "name": {"dataType":"string","required":true},
             "description": {"dataType":"string"},
-            "category": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["MEDICINE"]},{"dataType":"enum","enums":["EQUIPMENT"]},{"dataType":"enum","enums":["CONSUMABLE"]},{"dataType":"enum","enums":["SUPPLEMENT"]}]},
+            "category": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PILLS"]},{"dataType":"enum","enums":["SYRINGES"]},{"dataType":"enum","enums":["CAPSULE"]},{"dataType":"enum","enums":["SYRUP"]}]},
             "unitPrice": {"dataType":"double","required":true},
             "reorderLevel": {"dataType":"double"},
         },
@@ -539,7 +541,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_CreateProductDTO_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"code":{"dataType":"string"},"name":{"dataType":"string"},"description":{"dataType":"string"},"category":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["MEDICINE"]},{"dataType":"enum","enums":["EQUIPMENT"]},{"dataType":"enum","enums":["CONSUMABLE"]},{"dataType":"enum","enums":["SUPPLEMENT"]}]},"unitPrice":{"dataType":"double"},"reorderLevel":{"dataType":"double"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"code":{"dataType":"string"},"name":{"dataType":"string"},"description":{"dataType":"string"},"category":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PILLS"]},{"dataType":"enum","enums":["SYRINGES"]},{"dataType":"enum","enums":["CAPSULE"]},{"dataType":"enum","enums":["SYRUP"]}]},"unitPrice":{"dataType":"double"},"reorderLevel":{"dataType":"double"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UpdateProductDTO": {
@@ -2764,6 +2766,37 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'searchFacilitiesByName',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsDashboardController_getDashboardOverview: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
+        app.get('/api/v1/dashboard/overview',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getDashboardOverview)),
+
+            async function DashboardController_getDashboardOverview(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsDashboardController_getDashboardOverview, request, response });
+
+                const controller = new DashboardController();
+
+              await templateService.apiHandler({
+                methodName: 'getDashboardOverview',
                 controller,
                 response,
                 next,

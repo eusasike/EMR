@@ -26,8 +26,8 @@ export const PharmacyManagementPage: React.FC = () => {
   const [productCode, setProductCode] = useState<string>("");
   const [productDesc, setProductDesc] = useState<string>("");
   const [productCategory, setProductCategory] = useState<
-    "MEDICINE" | "EQUIPMENT" | "CONSUMABLE" | "SUPPLEMENT"
-  >("MEDICINE");
+    "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP"
+  >("PILLS");
   const [unitPrice, setUnitPrice] = useState<string | "">("");
   const [reorderLevel, setReorderLevel] = useState<string | number>("10");
 
@@ -37,8 +37,8 @@ export const PharmacyManagementPage: React.FC = () => {
   const [editProductCode, setEditProductCode] = useState<string>("");
   const [editProductDesc, setEditProductDesc] = useState<string>("");
   const [editProductCategory, setEditProductCategory] = useState<
-    "MEDICINE" | "EQUIPMENT" | "CONSUMABLE" | "SUPPLEMENT"
-  >("MEDICINE");
+    "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP"
+  >("PILLS");
   const [editUnitPrice, setEditUnitPrice] = useState<string | "">("");
   const [editReorderLevel, setEditReorderLevel] = useState<string | number>(
     "10",
@@ -131,11 +131,8 @@ export const PharmacyManagementPage: React.FC = () => {
     setEditProductCode(product.code || "");
     setEditProductDesc(product.description || "");
     setEditProductCategory(
-      (product.category as
-        | "MEDICINE"
-        | "EQUIPMENT"
-        | "CONSUMABLE"
-        | "SUPPLEMENT") || "MEDICINE",
+      (product.category as "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP") ||
+        "PILLS",
     );
     setEditUnitPrice(String(product.unitPrice));
     setEditReorderLevel(String(product.reorderLevel));
@@ -484,18 +481,18 @@ export const PharmacyManagementPage: React.FC = () => {
                     onChange={(e) =>
                       setProductCategory(
                         e.target.value as
-                          | "MEDICINE"
-                          | "EQUIPMENT"
-                          | "CONSUMABLE"
-                          | "SUPPLEMENT",
+                          | "PILLS"
+                          | "SYRINGES"
+                          | "CAPSULE"
+                          | "SYRUP",
                       )
                     }
                     className="form-input"
                   >
-                    <option value="MEDICINE">MEDICINE</option>
-                    <option value="EQUIPMENT">EQUIPMENT</option>
-                    <option value="CONSUMABLE">CONSUMABLE</option>
-                    <option value="SUPPLEMENT">SUPPLEMENT</option>
+                    <option value="PILLS">PILLS</option>
+                    <option value="SYRINGES">SYRINGES</option>
+                    <option value="CAPSULE">CAPSULE</option>
+                    <option value="SYRUP">SYRUP</option>
                   </select>
                 </div>
                 <div className="form-group">
@@ -598,18 +595,18 @@ export const PharmacyManagementPage: React.FC = () => {
                     onChange={(e) =>
                       setEditProductCategory(
                         e.target.value as
-                          | "MEDICINE"
-                          | "EQUIPMENT"
-                          | "CONSUMABLE"
-                          | "SUPPLEMENT",
+                          | "PILLS"
+                          | "SYRINGES"
+                          | "CAPSULE"
+                          | "SYRUP",
                       )
                     }
                     className="form-input"
                   >
-                    <option value="MEDICINE">MEDICINE</option>
-                    <option value="EQUIPMENT">EQUIPMENT</option>
-                    <option value="CONSUMABLE">CONSUMABLE</option>
-                    <option value="SUPPLEMENT">SUPPLEMENT</option>
+                    <option value="PILLS">PILLS</option>
+                    <option value="SYRINGES">SYRINGES</option>
+                    <option value="CAPSULE">CAPSULE</option>
+                    <option value="SYRUP">SYRUP</option>
                   </select>
                 </div>
                 <div className="form-group">
@@ -722,7 +719,7 @@ export const PharmacyManagementPage: React.FC = () => {
                     required
                   />
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label className="form-label">
                     Cost Price ($) (Optional)
                   </label>
@@ -733,7 +730,7 @@ export const PharmacyManagementPage: React.FC = () => {
                     onChange={(e) => setCostPrice(e.target.value)}
                     className="form-input"
                   />
-                </div>
+                </div> */}
                 <div className="form-group">
                   <label className="form-label">Expiry Date</label>
                   <input

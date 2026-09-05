@@ -85,7 +85,7 @@ export interface CreateProductDTO {
   name: string;
   code?: string;
   description?: string;
-  category: "MEDICINE" | "EQUIPMENT" | "CONSUMABLE" | "SUPPLEMENT";
+  category: "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP";
   unitPrice: number;
   reorderLevel: number;
 }

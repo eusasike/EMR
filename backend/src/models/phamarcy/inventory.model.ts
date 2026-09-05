@@ -5,10 +5,10 @@ import { z } from "zod";
 // Enum Schemas
 // ==========================================
 export const ProductCategoryEnum = z.enum([
-  "MEDICINE",
-  "EQUIPMENT",
-  "CONSUMABLE",
-  "SUPPLEMENT",
+  "PILLS",
+  "SYRINGES",
+  "CAPSULE",
+  "SYRUP",
 ]);
 
 // ==========================================
@@ -18,7 +18,7 @@ export interface CreateProductDTO {
   code?: string;
   name: string;
   description?: string;
-  category?: "MEDICINE" | "EQUIPMENT" | "CONSUMABLE" | "SUPPLEMENT";
+  category?: "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP";
   unitPrice: number;
   reorderLevel?: number;
 }
@@ -29,7 +29,7 @@ export const createProductSchema = z.object({
   code: z.string().trim().optional(),
   name: z.string().min(1, "Product name is required").trim(),
   description: z.string().optional(),
-  category: ProductCategoryEnum.default("MEDICINE"),
+  category: ProductCategoryEnum.default("PILLS"),
   unitPrice: z.number().positive("Unit price must be greater than zero"),
   reorderLevel: z.number().int().nonnegative().default(10),
 });

@@ -374,7 +374,7 @@ export const PharmacyDispensePage: React.FC = () => {
                           </div>
                         </td>
                         <td className="text-xs text-muted font-medium">
-                          {item.quantity} units
+                          {item.quantity}
                         </td>
                         <td>
                           <select
@@ -443,9 +443,7 @@ export const PharmacyDispensePage: React.FC = () => {
                   disabled={loading}
                   className="btn-primary"
                 >
-                  {loading
-                    ? "Processing..."
-                    : "Complete Dispensing & Close Visit"}
+                  {loading ? "Processing..." : "Complete Dispensing"}
                 </button>
               </div>
             </form>

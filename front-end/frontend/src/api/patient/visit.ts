@@ -138,8 +138,10 @@ export const getVisitsByMrnApi = async (mrn: string): Promise<Visit[]> => {
 };
 
 // Retrieve all visit records for a patient by ID
-export const getVisitsByPatientIdApi = async (id: string): Promise<Visit[]> => {
-  const response = await api.get<VisitListResponse>(`/visits/patient/${id}`);
+export const getVisitsByPatientIdApi = async (
+  mrn: string,
+): Promise<Visit[]> => {
+  const response = await api.get<VisitListResponse>(`/visits/patient/${mrn}`);
   return response.data.data || [];
 };
 

@@ -1,4 +1,4 @@
-import { PrismaClient, InvoiceStatus, PaymentStatus } from "@prisma/client";
+import { PrismaClient, InvoiceStatus, VisitStatus } from "@prisma/client";
 import {
   CreateInvoiceDTO,
   CreatePaymentDTO,
@@ -90,12 +90,15 @@ export class BillingService {
   async processPayment(
     invoiceId: string,
     dto: CreatePaymentDTO,
-    receivedById: string, // 👈 Passed as a separate argument from the controller session
+    receivedById: string,
   ): Promise<InvoiceResponseDTO> {
     return await prisma.$transaction(async (tx) => {
       const invoice = await tx.invoice.findUnique({
         where: { id: invoiceId },
-        include: { payments: true },
+        include: {
+          payments: true,
+          visit: true,
+        },
       });
 
       if (!invoice) {
@@ -121,7 +124,6 @@ export class BillingService {
           invoiceId,
           amount: dto.amount,
           paymentMethod: dto.paymentMethod,
-          // transactionRef: dto.transactionRef,
           receivedById,
         },
       });
@@ -150,6 +152,16 @@ export class BillingService {
         },
       });
 
+      // Update the associated patient visit status to COMPLETED if the invoice is fully paid
+      // if (newStatus === InvoiceStatus.PAID && updatedInvoice.visitId) {
+      //   await tx.patientVisit.update({
+      //     where: { id: updatedInvoice.visitId },
+      //     data: {
+      //       status: VisitStatus.COMPLETED,
+      //     },
+      //   });
+      // }
+
       await BillingPublisher.publishPaymentReceived({
         paymentId: payment.id,
         invoiceId: updatedInvoice.id,
@@ -162,6 +174,7 @@ export class BillingService {
       return this.mapToInvoiceDTO(updatedInvoice);
     });
   }
+
   private mapToInvoiceDTO(invoice: any): InvoiceResponseDTO {
     return {
       id: invoice.id,
@@ -175,7 +188,6 @@ export class BillingService {
       type: invoice.type,
       createdAt: invoice.createdAt,
 
-      // Guard nested arrays with (invoice.relation || []) to prevent undefined .map() crashes
       payments: (invoice.payments || []).map((payment: any) => ({
         id: payment.id,
         amount: payment.amount?.toString() || "0",
@@ -223,7 +235,6 @@ export class BillingService {
       orderBy: { createdAt: "desc" },
     });
 
-    // Fallback to an empty array if invoices is undefined or null
     return (invoices || []).map((invoice) => this.mapToInvoiceDTO(invoice));
   }
 }
