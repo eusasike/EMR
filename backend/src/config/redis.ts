@@ -1,18 +1,17 @@
 import Redis, { RedisOptions } from "ioredis";
 
-const REDIS_HOST = process.env.REDIS_HOST || "127.0.0.1";
-const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD || undefined;
+const redisConnectionParam = process.env.REDIS_URL || {
+  host: process.env.REDIS_HOST || "127.0.0.1",
+  port: Number(process.env.REDIS_PORT) || 6379,
+  password: process.env.REDIS_PASSWORD || undefined,
+};
 
 const redisOptions: RedisOptions = {
-  host: REDIS_HOST,
-  port: REDIS_PORT,
-  password: REDIS_PASSWORD,
   maxRetriesPerRequest: 3,
   enableReadyCheck: true,
 
   retryStrategy(times: number) {
-    const delay = Math.min(times * 100, 3000); // Back off up to max 3 seconds
+    const delay = Math.min(times * 100, 3000);
     console.log(`🔄 [Redis] Reconnecting attempt #${times} in ${delay}ms...`);
     return delay;
   },
@@ -20,13 +19,16 @@ const redisOptions: RedisOptions = {
   reconnectOnError(err: Error) {
     const targetErrors = ["READONLY", "ETIMEDOUT"];
     if (targetErrors.some((e) => err.message.includes(e))) {
-      return true; // Force reconnection
+      return true;
     }
     return false;
   },
 };
 
-export const redisClient = new Redis(redisOptions);
+export const redisClient =
+  typeof redisConnectionParam === "string"
+    ? new Redis(redisConnectionParam, redisOptions)
+    : new Redis({ ...redisOptions, ...redisConnectionParam });
 
 redisClient.on("connect", () => {
   console.log("⚡ [Redis] Socket connected successfully.");
