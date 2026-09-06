@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm install && VITE_API_BASE_URL=https://onrender.com npx vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
