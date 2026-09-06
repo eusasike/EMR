@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd front-end/frontend && npm install && npx vite build",
+  "buildCommand": "cd front-end/frontend && npm install && VITE_API_BASE_URL=https://onrender.com npx vite build",
   "outputDirectory": "front-end/frontend/dist",
   "framework": "vite"
 }
