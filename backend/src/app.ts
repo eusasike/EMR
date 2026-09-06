@@ -15,7 +15,11 @@ import fs from "fs";
 //CRSF Middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:4000"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4000",
+      "https://onrender.com",
+    ],
     credentials: true,
     allowedHeaders: "*", // Accepts custom headers (X-Facility-Code, etc.)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
