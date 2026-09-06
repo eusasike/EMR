@@ -10,7 +10,8 @@ import { initializePatientWorkers } from "./message/worker/patient.worker";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 export const app: Express = express();
-
+import path from "path";
+import fs from "fs";
 //CRSF Middleware
 app.use(
   cors({
@@ -66,7 +67,22 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Swagger Documentation
 try {
-  const swaggerDocument = require("./generated/swagger.json");
+  // const swaggerDocument = require("./generated/swagger.json");
+  let swaggerDocument;
+  const localSpecPath = path.join(__dirname, "generated", "swagger.json");
+  const fallbackSpecPath = path.join(
+    __dirname,
+    "..",
+    "src",
+    "generated",
+    "swagger.json",
+  );
+
+  if (fs.existsSync(localSpecPath)) {
+    swaggerDocument = JSON.parse(fs.readFileSync(localSpecPath, "utf8"));
+  } else {
+    swaggerDocument = JSON.parse(fs.readFileSync(fallbackSpecPath, "utf8"));
+  }
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 } catch {
   logger.warn('Swagger spec not found. Run "npm run tsoa:gen" to generate.');

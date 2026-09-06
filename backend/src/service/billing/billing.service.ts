@@ -1,4 +1,4 @@
-import { PrismaClient, InvoiceStatus, VisitStatus } from "@prisma/client";
+import { PrismaClient, InvoiceStatus } from "@prisma/client";
 import {
   CreateInvoiceDTO,
   CreatePaymentDTO,
@@ -18,19 +18,10 @@ export class BillingService {
   ): Promise<InvoiceResponseDTO> {
     return await prisma.$transaction(async (tx) => {
       let totalAmount = 0;
-      const processedItems = (dto.items || []).map((item) => {
+      (dto.items || []).forEach((item) => {
         const quantity = item.quantity ?? 1;
         const totalPrice = quantity * item.unitPrice;
         totalAmount += totalPrice;
-
-        return {
-          chargeType: item.chargeType,
-          referenceId: item.referenceId || null,
-          description: item.description,
-          quantity,
-          unitPrice: item.unitPrice,
-          totalPrice,
-        };
       });
 
       const invoiceNumber = `INV-${Date.now()}`;
@@ -40,15 +31,12 @@ export class BillingService {
           facilityId,
           visitId: dto.visitId,
           invoiceNumber,
-          totalAmount,
-          paidAmount: 0,
+          grandTotal: totalAmount,
+          amountPaid: 0, // ✅ Fixed from paidAmount to amountPaid
           status: InvoiceStatus.PENDING,
-          items: {
-            create: processedItems,
-          },
         },
         include: {
-          items: true,
+          visit: true,
           payments: true,
         },
       });
@@ -72,8 +60,8 @@ export class BillingService {
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
-        items: true,
         payments: true,
+        visit: true,
       },
     });
 
@@ -129,10 +117,9 @@ export class BillingService {
       });
 
       const newPaidAmount = paidAmount + dto.amount;
-      const newBalanceDue = totalAmount - newPaidAmount;
 
       let newStatus: InvoiceStatus = InvoiceStatus.PENDING;
-      if (newBalanceDue === 0) {
+      if (totalAmount - newPaidAmount === 0) {
         newStatus = InvoiceStatus.PAID;
       }
 
@@ -152,21 +139,11 @@ export class BillingService {
         },
       });
 
-      // Update the associated patient visit status to COMPLETED if the invoice is fully paid
-      // if (newStatus === InvoiceStatus.PAID && updatedInvoice.visitId) {
-      //   await tx.patientVisit.update({
-      //     where: { id: updatedInvoice.visitId },
-      //     data: {
-      //       status: VisitStatus.COMPLETED,
-      //     },
-      //   });
-      // }
-
       await BillingPublisher.publishPaymentReceived({
         paymentId: payment.id,
         invoiceId: updatedInvoice.id,
         amount: dto.amount,
-        balanceRemaining: newBalanceDue,
+        balanceRemaining: totalAmount - newPaidAmount,
         paymentMethod: dto.paymentMethod,
         timestamp: payment.createdAt.toISOString(),
       });
