@@ -121,7 +121,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     },
     {
       to: "/inventory",
-      label: "Medicine Configuration",
+      label: "Inventory Settings",
       icon: <Package size={18} />,
       allowedRoles: ["ADMIN"],
     },
