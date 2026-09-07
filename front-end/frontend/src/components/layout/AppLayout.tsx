@@ -108,14 +108,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       allowedRoles: ["ADMIN"],
     },
     {
+      to: "/reports",
+      label: "Reports",
+      icon: <FileText size={18} />,
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "ACCOUNTANT", "BILLING_CLERK"],
+    },
+    {
       to: "/medical-services",
-      label: "Services Settings",
+      label: "Clinical Services Settings",
       icon: <Settings size={18} />,
       allowedRoles: ["ADMIN", "FACILITY_ADMIN"],
     },
     {
       to: "/inventory",
-      label: "Inventory",
+      label: "Medicine Configuration",
       icon: <Package size={18} />,
       allowedRoles: ["ADMIN"],
     },

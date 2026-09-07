@@ -2801,6 +2801,94 @@
 				]
 			}
 		},
+		"/api/v1/reports/daily": {
+			"get": {
+				"operationId": "GetDailyReport",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"description": "Retrieve daily billing, patient services, and revenue reports by date and facility",
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "date",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/reports/range": {
+			"get": {
+				"operationId": "GetReportByDateRange",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"description": "Retrieve billing, patient services, and revenue reports by custom date range and facility",
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "startDate",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "endDate",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/v1/users/register": {
 			"post": {
 				"operationId": "Register",
@@ -3067,9 +3155,6 @@
 												"role": {
 													"$ref": "#/components/schemas/_36_Enums.Role"
 												},
-												"password": {
-													"type": "string"
-												},
 												"email": {
 													"type": "string"
 												},
@@ -3088,6 +3173,9 @@
 												"isActive": {
 													"type": "boolean"
 												},
+												"password": {
+													"type": "string"
+												},
 												"updatedAt": {
 													"type": "string",
 													"format": "date-time"
@@ -3102,13 +3190,13 @@
 											},
 											"required": [
 												"role",
-												"password",
 												"email",
 												"phone",
 												"middleName",
 												"lastName",
 												"firstName",
 												"isActive",
+												"password",
 												"updatedAt",
 												"createdAt",
 												"id"

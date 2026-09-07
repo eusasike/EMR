@@ -8,9 +8,9 @@ import { VitalSignsPage } from "./pages/patient/vital-sign.modal";
 import { ManageMedicalServicesPage } from "./pages/medical-service/ManageMedicalServices";
 import { DoctorConsultationPage } from "./pages/medical-service/doctorConsultation";
 import { LabTechnicianPage } from "./pages/lab/labtechnician";
-import { PharmacyManagementPage } from "./pages/inventory/phamarcy";
-import { PharmacyDispensePage } from "./pages/inventory/dispense";
 import { InvoiceBillingPage } from "./pages/billing/billing";
+import { DailyRevenueReportPage } from "./pages/report/report";
+import { PharmacyDispensePage } from "./pages/inventory/dispense";
 
 // Route Guard for authenticated staff members
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -105,7 +105,7 @@ export const App: React.FC = () => {
           path="/inventory"
           element={
             <ProtectedRoute>
-              <PharmacyManagementPage />
+              <PharmacyDispensePage />
             </ProtectedRoute>
           }
         />
@@ -126,6 +126,16 @@ export const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <InvoiceBillingPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Admin Routes */}
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <DailyRevenueReportPage />
             </ProtectedRoute>
           }
         />
