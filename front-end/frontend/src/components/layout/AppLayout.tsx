@@ -95,12 +95,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       icon: <FlaskConical size={18} />,
       allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "LAB_TECH"],
     },
-    {
-      to: "/inventory",
-      label: "inventory",
-      icon: <Package size={18} />,
-      allowedRoles: ["ADMIN"],
-    },
 
     // {
     //   to: "/wards",
@@ -125,6 +119,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       label: "Services Settings",
       icon: <Settings size={18} />,
       allowedRoles: ["ADMIN", "FACILITY_ADMIN"],
+    },
+    {
+      to: "/inventory",
+      label: "Inventory",
+      icon: <Package size={18} />,
+      allowedRoles: ["ADMIN"],
     },
   ];
 

@@ -1,0 +1,4 @@
+DATABASE_URL="postgresql://neondb_owner:npg_jiKp4q1gLCeo@ep-steep-brook-aykt8d5i-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require" npx prisma db push
+
+DATABASE_URL="postgresql://neondb_owner:npg_jiKp4q1gLCeo@ep-steep-brook-aykt8d5i-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require" npx prisma db seed
+
