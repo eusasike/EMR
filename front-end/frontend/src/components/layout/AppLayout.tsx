@@ -2,6 +2,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logoutApi } from "../../api/auth/auth";
+import { IdleTimeoutModal } from "../../pages/auth/idleTimeout"; // <--- Import the modal component
 import {
   Users,
   // BedDouble,
@@ -88,20 +89,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       icon: <Stethoscope size={18} />,
       allowedRoles: ["ADMIN", "DOCTOR"],
     },
-
     {
       to: "/laboratory",
       label: "Laboratory",
       icon: <FlaskConical size={18} />,
       allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "LAB_TECH"],
     },
-
-    // {
-    //   to: "/wards",
-    //   label: "Ward & Beds",
-    //   icon: <BedDouble size={18} />,
-    //   allowedRoles: ["ADMIN", "DOCTOR", "NURSE"],
-    // },
     {
       to: "/billing",
       label: "Billing",
@@ -136,6 +129,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
   return (
     <div className="dashboard-layout">
+      {/* Global Idle Timeout Monitor */}
+      <IdleTimeoutModal />
+
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="sidebar-header">

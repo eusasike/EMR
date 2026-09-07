@@ -36,3 +36,8 @@ export const loginApi = async (data: LoginDTO): Promise<LoginResponse> => {
 export const logoutApi = async (refreshToken: string): Promise<void> => {
   await api.post("/auth/logout", { refreshToken });
 };
+
+export const refreshApi = async (): Promise<LoginResponse> => {
+  const response = await api.post("/auth/refresh");
+  return response.data.data || response.data;
+};
