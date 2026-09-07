@@ -18,7 +18,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:4000",
-      "https://onrender.com",
+      "https://emr-psi-two.vercel.app",
     ],
     credentials: true,
     allowedHeaders: "*", // Accepts custom headers (X-Facility-Code, etc.)
