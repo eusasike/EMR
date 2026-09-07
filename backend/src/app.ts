@@ -9,24 +9,67 @@ import { RegisterRoutes } from "./generated/routes";
 import { initializePatientWorkers } from "./message/worker/patient.worker";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-export const app: Express = express();
 import path from "path";
 import fs from "fs";
-//CRSF Middleware
+
+export const app: Express = express();
+
+// ============================================================================
+// CORS Configuration
+// ============================================================================
+
+// 1. Explicitly declare permitted origin targets
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:4000",
+  "https://emr-psi-two.vercel.app",
+];
+
+// 2. Standard CORS Layer Configuration
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:4000",
-      "https://emr-psi-two.vercel.app",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    allowedHeaders: "*", // Accepts custom headers (X-Facility-Code, etc.)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-facility-id",
+      "x-facility-code",
+    ],
   }),
 );
 
-app.options(/(.*)/, cors());
+// 3. Robust Global Preflight OPTIONS Handler (Replaces app.options regex)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+    );
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, x-facility-id, x-facility-code",
+    );
+  }
+
+  // Instantly return 200 OK for browser preflight checks without passing to routes
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 app.use(cookieParser());
 
 // Body Parser Middleware
