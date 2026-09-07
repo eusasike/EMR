@@ -315,16 +315,16 @@ export const LabTechnicianPage: React.FC = () => {
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="form-group col-span-1">
-                    <label className="form-label">Result Value</label>
+                    <label className="form-label">Result</label>
                     <input
                       type="text"
                       value={resultValue}
                       onChange={(e) => setResultValue(e.target.value)}
                       className="form-input"
-                      placeholder="e.g., 5.4"
+                      placeholder="....."
                     />
                   </div>
-                  <div className="form-group col-span-1">
+                  {/* <div className="form-group col-span-1">
                     <label className="form-label">Unit</label>
                     <input
                       type="text"
@@ -333,8 +333,8 @@ export const LabTechnicianPage: React.FC = () => {
                       className="form-input"
                       placeholder="e.g., mg/dL"
                     />
-                  </div>
-                  <div className="form-group col-span-1">
+                  </div> */}
+                  {/* <div className="form-group col-span-1">
                     <label className="form-label">Reference Range</label>
                     <input
                       type="text"
@@ -343,7 +343,7 @@ export const LabTechnicianPage: React.FC = () => {
                       className="form-input"
                       placeholder="e.g., 4.0 - 6.0"
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="form-group">
