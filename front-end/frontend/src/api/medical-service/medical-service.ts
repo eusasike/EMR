@@ -74,6 +74,11 @@ export interface ProvidedServiceItem {
 export interface VitalSignsResponse {
   id?: string;
   weight?: number;
+  height?: number;
+  bloodPressure?: string;
+  temperature?: number;
+  pulseRate?: number;
+  respiratoryRate?: number;
 }
 // export interface Visit {
 //   id: string;

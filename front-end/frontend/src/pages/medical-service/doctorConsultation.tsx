@@ -569,6 +569,18 @@ export const DoctorConsultationPage: React.FC = () => {
                   </span>
                 </div>
                 <div>
+                  <span className="text-muted">Blood Pressure:</span>{" "}
+                  <span className="font-medium text-slate-800">
+                    {activeVisit.vitalSigns?.bloodPressure} mmHg
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted">Temperature:</span>{" "}
+                  <span className="font-medium text-slate-800">
+                    {activeVisit.vitalSigns?.temperature} °C
+                  </span>
+                </div>
+                <div>
                   <span className="text-muted">Symptoms:</span>{" "}
                   <span className="font-medium text-slate-800">
                     {activeVisit.symptoms}
