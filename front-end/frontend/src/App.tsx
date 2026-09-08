@@ -11,6 +11,7 @@ import { LabTechnicianPage } from "./pages/lab/labtechnician";
 import { InvoiceBillingPage } from "./pages/billing/billing";
 import { DailyRevenueReportPage } from "./pages/report/report";
 import { PharmacyDispensePage } from "./pages/inventory/dispense";
+import { PharmacyManagementPage } from "./pages/inventory/phamarcy";
 
 // Route Guard for authenticated staff members
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -105,7 +106,7 @@ export const App: React.FC = () => {
           path="/inventory"
           element={
             <ProtectedRoute>
-              <PharmacyDispensePage />
+              <PharmacyManagementPage />
             </ProtectedRoute>
           }
         />

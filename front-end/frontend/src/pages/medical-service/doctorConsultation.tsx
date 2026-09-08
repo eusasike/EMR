@@ -604,7 +604,7 @@ export const DoctorConsultationPage: React.FC = () => {
                   className="btn-primary text-sm py-2 px-4"
                   style={{ backgroundColor: "#033909" }}
                 >
-                  + Order Pharmacy Products
+                  + Add prescription order
                 </button>
 
                 <button
@@ -612,7 +612,7 @@ export const DoctorConsultationPage: React.FC = () => {
                   onClick={handleOpenCreateModal}
                   className="btn-primary text-sm py-2 px-4"
                 >
-                  + Order New Service
+                  + Add Service
                 </button>
               </div>
             </div>
@@ -1213,7 +1213,7 @@ export const DoctorConsultationPage: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Notes / Instructions</label>
+                  <label className="form-label">Doctor notes</label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -1240,7 +1240,7 @@ export const DoctorConsultationPage: React.FC = () => {
                     className="btn-primary"
                     style={{ flex: 1 }}
                   >
-                    {loading ? "Saving..." : "Save Order"}
+                    {loading ? "Saving..." : "Save"}
                   </button>
                 </div>
               </form>
