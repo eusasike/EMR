@@ -1,4 +1,3 @@
-// src/components/layout/AppLayout.tsx
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logoutApi } from "../../api/auth/auth";
@@ -141,8 +140,25 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          <div className="brand-icon">CP</div>
-          <span className="brand-title"> EMR</span>
+          <div
+            className="brand-icon"
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: "4px",
+              padding: "4px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "none",
+            }}
+          >
+            <img
+              src="/src/assets/vite.svg"
+              alt="EMR Logo"
+              style={{ width: "20px", height: "20px", objectFit: "contain" }}
+            />
+          </div>
+          <span className="brand-title">EMR</span>
         </div>
 
         <nav className="sidebar-nav">

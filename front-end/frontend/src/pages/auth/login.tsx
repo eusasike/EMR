@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "../../api/auth/auth";
+import logo from "../../assets/images.jpeg";
 import "../../style/auth.css";
 import axios from "axios";
 
@@ -62,10 +63,13 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="auth-container">
+      <div className="auth-logo-top">
+        <img src={logo} alt="Mount Meru Hope Dispensary Logo" />
+      </div>
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo-badge">CP</div>
-          <h1 className="auth-title">Mount Meru Hope Dispensary</h1>
+          {/* <h4 className="auth-title">Ndoombo Community Foundation</h4> */}
+          <p className="auth-subtitle">Sign in to your account</p>
         </div>
 
         {error && <div className="alert-danger">{error}</div>}
