@@ -153,7 +153,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             }}
           >
             <img
-              src="/src/assets/vite.svg"
+              src="/src/assets/images.jpeg"
               alt="EMR Logo"
               style={{ width: "20px", height: "20px", objectFit: "contain" }}
             />
