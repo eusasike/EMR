@@ -807,7 +807,7 @@ export const PatientsPage: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Address</label>
+                <label className="form-label">Village/Address</label>
                 <input
                   type="text"
                   className="form-input"
