@@ -44,7 +44,7 @@ export class LabController extends Controller {
    * Record findings, result values, and transition status to COMPLETED.
    */
   @Put("{id}/results")
-  @Security("jwt")
+  @Security("jwt", ["ADMIN", "PHARMACIST", "TECHNICIAN", "DOCTOR"])
   @SuccessResponse(200, "Lab Result Recorded Successfully")
   @Response(400, "Validation Error or Invalid Status Transition")
   @Response(404, "Lab Result Not Found")
@@ -69,7 +69,7 @@ export class LabController extends Controller {
    * Transitions status to VERIFIED.
    */
   @Put("{id}/verify")
-  @Security("JWT", ["ADMIN", "PHARMACIST", "TECHNICIAN"])
+  @Security("jwt", ["ADMIN", "PHARMACIST", "TECHNICIAN", "DOCTOR"])
   @SuccessResponse(200, "Lab Result Verified Successfully")
   @Response(404, "Lab Result Not Found")
   public async verifyResult(
@@ -77,7 +77,6 @@ export class LabController extends Controller {
     @Body() requestBody: { findings?: string },
     @Request() req: any,
   ) {
-    // Safely extract the authenticated user ID executing this action
     const userId = req.user?.id || req.user?.userId || req.user?.sub;
 
     if (!userId) {

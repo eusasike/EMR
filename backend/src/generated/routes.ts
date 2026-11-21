@@ -200,14 +200,9 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "_36_Enums.Role": {
+    "UserRole": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["MANAGER"]},{"dataType":"enum","enums":["GUEST"]},{"dataType":"enum","enums":["NURSE"]},{"dataType":"enum","enums":["DOCTOR"]},{"dataType":"enum","enums":["CASHIER"]},{"dataType":"enum","enums":["PHARMACIST"]},{"dataType":"enum","enums":["TECHNICIAN"]}],"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Role": {
-        "dataType": "refAlias",
-        "type": {"ref":"_36_Enums.Role","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "RegisterUserDTO": {
@@ -219,11 +214,16 @@ const models: TsoaRoute.Models = {
             "email": {"dataType":"string","required":true},
             "phone": {"dataType":"string"},
             "password": {"dataType":"string","required":true},
-            "role": {"ref":"Role","required":true},
+            "role": {"ref":"UserRole","required":true},
             "facilityId": {"dataType":"string"},
             "isActive": {"dataType":"boolean"},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "_36_Enums.Role": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["MANAGER"]},{"dataType":"enum","enums":["GUEST"]},{"dataType":"enum","enums":["NURSE"]},{"dataType":"enum","enums":["DOCTOR"]},{"dataType":"enum","enums":["CASHIER"]},{"dataType":"enum","enums":["PHARMACIST"]},{"dataType":"enum","enums":["TECHNICIAN"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.PrescriptionStatus": {
@@ -2168,7 +2168,7 @@ export function RegisterRoutes(app: Router) {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.put('/api/v1/labs/:id/results',
-            authenticateMiddleware([{"jwt":[]}]),
+            authenticateMiddleware([{"jwt":["ADMIN","PHARMACIST","TECHNICIAN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(LabController)),
             ...(fetchMiddlewares<RequestHandler>(LabController.prototype.recordResult)),
 
@@ -2201,7 +2201,7 @@ export function RegisterRoutes(app: Router) {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.put('/api/v1/labs/:id/verify',
-            authenticateMiddleware([{"JWT":["ADMIN","PHARMACIST","TECHNICIAN"]}]),
+            authenticateMiddleware([{"jwt":["ADMIN","PHARMACIST","TECHNICIAN","DOCTOR"]}]),
             ...(fetchMiddlewares<RequestHandler>(LabController)),
             ...(fetchMiddlewares<RequestHandler>(LabController.prototype.verifyResult)),
 
