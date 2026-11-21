@@ -69,7 +69,7 @@ export class LabController extends Controller {
    * Transitions status to VERIFIED.
    */
   @Put("{id}/verify")
-  @Security("jwt")
+  @Security("JWT", ["ADMIN", "PHARMACIST", "TECHNICIAN"])
   @SuccessResponse(200, "Lab Result Verified Successfully")
   @Response(404, "Lab Result Not Found")
   public async verifyResult(

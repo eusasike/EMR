@@ -551,6 +551,8 @@ enum Role {
   NURSE
   DOCTOR
   CASHIER
+  PHARMACIST
+  TECHNICIAN
 }
 
 enum Gender {
