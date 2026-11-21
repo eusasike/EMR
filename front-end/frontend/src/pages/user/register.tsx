@@ -112,7 +112,7 @@ export const UsersPage: React.FC = () => {
           <table className="emr-table">
             <thead>
               <tr>
-                <th>Full Name</th>
+                <th>Full Namessss</th>
                 <th>Role</th>
                 <th>Contact Info</th>
                 <th>Facility</th>
