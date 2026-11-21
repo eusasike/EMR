@@ -1822,7 +1822,7 @@ export function RegisterRoutes(app: Router) {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateRegionDTO"},
         };
         app.post('/api/v1/admin/locations/regions',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.createRegion)),
 
@@ -1854,7 +1854,7 @@ export function RegisterRoutes(app: Router) {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateRegionDTO"},
         };
         app.put('/api/v1/admin/locations/regions/:id',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.updateRegion)),
 
@@ -1885,7 +1885,7 @@ export function RegisterRoutes(app: Router) {
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
         };
         app.delete('/api/v1/admin/locations/regions/:id',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.deleteRegion)),
 
@@ -1917,7 +1917,7 @@ export function RegisterRoutes(app: Router) {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateDistrictDTO"},
         };
         app.post('/api/v1/admin/locations/regions/:regionId/districts',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.createDistrict)),
 
@@ -1949,7 +1949,7 @@ export function RegisterRoutes(app: Router) {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateDistrictDTO"},
         };
         app.put('/api/v1/admin/locations/districts/:id',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.updateDistrict)),
 
@@ -1980,7 +1980,7 @@ export function RegisterRoutes(app: Router) {
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
         };
         app.delete('/api/v1/admin/locations/districts/:id',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.deleteDistrict)),
 
@@ -2011,7 +2011,7 @@ export function RegisterRoutes(app: Router) {
                 name: {"in":"query","name":"name","required":true,"dataType":"string"},
         };
         app.get('/api/v1/admin/locations/regions/search',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.getRegionByName)),
 
@@ -2043,7 +2043,7 @@ export function RegisterRoutes(app: Router) {
                 regionId: {"in":"query","name":"regionId","dataType":"string"},
         };
         app.get('/api/v1/admin/locations/districts/search',
-            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
             ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.getDistrictByName)),
 
@@ -2059,6 +2059,67 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getDistrictByName',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_getRegions: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/api/v1/admin/locations/regions',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.getRegions)),
+
+            async function LocationAdminController_getRegions(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_getRegions, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'getRegions',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLocationAdminController_getDistricts: Record<string, TsoaRoute.ParameterSchema> = {
+                regionId: {"in":"query","name":"regionId","required":true,"dataType":"string"},
+        };
+        app.get('/api/v1/admin/locations/districts',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController)),
+            ...(fetchMiddlewares<RequestHandler>(LocationAdminController.prototype.getDistricts)),
+
+            async function LocationAdminController_getDistricts(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLocationAdminController_getDistricts, request, response });
+
+                const controller = new LocationAdminController();
+
+              await templateService.apiHandler({
+                methodName: 'getDistricts',
                 controller,
                 response,
                 next,

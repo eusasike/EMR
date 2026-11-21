@@ -169,8 +169,8 @@ export class PatientController extends Controller {
     }
 
     const result = await this.patientService.getPatients(
-      queryValidation.data,
-      currentUser.facilityIds[0],
+      queryValidation.data, // 👈 1st argument: query
+      currentUser.facilityIds[0], // 👈 2nd argument: facilityId
     );
 
     this.setStatus(200);

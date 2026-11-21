@@ -5262,9 +5262,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [],
@@ -5278,6 +5276,34 @@
 						}
 					}
 				}
+			},
+			"get": {
+				"operationId": "GetRegions",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Region"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "List all regions",
+				"tags": [
+					"Administrative Location Management"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/api/v1/admin/locations/regions/{id}": {
@@ -5306,9 +5332,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5347,9 +5371,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5387,9 +5409,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5437,9 +5457,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5475,9 +5493,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5519,9 +5535,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5563,9 +5577,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"ADMIN"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [
@@ -5581,6 +5593,48 @@
 						"in": "query",
 						"name": "regionId",
 						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/admin/locations/districts": {
+			"get": {
+				"operationId": "GetDistricts",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/District"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Missing regionId query parameter"
+					}
+				},
+				"description": "List districts of a region",
+				"tags": [
+					"Administrative Location Management"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "regionId",
+						"required": true,
 						"schema": {
 							"type": "string"
 						}

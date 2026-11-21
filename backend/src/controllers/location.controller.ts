@@ -29,7 +29,7 @@ import { Region, District } from "@prisma/client";
 
 @Route("api/v1/admin/locations")
 @Tags("Administrative Location Management")
-@Security("jwt", ["ADMIN"])
+@Security("jwt")
 export class LocationAdminController extends Controller {
   private locationService: LocationService;
 
@@ -175,5 +175,28 @@ export class LocationAdminController extends Controller {
     }
 
     return district;
+  }
+
+  /**
+   * List all regions
+   */
+  @Get("regions")
+  @SuccessResponse("200", "OK")
+  public async getRegions(): Promise<Region[]> {
+    return this.locationService.getRegions();
+  }
+
+  /**
+   * List districts of a region
+   */
+  @Get("districts")
+  @SuccessResponse("200", "OK")
+  @Response("400", "Missing regionId query parameter")
+  public async getDistricts(@Query() regionId: string): Promise<District[]> {
+    if (!regionId || !regionId.trim()) {
+      this.setStatus(400);
+      throw new Error("Query parameter 'regionId' is required.");
+    }
+    return this.locationService.getDistrictsByRegion(regionId);
   }
 }
