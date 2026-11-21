@@ -8,7 +8,7 @@ export type UserRole =
   | "NURSE"
   | "DOCTOR"
   | "CASHIER"
-  // | "PHARMACIST"
+  | "PHARMACIST"
   | "TECHNICIAN";
 
 export interface RegisterUserPayload {
