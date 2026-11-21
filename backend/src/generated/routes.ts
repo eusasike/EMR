@@ -202,7 +202,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.Role": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["MANAGER"]},{"dataType":"enum","enums":["GUEST"]},{"dataType":"enum","enums":["NURSE"]},{"dataType":"enum","enums":["DOCTOR"]},{"dataType":"enum","enums":["CASHIER"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["MANAGER"]},{"dataType":"enum","enums":["GUEST"]},{"dataType":"enum","enums":["NURSE"]},{"dataType":"enum","enums":["DOCTOR"]},{"dataType":"enum","enums":["CASHIER"]},{"dataType":"enum","enums":["PHARMACIST"]},{"dataType":"enum","enums":["TECHNICIAN"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Role": {
@@ -2140,7 +2140,7 @@ export function RegisterRoutes(app: Router) {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.put('/api/v1/labs/:id/verify',
-            authenticateMiddleware([{"jwt":[]}]),
+            authenticateMiddleware([{"JWT":["ADMIN","PHARMACIST","TECHNICIAN"]}]),
             ...(fetchMiddlewares<RequestHandler>(LabController)),
             ...(fetchMiddlewares<RequestHandler>(LabController.prototype.verifyResult)),
 

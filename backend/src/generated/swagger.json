@@ -436,7 +436,9 @@
 					"GUEST",
 					"NURSE",
 					"DOCTOR",
-					"CASHIER"
+					"CASHIER",
+					"PHARMACIST",
+					"TECHNICIAN"
 				]
 			},
 			"Role": {
@@ -5999,7 +6001,11 @@
 				],
 				"security": [
 					{
-						"jwt": []
+						"JWT": [
+							"ADMIN",
+							"PHARMACIST",
+							"TECHNICIAN"
+						]
 					}
 				],
 				"parameters": [
