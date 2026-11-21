@@ -28,7 +28,7 @@ const ROLES: { label: string; value: UserRole }[] = [
   { label: "Doctor", value: "DOCTOR" },
   { label: "Nurse", value: "NURSE" },
   { label: "Clinical Officer", value: "CLINICAL_OFFICER" },
-  { label: "Lab Technician", value: "LAB_TECH" },
+  { label: "Lab Technician", value: "TECHNICIAN" },
   { label: "Pharmacist", value: "PHARMACIST" },
   { label: "Receptionist", value: "RECEPTIONIST" },
   { label: "System Administrator", value: "ADMIN" },

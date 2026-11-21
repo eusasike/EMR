@@ -4,7 +4,7 @@ export type UserRole =
   | "ADMIN"
   | "DOCTOR"
   | "NURSE"
-  | "LAB_TECH"
+  | "TECHNICIAN"
   | "PHARMACIST"
   | "RECEPTIONIST"
   | "CLINICAL_OFFICER";
