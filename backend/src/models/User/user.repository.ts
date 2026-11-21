@@ -56,7 +56,6 @@ export class UserRepository {
         firstName: true,
         lastName: true,
         middleName: true,
-        password: true,
         email: true,
         phone: true,
         role: true,
@@ -64,6 +63,13 @@ export class UserRepository {
         facilities: {
           select: {
             facilityId: true,
+            facility: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
           },
         },
         createdAt: true,
