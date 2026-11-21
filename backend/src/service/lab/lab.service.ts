@@ -94,7 +94,7 @@ export class LabService {
       where: { id },
       data: {
         status: LabStatus.VERIFIED,
-        verifiedById: verifiedById,
+        verifiedById,
         ...(findings ? { findings } : {}),
       },
       include: {
@@ -104,14 +104,19 @@ export class LabService {
       },
     });
 
-    await redisClient.del(`cache:lab_results:visit:${updated.visitId}`);
-
-    await LabPublisher.publishLabVerified({
-      labResultId: updated.id,
-      visitId: updated.visitId,
-      verifiedById,
-      timestamp: updated.updatedAt.toISOString(),
-    });
+    try {
+      await LabPublisher.publishLabVerified({
+        labResultId: updated.id,
+        visitId: updated.visitId,
+        verifiedById,
+        timestamp: updated.updatedAt.toISOString(),
+      });
+    } catch (mqError: any) {
+      console.error(
+        `⚠️ [RabbitMQ Error] Failed to publish lab verified event:`,
+        mqError.message,
+      );
+    }
 
     return updated;
   }
