@@ -16,7 +16,23 @@ export interface District {
   updatedAt?: string;
 }
 
-// Fetch region by name or list
+// Fetch all regions (for the Region dropdown)
+export const getRegionsApi = async (): Promise<Region[]> => {
+  const response = await api.get<Region[]>(`/admin/locations/regions`);
+  return response.data;
+};
+
+// Fetch all districts belonging to a region (for the District dropdown)
+export const getDistrictsByRegionApi = async (
+  regionId: string,
+): Promise<District[]> => {
+  const response = await api.get<District[]>(`/admin/locations/districts`, {
+    params: { regionId },
+  });
+  return response.data;
+};
+
+// Fetch region by name
 export const getRegionByNameApi = async (name: string): Promise<Region> => {
   const response = await api.get<Region>(`/admin/locations/regions/search`, {
     params: { name },

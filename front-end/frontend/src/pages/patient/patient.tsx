@@ -9,14 +9,34 @@ import {
   searchPatientApi,
 } from "../../api/patient/patient";
 import {
-  getRegionByNameApi,
-  getDistrictByNameApi,
+  getRegionsApi,
+  getDistrictsByRegionApi,
   type Region,
   type District,
 } from "../../api/location/location";
 import { PatientVisitModal } from "./patientVisit.modal";
 import { Plus, Search, Stethoscope } from "lucide-react";
 import "../../style/component.css";
+
+const emptyForm: CreatePatientDTO = {
+  firstName: "",
+  lastName: "",
+  gender: "MALE",
+  dateOfBirth: "",
+  phone: "",
+  emergencyContactName: "",
+  emergencyContactPhone: "",
+  address: "",
+  regionId: "",
+  districtId: "",
+};
+
+const errorTextStyle: React.CSSProperties = {
+  color: "#ef4444",
+  fontSize: "12px",
+  marginTop: "4px",
+  display: "block",
+};
 
 export const PatientsPage: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -33,42 +53,20 @@ export const PatientsPage: React.FC = () => {
   const [selectedPatientForVisit, setSelectedPatientForVisit] =
     useState<Patient | null>(null);
 
-  // Region and District states
-  const [regionInput, setRegionInput] = useState("");
-  const [districtInput, setDistrictInput] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
-  const [selectedDistrict, setSelectedDistrict] = useState<District | null>(
-    null,
-  );
+  // Region and District dropdown data
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [loadingRegions, setLoadingRegions] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
 
-  // Autocomplete suggestions and visibility states
-  const [regionSuggestions, setRegionSuggestions] = useState<Region[]>([]);
-  const [districtSuggestions, setDistrictSuggestions] = useState<District[]>(
-    [],
-  );
-  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
-  const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
-
-  // Specific Error states
-  const [locationError, setLocationError] = useState("");
+  // Error states
   const [regionError, setRegionError] = useState("");
   const [districtError, setDistrictError] = useState("");
   const [formGeneralError, setFormGeneralError] = useState("");
   const [phoneError, setPhoneError] = useState<string>("");
   const [emergencyPhoneError, setEmergencyPhoneError] = useState<string>("");
 
-  const [formData, setFormData] = useState<CreatePatientDTO>({
-    firstName: "",
-    lastName: "",
-    gender: "MALE",
-    dateOfBirth: "",
-    phone: "",
-    emergencyContactName: "",
-    emergencyContactPhone: "",
-    address: "",
-    regionId: "",
-    districtId: "",
-  });
+  const [formData, setFormData] = useState<CreatePatientDTO>(emptyForm);
 
   const isValidPhoneNumber = (phone?: string): boolean => {
     if (!phone || !phone.trim()) return true;
@@ -107,6 +105,7 @@ export const PatientsPage: React.FC = () => {
     }
   };
 
+  // Load patients on mount
   useEffect(() => {
     let isMounted = true;
 
@@ -125,6 +124,45 @@ export const PatientsPage: React.FC = () => {
       isMounted = false;
     };
   }, []);
+
+  // Load all regions on mount
+  useEffect(() => {
+    let isMounted = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoadingRegions(true);
+
+    getRegionsApi()
+      .then((data: Region[]) => {
+        if (isMounted) setRegions(data);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to load regions:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingRegions(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const loadDistricts = async (regionId: string) => {
+    if (!regionId) {
+      setDistricts([]);
+      return;
+    }
+    setLoadingDistricts(true);
+    try {
+      const data = await getDistrictsByRegionApi(regionId);
+      setDistricts(data);
+    } catch (err: unknown) {
+      console.error("Failed to load districts:", err);
+      setDistricts([]);
+    } finally {
+      setLoadingDistricts(false);
+    }
+  };
 
   const refreshPatients = async () => {
     setLoading(true);
@@ -168,118 +206,25 @@ export const PatientsPage: React.FC = () => {
     }
   };
 
-  const openRegistrationModal = () => {
-    setEditingPatientId(null);
-    const parts = searchTerm.trim().split(/\s+/);
-    setFormData({
-      firstName: parts[0] || "",
-      lastName: parts.slice(1).join(" ") || "",
-      gender: "MALE",
-      dateOfBirth: "",
-      phone: "",
-      emergencyContactName: "",
-      emergencyContactPhone: "",
-      address: "",
-      regionId: "",
-      districtId: "",
-    });
-    setRegionInput("");
-    setDistrictInput("");
-    setSelectedRegion(null);
-    setSelectedDistrict(null);
-    setRegionSuggestions([]);
-    setDistrictSuggestions([]);
-    setShowRegionDropdown(false);
-    setShowDistrictDropdown(false);
-    setLocationError("");
+  const resetFormErrors = () => {
     setRegionError("");
     setDistrictError("");
     setFormGeneralError("");
     setPhoneError("");
     setEmergencyPhoneError("");
+  };
+
+  const openRegistrationModal = () => {
+    setEditingPatientId(null);
+    const parts = searchTerm.trim().split(/\s+/);
+    setFormData({
+      ...emptyForm,
+      firstName: parts[0] || "",
+      lastName: parts.slice(1).join(" ") || "",
+    });
+    setDistricts([]);
+    resetFormErrors();
     setIsModalOpen(true);
-  };
-
-  // Region Autocomplete Handlers
-  const handleRegionInputChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const query = e.target.value;
-    setRegionInput(query);
-    setSelectedRegion(null);
-    setSelectedDistrict(null);
-    setDistrictInput("");
-    setRegionError("");
-    setFormData((prev: CreatePatientDTO) => ({
-      ...prev,
-      regionId: "",
-      districtId: "",
-    }));
-
-    if (query.trim().length > 1) {
-      try {
-        const result = await getRegionByNameApi(query.trim());
-        setRegionSuggestions(result ? [result] : []);
-        setShowRegionDropdown(true);
-        setLocationError("");
-      } catch {
-        setRegionSuggestions([]);
-        setShowRegionDropdown(false);
-      }
-    } else {
-      setRegionSuggestions([]);
-      setShowRegionDropdown(false);
-    }
-  };
-
-  const selectRegion = (region: Region) => {
-    setRegionInput(region.name);
-    setSelectedRegion(region);
-    setFormData((prev: CreatePatientDTO) => ({ ...prev, regionId: region.id }));
-    setShowRegionDropdown(false);
-    setRegionError("");
-    setLocationError("");
-  };
-
-  // District Autocomplete Handlers
-  const handleDistrictInputChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const query = e.target.value;
-    setDistrictInput(query);
-    setSelectedDistrict(null);
-    setDistrictError("");
-    setFormData((prev: CreatePatientDTO) => ({ ...prev, districtId: "" }));
-
-    if (query.trim().length > 1) {
-      try {
-        const result = await getDistrictByNameApi(
-          query.trim(),
-          selectedRegion?.id,
-        );
-        setDistrictSuggestions(result ? [result] : []);
-        setShowDistrictDropdown(true);
-        setLocationError("");
-      } catch {
-        setDistrictSuggestions([]);
-        setShowDistrictDropdown(false);
-      }
-    } else {
-      setDistrictSuggestions([]);
-      setShowDistrictDropdown(false);
-    }
-  };
-
-  const selectDistrict = (district: District) => {
-    setDistrictInput(district.name);
-    setSelectedDistrict(district);
-    setFormData((prev: CreatePatientDTO) => ({
-      ...prev,
-      districtId: district.id,
-    }));
-    setShowDistrictDropdown(false);
-    setDistrictError("");
-    setLocationError("");
   };
 
   const openEditModal = (patient: Patient) => {
@@ -297,29 +242,32 @@ export const PatientsPage: React.FC = () => {
       districtId: patient.districtId || "",
     });
 
-    setRegionInput("");
-    setDistrictInput("");
+    setDistricts([]);
+    if (patient.regionId) {
+      loadDistricts(patient.regionId);
+    }
 
-    setSelectedRegion(
-      patient.regionId ? { id: patient.regionId, name: "" } : null,
-    );
-    setSelectedDistrict(
-      patient.districtId && patient.regionId
-        ? {
-            id: patient.districtId,
-            name: "",
-            regionId: patient.regionId,
-          }
-        : null,
-    );
+    resetFormErrors();
+    setIsModalOpen(true);
+  };
 
-    setLocationError("");
+  // Region dropdown change: reset district and load districts of that region
+  const handleRegionChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const regionId = e.target.value;
+    setFormData((prev: CreatePatientDTO) => ({
+      ...prev,
+      regionId,
+      districtId: "",
+    }));
     setRegionError("");
     setDistrictError("");
-    setFormGeneralError("");
-    setPhoneError("");
-    setEmergencyPhoneError("");
-    setIsModalOpen(true);
+    loadDistricts(regionId);
+  };
+
+  const handleDistrictChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const districtId = e.target.value;
+    setFormData((prev: CreatePatientDTO) => ({ ...prev, districtId }));
+    setDistrictError("");
   };
 
   const handleSubmitPatient = async (e: React.FormEvent) => {
@@ -330,28 +278,21 @@ export const PatientsPage: React.FC = () => {
 
     let isValid = true;
 
-    if (regionInput.trim() && !formData.regionId) {
-      setRegionError("Please select a valid region from the dropdown list.");
+    if (formData.districtId && !formData.regionId) {
+      setRegionError("Please select a region first.");
       isValid = false;
     }
 
-    if (districtInput.trim() && !formData.districtId) {
-      setDistrictError(
-        "Please select a valid district from the dropdown list.",
-      );
+    if (formData.regionId && !formData.districtId) {
+      setDistrictError("Please select a district.");
       isValid = false;
     }
 
-    const isPhoneValid = isValidPhoneNumber(formData.phone);
-    const isEmergencyValid = isValidPhoneNumber(
-      formData.emergencyContactPhone || "",
-    );
-
-    if (!isPhoneValid) {
+    if (!isValidPhoneNumber(formData.phone)) {
       setPhoneError("Please enter a valid primary phone number.");
       isValid = false;
     }
-    if (!isEmergencyValid) {
+    if (!isValidPhoneNumber(formData.emergencyContactPhone || "")) {
       setEmergencyPhoneError(
         "Please enter a valid emergency contact phone number.",
       );
@@ -628,120 +569,54 @@ export const PatientsPage: React.FC = () => {
               </div>
 
               <div className="form-grid">
-                <div className="form-group" style={{ position: "relative" }}>
+                <div className="form-group">
                   <label className="form-label">Region</label>
-                  <input
-                    type="text"
+                  <select
                     className={`form-input ${regionError ? "input-error" : ""}`}
-                    placeholder="Type to search region..."
-                    value={regionInput}
-                    onChange={handleRegionInputChange}
-                    onFocus={() =>
-                      regionSuggestions.length > 0 &&
-                      setShowRegionDropdown(true)
-                    }
-                  />
-                  {selectedRegion && (
-                    <span
-                      style={{
-                        fontSize: "11px",
-                        color: "#16a34a",
-                        marginTop: "2px",
-                        display: "block",
-                      }}
-                    >
-                      ✓ Selected: {selectedRegion.name}
-                    </span>
-                  )}
+                    value={formData.regionId || ""}
+                    onChange={handleRegionChange}
+                    disabled={loadingRegions}
+                  >
+                    <option value="">
+                      {loadingRegions ? "Loading regions..." : "Select region"}
+                    </option>
+                    {regions.map((region) => (
+                      <option key={region.id} value={region.id}>
+                        {region.name}
+                      </option>
+                    ))}
+                  </select>
                   {regionError && (
-                    <span
-                      style={{
-                        color: "#ef4444",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                        display: "block",
-                      }}
-                    >
-                      {regionError}
-                    </span>
-                  )}
-                  {showRegionDropdown && regionSuggestions.length > 0 && (
-                    <ul className="autocomplete-dropdown">
-                      {regionSuggestions.map((region) => (
-                        <li
-                          key={region.id}
-                          onClick={() => selectRegion(region)}
-                        >
-                          {region.name}
-                        </li>
-                      ))}
-                    </ul>
+                    <span style={errorTextStyle}>{regionError}</span>
                   )}
                 </div>
 
-                <div className="form-group" style={{ position: "relative" }}>
+                <div className="form-group">
                   <label className="form-label">District</label>
-                  <input
-                    type="text"
+                  <select
                     className={`form-input ${districtError ? "input-error" : ""}`}
-                    placeholder="Type to search district..."
-                    value={districtInput}
-                    onChange={handleDistrictInputChange}
-                    onFocus={() =>
-                      districtSuggestions.length > 0 &&
-                      setShowDistrictDropdown(true)
-                    }
-                  />
-                  {selectedDistrict && (
-                    <span
-                      style={{
-                        fontSize: "11px",
-                        color: "#16a34a",
-                        marginTop: "2px",
-                        display: "block",
-                      }}
-                    >
-                      ✓ Selected: {selectedDistrict.name}
-                    </span>
-                  )}
+                    value={formData.districtId || ""}
+                    onChange={handleDistrictChange}
+                    disabled={!formData.regionId || loadingDistricts}
+                  >
+                    <option value="">
+                      {!formData.regionId
+                        ? "Select region first"
+                        : loadingDistricts
+                          ? "Loading districts..."
+                          : "Select district"}
+                    </option>
+                    {districts.map((district) => (
+                      <option key={district.id} value={district.id}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
                   {districtError && (
-                    <span
-                      style={{
-                        color: "#ef4444",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                        display: "block",
-                      }}
-                    >
-                      {districtError}
-                    </span>
-                  )}
-                  {showDistrictDropdown && districtSuggestions.length > 0 && (
-                    <ul className="autocomplete-dropdown">
-                      {districtSuggestions.map((district) => (
-                        <li
-                          key={district.id}
-                          onClick={() => selectDistrict(district)}
-                        >
-                          {district.name}
-                        </li>
-                      ))}
-                    </ul>
+                    <span style={errorTextStyle}>{districtError}</span>
                   )}
                 </div>
               </div>
-
-              {locationError && (
-                <span
-                  style={{
-                    color: "#ef4444",
-                    fontSize: "12px",
-                    display: "block",
-                  }}
-                >
-                  {locationError}
-                </span>
-              )}
 
               <div className="form-group">
                 <label className="form-label">Phone Number</label>
@@ -752,18 +627,7 @@ export const PatientsPage: React.FC = () => {
                   value={formData.phone}
                   onChange={handlePhoneChange}
                 />
-                {phoneError && (
-                  <span
-                    style={{
-                      color: "#ef4444",
-                      fontSize: "12px",
-                      marginTop: "4px",
-                      display: "block",
-                    }}
-                  >
-                    {phoneError}
-                  </span>
-                )}
+                {phoneError && <span style={errorTextStyle}>{phoneError}</span>}
               </div>
 
               <div className="form-grid">
@@ -792,16 +656,7 @@ export const PatientsPage: React.FC = () => {
                     onChange={handleEmergencyPhoneChange}
                   />
                   {emergencyPhoneError && (
-                    <span
-                      style={{
-                        color: "#ef4444",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                        display: "block",
-                      }}
-                    >
-                      {emergencyPhoneError}
-                    </span>
+                    <span style={errorTextStyle}>{emergencyPhoneError}</span>
                   )}
                 </div>
               </div>

@@ -123,13 +123,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       to: "/medical-services",
       label: "Clinical Services Settings",
       icon: <Settings size={18} />,
-      allowedRoles: [
-        "ADMIN",
-        "FACILITY_ADMIN",
-        "TECHNICIAN",
-        "NURSE",
-        "DOCTOR",
-      ],
+      allowedRoles: ["ADMIN"],
     },
     {
       to: "/inventory",
