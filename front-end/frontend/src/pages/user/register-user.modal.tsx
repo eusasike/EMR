@@ -27,10 +27,8 @@ interface FacilityOption {
 const ROLES: { label: string; value: UserRole }[] = [
   { label: "Doctor", value: "DOCTOR" },
   { label: "Nurse", value: "NURSE" },
-  { label: "Clinical Officer", value: "CLINICAL_OFFICER" },
   { label: "Lab Technician", value: "TECHNICIAN" },
-  { label: "Pharmacist", value: "PHARMACIST" },
-  { label: "Receptionist", value: "RECEPTIONIST" },
+  // { label: "Pharmacist", value: "PHARMACIST" },
   { label: "System Administrator", value: "ADMIN" },
 ];
 
@@ -63,8 +61,8 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
 
   const [facilities, setFacilities] = useState<FacilityOption[]>([]);
   const [facilitySearch, setFacilitySearch] = useState<string>(() =>
-    userToEdit?.facility
-      ? `${userToEdit.facility.name} (${userToEdit.facility.code})`
+    userToEdit?.facilities && userToEdit.facilities.length > 0
+      ? `${userToEdit.facilities[0].facility?.name} (${userToEdit.facilities[0].facility?.code})`
       : "",
   );
   const [searchingFacility, setSearchingFacility] = useState(false);
@@ -81,12 +79,15 @@ export const RegisterStaffModal: React.FC<RegisterStaffModalProps> = ({
       phone: userToEdit?.phone || "",
       password: "",
       role: (userToEdit?.role || "NURSE") as UserRole,
-      facilityId: userToEdit?.facility?.code || "",
+      facilityId:
+        userToEdit?.facilities && userToEdit.facilities.length > 0
+          ? userToEdit.facilities[0].facilityId
+          : "",
       isActive: userToEdit?.isActive ?? true,
     });
     setFacilitySearch(
-      userToEdit?.facility
-        ? `${userToEdit.facility.name} (${userToEdit.facility.code})`
+      userToEdit?.facilities && userToEdit.facilities.length > 0
+        ? `${userToEdit.facilities[0].facility?.name} (${userToEdit.facilities[0].facility?.code})`
         : "",
     );
     setError(null);

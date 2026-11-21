@@ -92,19 +92,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       to: "/laboratory",
       label: "Laboratory",
       icon: <FlaskConical size={18} />,
-      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "TECHNICIAN", "PHARMACIST"],
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE", "TECHNICIAN"],
     },
     {
       to: "/billing",
       label: "Billing",
       icon: <FileText size={18} />,
-      allowedRoles: ["ADMIN", "ACCOUNTANT", "BILLING_CLERK", "PHARMACIST"],
+      allowedRoles: ["ADMIN", "ACCOUNTANT", "BILLING_CLERK"],
     },
     {
       to: "/dispense",
       label: "Pharmacy Dispense",
       icon: <HandPlatter size={18} />,
-      allowedRoles: ["ADMIN", "PHARMACIST", "DOCTOR", "NURSE"],
+      allowedRoles: ["ADMIN", "DOCTOR", "NURSE"],
     },
     {
       to: "/reports",
@@ -116,7 +116,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         "NURSE",
         "ACCOUNTANT",
         "BILLING_CLERK",
-        "PHARMACIST",
         "TECHNICIAN",
       ],
     },
@@ -124,13 +123,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       to: "/medical-services",
       label: "Clinical Services Settings",
       icon: <Settings size={18} />,
-      allowedRoles: ["ADMIN", "FACILITY_ADMIN", "PHARMACIST", "TECHNICIAN"],
+      allowedRoles: ["ADMIN", "FACILITY_ADMIN", "TECHNICIAN"],
     },
     {
       to: "/inventory",
       label: "Inventory Settings",
       icon: <Package size={18} />,
-      allowedRoles: ["ADMIN", "PHARMACIST", "TECHNICIAN"],
+      allowedRoles: ["ADMIN", "TECHNICIAN"],
     },
   ];
 

@@ -165,9 +165,10 @@ export const UsersPage: React.FC = () => {
                         </div>
                       </td>
                       <td>
-                        {user.facility ? (
+                        {user.facilities && user.facilities.length > 0 ? (
                           <span>
-                            {user.facility.name} ({user.facility.code})
+                            {user.facilities[0].facility?.name} (
+                            {user.facilities[0].facility?.code})
                           </span>
                         ) : (
                           <span className="text-muted">—</span>

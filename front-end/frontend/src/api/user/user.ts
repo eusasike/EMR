@@ -1,13 +1,15 @@
 import { api } from "../axiosClient";
 
+// ✅ Matches your exact PostgreSQL / Prisma Role enum
 export type UserRole =
   | "ADMIN"
-  | "DOCTOR"
+  | "MANAGER"
+  | "GUEST"
   | "NURSE"
-  | "TECHNICIAN"
+  | "DOCTOR"
+  | "CASHIER"
   | "PHARMACIST"
-  | "RECEPTIONIST"
-  | "CLINICAL_OFFICER";
+  | "TECHNICIAN";
 
 export interface RegisterUserPayload {
   firstName: string;
@@ -20,6 +22,11 @@ export interface RegisterUserPayload {
   facilityId?: string;
   isActive?: boolean;
 }
+
+// ✅ Allows optional password when editing an existing staff member
+export type UpdateUserPayload = Omit<RegisterUserPayload, "password"> & {
+  password?: string;
+};
 
 export interface RegisterUserResponse {
   success: boolean;
@@ -40,12 +47,16 @@ export interface UserItem {
   middleName?: string;
   email: string;
   phone?: string;
-  role: string;
+  role: UserRole;
   isActive: boolean;
-  facility?: {
-    name: string;
-    code: string;
-  };
+  facilities?: {
+    facilityId: string;
+    facility?: {
+      id: string;
+      name: string;
+      code: string;
+    };
+  }[];
   createdAt: string;
 }
 
@@ -64,10 +75,9 @@ export const registerStaffUserApi = async (
   return response.data;
 };
 
-//update user
 export const updateUserApi = async (
   id: string,
-  data: RegisterUserPayload,
+  data: UpdateUserPayload,
 ): Promise<RegisterUserResponse> => {
   const response = await api.put<RegisterUserResponse>(
     `/users/update/${id}`,
