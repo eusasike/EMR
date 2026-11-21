@@ -5,6 +5,16 @@ import { is } from "zod/locales";
 const phoneRegex = /^\+?[1-9]\d{8,14}$/;
 
 // TypeScript DTO used by TSOA for Swagger generation
+export type UserRole =
+  | "ADMIN"
+  | "MANAGER"
+  | "GUEST"
+  | "NURSE"
+  | "DOCTOR"
+  | "CASHIER"
+  | "PHARMACIST"
+  | "TECHNICIAN";
+
 export interface RegisterUserDTO {
   firstName: string;
   lastName: string;
@@ -12,7 +22,7 @@ export interface RegisterUserDTO {
   email: string;
   phone?: string;
   password: string;
-  role: Role;
+  role: UserRole;
   facilityId?: string;
   isActive?: boolean;
 }
@@ -25,8 +35,20 @@ export const RegisterUserZodSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().optional().or(z.literal("")),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  role: z.nativeEnum(Role, {
-    message: "Invalid staff role specified",
-  }),
+  role: z.enum(
+    [
+      "ADMIN",
+      "MANAGER",
+      "GUEST",
+      "NURSE",
+      "DOCTOR",
+      "CASHIER",
+      "PHARMACIST",
+      "TECHNICIAN",
+    ],
+    {
+      message: "Invalid staff role specified",
+    },
+  ),
   facilityId: z.string().optional(),
 });
