@@ -44,7 +44,7 @@ export class LabController extends Controller {
    * Record findings, result values, and transition status to COMPLETED.
    */
   @Put("{id}/results")
-  @Security("jwt", ["ADMIN", "PHARMACIST", "TECHNICIAN", "DOCTOR"])
+  @Security("jwt", ["ADMIN", "PHARMACIST", "TECHNICIAN", "DOCTOR", "NURSE"])
   @SuccessResponse(200, "Lab Result Recorded Successfully")
   @Response(400, "Validation Error or Invalid Status Transition")
   @Response(404, "Lab Result Not Found")
@@ -69,7 +69,7 @@ export class LabController extends Controller {
    * Transitions status to VERIFIED.
    */
   @Put("{id}/verify")
-  @Security("jwt", ["ADMIN", "PHARMACIST", "TECHNICIAN", "DOCTOR"])
+  @Security("jwt", ["ADMIN", "PHARMACIST", "TECHNICIAN", "DOCTOR", "NURSE"])
   @SuccessResponse(200, "Lab Result Verified Successfully")
   @Response(404, "Lab Result Not Found")
   public async verifyResult(

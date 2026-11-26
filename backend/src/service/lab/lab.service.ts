@@ -1,12 +1,11 @@
-import { PrismaClient, LabStatus } from "@prisma/client";
+import { LabStatus } from "@prisma/client";
+import { prisma } from "../../config/database";
 import {
   OrderLabServiceDTO,
   RecordLabResultDTO,
 } from "../../models/lab/lab.model";
 import { LabPublisher } from "../../message/publisher/lab.publisher";
-import { redisClient } from "../../config/redis";
 import { NotFoundError } from "../../util/custom-error";
-const prisma = new PrismaClient();
 
 export class LabService {
   /**
@@ -25,16 +24,19 @@ export class LabService {
       },
     });
 
-    // Invalidate visit-related lab caches
-    await redisClient.del(`cache:lab_results:visit:${data.visitId}`);
-
-    // Publish event
-    await LabPublisher.publishLabOrdered({
-      labResultId: labResult.id,
-      visitId: labResult.visitId,
-      providedServiceId: labResult.providedServiceId,
-      timestamp: labResult.createdAt.toISOString(),
-    });
+    try {
+      await LabPublisher.publishLabOrdered({
+        labResultId: labResult.id,
+        visitId: labResult.visitId,
+        providedServiceId: labResult.providedServiceId,
+        timestamp: labResult.createdAt.toISOString(),
+      });
+    } catch (mqError: any) {
+      console.error(
+        `⚠️ [RabbitMQ Error] Failed to publish lab ordered event:`,
+        mqError.message,
+      );
+    }
 
     return labResult;
   }
@@ -49,7 +51,7 @@ export class LabService {
   ) {
     const existing = await prisma.labResult.findUnique({ where: { id } });
     if (!existing) {
-      throw new Error("Lab result record not found.");
+      throw new NotFoundError("Lab result record not found.");
     }
 
     const updated = await prisma.labResult.update({
@@ -61,7 +63,7 @@ export class LabService {
         findings: data.findings,
         specimenType: data.specimenType ?? existing.specimenType,
         status: data.status ?? LabStatus.COMPLETED,
-        performedById: performedById,
+        performedById,
       },
       include: {
         performedBy: {
@@ -70,14 +72,19 @@ export class LabService {
       },
     });
 
-    await redisClient.del(`cache:lab_results:visit:${updated.visitId}`);
-
-    await LabPublisher.publishLabCompleted({
-      labResultId: updated.id,
-      visitId: updated.visitId,
-      performedById,
-      timestamp: updated.updatedAt.toISOString(),
-    });
+    try {
+      await LabPublisher.publishLabCompleted({
+        labResultId: updated.id,
+        visitId: updated.visitId,
+        performedById,
+        timestamp: updated.updatedAt.toISOString(),
+      });
+    } catch (mqError: any) {
+      console.error(
+        `⚠️ [RabbitMQ Error] Failed to publish lab completed event:`,
+        mqError.message,
+      );
+    }
 
     return updated;
   }
@@ -122,17 +129,10 @@ export class LabService {
   }
 
   /**
-   * Fetch lab results for a specific patient visit with Redis caching.
+   * Fetch lab results for a specific patient visit directly from PostgreSQL.
    */
   public async getResultsByVisit(visitId: string) {
-    const cacheKey = `cache:lab_results:visit:${visitId}`;
-    const cachedData = await redisClient.get(cacheKey);
-
-    if (cachedData) {
-      return JSON.parse(cachedData);
-    }
-
-    const results = await prisma.labResult.findMany({
+    return await prisma.labResult.findMany({
       where: { visitId },
       include: {
         providedService: true,
@@ -145,9 +145,6 @@ export class LabService {
       },
       orderBy: { createdAt: "desc" },
     });
-
-    await redisClient.setex(cacheKey, 300, JSON.stringify(results)); // Cache for 5 mins
-    return results;
   }
 
   /**

@@ -2168,7 +2168,7 @@ export function RegisterRoutes(app: Router) {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.put('/api/v1/labs/:id/results',
-            authenticateMiddleware([{"jwt":["ADMIN","PHARMACIST","TECHNICIAN","DOCTOR"]}]),
+            authenticateMiddleware([{"jwt":["ADMIN","PHARMACIST","TECHNICIAN","DOCTOR","NURSE"]}]),
             ...(fetchMiddlewares<RequestHandler>(LabController)),
             ...(fetchMiddlewares<RequestHandler>(LabController.prototype.recordResult)),
 
@@ -2201,7 +2201,7 @@ export function RegisterRoutes(app: Router) {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.put('/api/v1/labs/:id/verify',
-            authenticateMiddleware([{"jwt":["ADMIN","PHARMACIST","TECHNICIAN","DOCTOR"]}]),
+            authenticateMiddleware([{"jwt":["ADMIN","PHARMACIST","TECHNICIAN","DOCTOR","NURSE"]}]),
             ...(fetchMiddlewares<RequestHandler>(LabController)),
             ...(fetchMiddlewares<RequestHandler>(LabController.prototype.verifyResult)),
 
