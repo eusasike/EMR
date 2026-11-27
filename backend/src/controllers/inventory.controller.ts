@@ -26,6 +26,8 @@ import {
   UpdateProductDTO,
   CreateBatchDTO,
   CreateDispenseRecordDTO,
+  UpdateBatchDTO,
+  updateBatchSchema,
 } from "../models/phamarcy/inventory.model";
 import { UnauthorizedError } from "../util/custom-error";
 
@@ -161,6 +163,34 @@ export class PharmacyController extends Controller {
     const validatedData = createBatchSchema.parse(requestBody);
     this.setStatus(201);
     return await this.pharmacyService.createBatch(facilityId, validatedData);
+  }
+
+  @Put("batches/{id}")
+  @Response(400, "Bad Request - Validation Error")
+  @Response(404, "Batch Not Found")
+  public async updateBatch(
+    @Path() id: string,
+    @Body() requestBody: UpdateBatchDTO,
+    @Request() request: AuthenticatedRequest,
+  ) {
+    const facilityId =
+      request.user?.facilityId ||
+      (request.headers?.["x-facility-id"] as string);
+
+    if (!facilityId) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Facility ID missing from token session or headers",
+      };
+    }
+
+    const validatedData = updateBatchSchema.parse(requestBody);
+    return await this.pharmacyService.updateBatch(
+      id,
+      facilityId,
+      validatedData,
+    );
   }
 
   // ==========================================

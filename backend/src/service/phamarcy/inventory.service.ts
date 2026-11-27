@@ -11,6 +11,7 @@ import {
   productDispensedEventSchema,
   ReorderLevelReachedEvent,
   reorderLevelReachedEventSchema,
+  UpdateBatchDTO,
 } from "../../models/phamarcy/inventory.model";
 
 const prisma = new PrismaClient();
@@ -162,6 +163,69 @@ export class PharmacyService {
     await redisClient.del(CACHE_KEYS.REORDER_ALERT_LOCK(data.productId));
 
     return batch;
+  }
+  async updateBatch(batchId: string, facilityId: string, data: UpdateBatchDTO) {
+    // 1. Verify batch exists and belongs to a product in this facility
+    const existingBatch = await prisma.productBatch.findFirst({
+      where: {
+        id: batchId,
+        product: { facilityId },
+      },
+    });
+
+    if (!existingBatch) {
+      throw new Error("Batch not found or unauthorized for this facility");
+    }
+
+    // 2. Prevent duplicate batchNumber on the same product if changed
+    if (
+      data.batchNumber &&
+      data.batchNumber.trim() !== existingBatch.batchNumber
+    ) {
+      const duplicateBatch = await prisma.productBatch.findFirst({
+        where: {
+          productId: existingBatch.productId,
+          batchNumber: data.batchNumber.trim(),
+          id: { not: batchId },
+        },
+      });
+
+      if (duplicateBatch) {
+        throw new Error(
+          `Batch number "${data.batchNumber}" already exists for this product.`,
+        );
+      }
+    }
+
+    // 3. Update the batch
+    const updatedBatch = await prisma.productBatch.update({
+      where: { id: batchId },
+      data: {
+        ...(data.batchNumber !== undefined && {
+          batchNumber: data.batchNumber.trim(),
+        }),
+        ...(data.quantity !== undefined && {
+          quantity: data.quantity,
+        }),
+        ...(data.costPrice !== undefined && {
+          costPrice: data.costPrice,
+        }),
+        ...(data.expiryDate !== undefined && {
+          expiryDate: new Date(data.expiryDate),
+        }),
+      },
+    });
+
+    // Clear Redis cache if Redis is connected
+    if (redisClient.status === "ready") {
+      await redisClient.del([
+        CACHE_KEYS.PRODUCT_BY_ID(existingBatch.productId),
+        CACHE_KEYS.ALL_PRODUCTS(facilityId),
+        CACHE_KEYS.REORDER_ALERT_LOCK(existingBatch.productId),
+      ]);
+    }
+
+    return updatedBatch;
   }
 
   // ----------------------------------------

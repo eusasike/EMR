@@ -524,13 +524,18 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ProductCategoryType": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PILLS"]},{"dataType":"enum","enums":["SYRINGES"]},{"dataType":"enum","enums":["CAPSULE"]},{"dataType":"enum","enums":["SYRUP"]},{"dataType":"enum","enums":["VIAL"]},{"dataType":"enum","enums":["TUBES"]},{"dataType":"enum","enums":["INJECTION"]},{"dataType":"enum","enums":["TOPICAL"]},{"dataType":"enum","enums":["PC"]},{"dataType":"enum","enums":["SUPPOSITORY"]},{"dataType":"enum","enums":["INHALER"]},{"dataType":"enum","enums":["DROPS"]},{"dataType":"enum","enums":["PATCH"]},{"dataType":"enum","enums":["LOTION"]},{"dataType":"enum","enums":["GEL"]},{"dataType":"enum","enums":["SPRAY"]},{"dataType":"enum","enums":["POWDER"]},{"dataType":"enum","enums":["SOLUTION"]},{"dataType":"enum","enums":["EMULSION"]},{"dataType":"enum","enums":["SUSPENSION"]},{"dataType":"enum","enums":["TABLET"]},{"dataType":"enum","enums":["IV_BAG"]},{"dataType":"enum","enums":["IV_FLUID"]},{"dataType":"enum","enums":["IV_SOLUTION"]},{"dataType":"enum","enums":["IV_DRIP"]},{"dataType":"enum","enums":["IV_INFUSION"]},{"dataType":"enum","enums":["IV_PUSH"]},{"dataType":"enum","enums":["IV_BOLUS"]},{"dataType":"enum","enums":["IV_CHEMOTHERAPY"]},{"dataType":"enum","enums":["IV_ANTIBIOTIC"]},{"dataType":"enum","enums":["IV_ANALGESIC"]},{"dataType":"enum","enums":["IV_ANTIEMETIC"]},{"dataType":"enum","enums":["IV_ANTICOAGULANT"]},{"dataType":"enum","enums":["IV_ANTIHYPERTENSIVE"]},{"dataType":"enum","enums":["IV_ANTIDIABETIC"]},{"dataType":"enum","enums":["IV_ANTIFUNGAL"]},{"dataType":"enum","enums":["IV_ANTIVIRAL"]},{"dataType":"enum","enums":["IV_ANTIPARASITIC"]},{"dataType":"enum","enums":["IV_ANTIINFLAMMATORY"]},{"dataType":"enum","enums":["IV_ANTINEOPLASTIC"]},{"dataType":"enum","enums":["IV_ANTIHISTAMINE"]},{"dataType":"enum","enums":["IV_ANTIPSYCHOTIC"]},{"dataType":"enum","enums":["IV_ANTIDEPRESSANT"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateProductDTO": {
         "dataType": "refObject",
         "properties": {
             "code": {"dataType":"string"},
             "name": {"dataType":"string","required":true},
             "description": {"dataType":"string"},
-            "category": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PILLS"]},{"dataType":"enum","enums":["SYRINGES"]},{"dataType":"enum","enums":["CAPSULE"]},{"dataType":"enum","enums":["SYRUP"]}]},
+            "category": {"ref":"ProductCategoryType"},
             "unitPrice": {"dataType":"double","required":true},
             "reorderLevel": {"dataType":"double"},
         },
@@ -539,7 +544,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_CreateProductDTO_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"code":{"dataType":"string"},"name":{"dataType":"string"},"description":{"dataType":"string"},"category":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PILLS"]},{"dataType":"enum","enums":["SYRINGES"]},{"dataType":"enum","enums":["CAPSULE"]},{"dataType":"enum","enums":["SYRUP"]}]},"unitPrice":{"dataType":"double"},"reorderLevel":{"dataType":"double"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"code":{"dataType":"string"},"name":{"dataType":"string"},"description":{"dataType":"string"},"category":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["PILLS"]},{"dataType":"enum","enums":["SYRINGES"]},{"dataType":"enum","enums":["CAPSULE"]},{"dataType":"enum","enums":["SYRUP"]},{"dataType":"enum","enums":["VIAL"]},{"dataType":"enum","enums":["TUBES"]},{"dataType":"enum","enums":["INJECTION"]},{"dataType":"enum","enums":["TOPICAL"]},{"dataType":"enum","enums":["PC"]},{"dataType":"enum","enums":["SUPPOSITORY"]},{"dataType":"enum","enums":["INHALER"]},{"dataType":"enum","enums":["DROPS"]},{"dataType":"enum","enums":["PATCH"]},{"dataType":"enum","enums":["LOTION"]},{"dataType":"enum","enums":["GEL"]},{"dataType":"enum","enums":["SPRAY"]},{"dataType":"enum","enums":["POWDER"]},{"dataType":"enum","enums":["SOLUTION"]},{"dataType":"enum","enums":["EMULSION"]},{"dataType":"enum","enums":["SUSPENSION"]},{"dataType":"enum","enums":["TABLET"]},{"dataType":"enum","enums":["IV_BAG"]},{"dataType":"enum","enums":["IV_FLUID"]},{"dataType":"enum","enums":["IV_SOLUTION"]},{"dataType":"enum","enums":["IV_DRIP"]},{"dataType":"enum","enums":["IV_INFUSION"]},{"dataType":"enum","enums":["IV_PUSH"]},{"dataType":"enum","enums":["IV_BOLUS"]},{"dataType":"enum","enums":["IV_CHEMOTHERAPY"]},{"dataType":"enum","enums":["IV_ANTIBIOTIC"]},{"dataType":"enum","enums":["IV_ANALGESIC"]},{"dataType":"enum","enums":["IV_ANTIEMETIC"]},{"dataType":"enum","enums":["IV_ANTICOAGULANT"]},{"dataType":"enum","enums":["IV_ANTIHYPERTENSIVE"]},{"dataType":"enum","enums":["IV_ANTIDIABETIC"]},{"dataType":"enum","enums":["IV_ANTIFUNGAL"]},{"dataType":"enum","enums":["IV_ANTIVIRAL"]},{"dataType":"enum","enums":["IV_ANTIPARASITIC"]},{"dataType":"enum","enums":["IV_ANTIINFLAMMATORY"]},{"dataType":"enum","enums":["IV_ANTINEOPLASTIC"]},{"dataType":"enum","enums":["IV_ANTIHISTAMINE"]},{"dataType":"enum","enums":["IV_ANTIPSYCHOTIC"]},{"dataType":"enum","enums":["IV_ANTIDEPRESSANT"]}]},"unitPrice":{"dataType":"double"},"reorderLevel":{"dataType":"double"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UpdateProductDTO": {
@@ -555,6 +560,17 @@ const models: TsoaRoute.Models = {
             "quantity": {"dataType":"double","required":true},
             "costPrice": {"dataType":"double"},
             "expiryDate": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateBatchDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "batchNumber": {"dataType":"string"},
+            "quantity": {"dataType":"double"},
+            "costPrice": {"dataType":"double"},
+            "expiryDate": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -2448,6 +2464,39 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPharmacyController_updateBatch: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateBatchDTO"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
+        app.put('/api/v1/pharmacy/batches/:id',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController)),
+            ...(fetchMiddlewares<RequestHandler>(PharmacyController.prototype.updateBatch)),
+
+            async function PharmacyController_updateBatch(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPharmacyController_updateBatch, request, response });
+
+                const controller = new PharmacyController();
+
+              await templateService.apiHandler({
+                methodName: 'updateBatch',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
               });
             } catch (err) {
                 return next(err);
