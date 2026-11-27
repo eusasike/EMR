@@ -81,11 +81,59 @@ export interface Product {
   batches?: PharmacyBatch[];
 }
 
+export const PRODUCT_CATEGORIES = [
+  "PILLS",
+  "SYRINGES",
+  "CAPSULE",
+  "SYRUP",
+  "VIAL",
+  "TUBES",
+  "INJECTION",
+  "TOPICAL",
+  "PC",
+  "SUPPOSITORY",
+  "INHALER",
+  "DROPS",
+  "PATCH",
+  "LOTION",
+  "GEL",
+  "SPRAY",
+  "POWDER",
+  "SOLUTION",
+  "EMULSION",
+  "SUSPENSION",
+  "TABLET",
+  "IV_BAG",
+  "IV_FLUID",
+  "IV_SOLUTION",
+  "IV_DRIP",
+  "IV_INFUSION",
+  "IV_PUSH",
+  "IV_BOLUS",
+  "IV_CHEMOTHERAPY",
+  "IV_ANTIBIOTIC",
+  "IV_ANALGESIC",
+  "IV_ANTIEMETIC",
+  "IV_ANTICOAGULANT",
+  "IV_ANTIHYPERTENSIVE",
+  "IV_ANTIDIABETIC",
+  "IV_ANTIFUNGAL",
+  "IV_ANTIVIRAL",
+  "IV_ANTIPARASITIC",
+  "IV_ANTIINFLAMMATORY",
+  "IV_ANTINEOPLASTIC",
+  "IV_ANTIHISTAMINE",
+  "IV_ANTIPSYCHOTIC",
+  "IV_ANTIDEPRESSANT",
+] as const;
+
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
 export interface CreateProductDTO {
   name: string;
   code?: string;
   description?: string;
-  category: "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP";
+  category: ProductCategory;
   unitPrice: number;
   reorderLevel: number;
 }
@@ -112,6 +160,12 @@ export interface CreateDispenseRecordDTO {
   dispensedById?: string;
   notes?: string;
   items: DispenseItemDTO[];
+}
+export interface UpdateBatchDTO {
+  batchNumber?: string;
+  quantity?: number;
+  costPrice?: number;
+  expiryDate?: string;
 }
 
 export const getPharmacyProductsApi = async (): Promise<Product[]> => {
@@ -147,6 +201,16 @@ export const createPharmacyBatchApi = async (
 ): Promise<PharmacyBatch> => {
   const response = await api.post<{ data: PharmacyBatch } | PharmacyBatch>(
     "/pharmacy/batches",
+    dto,
+  );
+  return "data" in response.data ? response.data.data : response.data;
+};
+export const updatePharmacyBatchApi = async (
+  id: string,
+  dto: UpdateBatchDTO,
+): Promise<PharmacyBatch> => {
+  const response = await api.put<{ data: PharmacyBatch } | PharmacyBatch>(
+    `/pharmacy/batches/${id}`,
     dto,
   );
   return "data" in response.data ? response.data.data : response.data;

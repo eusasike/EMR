@@ -61,13 +61,96 @@ export const DailyRevenueReportPage: React.FC = () => {
     const paid = Number(invoice.amountPaid) || 0;
     return sum + paid;
   }, 0);
+  //export to Excel function
+  const handleExportCsv = () => {
+    if (!reportData || reportData.length === 0) return;
+
+    const headers = [
+      "Date",
+      "Patient Name",
+      "MRN",
+      "Services",
+      "Laboratory",
+      "Pharmacy",
+      "Status",
+      "Amount Paid (Tsh)",
+    ];
+
+    const escapeCsv = (val: string | number) => {
+      const str = String(val ?? "");
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+
+    const rows = reportData.map((invoice) => {
+      const patient = invoice.visit?.patient;
+      const fullName = patient
+        ? `${patient.firstName} ${patient.lastName}`
+        : "Walk-in / Unknown";
+      const mrnCode = patient?.mrn || "N/A";
+      const invoiceDate = new Date(invoice.createdAt).toLocaleDateString();
+
+      const services = invoice.visit?.services
+        ? invoice.visit.services
+            .map((s) => s.service?.name)
+            .filter(Boolean)
+            .join(", ")
+        : "";
+
+      const labs = invoice.visit?.labResults
+        ? invoice.visit.labResults
+            .map((l) => l.providedService?.service?.name)
+            .filter(Boolean)
+            .join(", ")
+        : "";
+
+      const medicines = invoice.visit?.dispenseRecord
+        ? invoice.visit.dispenseRecord
+            .flatMap((d) =>
+              d.items.map(
+                (i) => `${i.product?.name || "Medicine"} (Qty: ${i.quantity})`,
+              ),
+            )
+            .join(", ")
+        : "";
+
+      const amountPaidVal = (Number(invoice.amountPaid) || 0).toFixed(2);
+
+      return [
+        invoiceDate,
+        fullName,
+        mrnCode,
+        services,
+        labs,
+        medicines,
+        invoice.status,
+        amountPaidVal,
+      ]
+        .map(escapeCsv)
+        .join(",");
+    });
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `transactions_log_${startDate || "all"}_to_${endDate || "all"}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <AppLayout pageTitle="Date Range Patient Services & Revenue Report">
       <div className="p-6 max-w-7xl mx-auto">
         <div className="page-actions mb-6">
           <h1 className="text-xl font-bold text-slate-900">
-            Financial & Service Report Range
+            Financial & Service Report
           </h1>
           <p className="text-sm text-muted">
             Select a custom date range to inspect patient services, labs,
@@ -152,12 +235,29 @@ export const DailyRevenueReportPage: React.FC = () => {
         {/* Report Results Table */}
         {searched && reportData.length > 0 && (
           <div className="table-card">
-            <h3 className="text-md font-semibold text-slate-800 p-4 border-b border-slate-100 flex justify-between items-center">
-              <span>Transactions & Service Log</span>
-              <span className="text-xs font-normal text-muted">
-                {startDate} through {endDate}
-              </span>
-            </h3>
+            <div
+              className="p-4 border-b border-slate-100"
+              style={{ overflow: "hidden" }}
+            >
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                style={{
+                  float: "right",
+                  backgroundColor: "#0f3d06",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: "15px",
+                  padding: "10px 20px",
+                  borderRadius: "6px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Export CSV
+              </button>
+            </div>
+
             <table className="emr-table">
               <thead>
                 <tr>
@@ -225,48 +325,33 @@ export const DailyRevenueReportPage: React.FC = () => {
                               {services.length > 0 && (
                                 <div className="flex flex-wrap items-center gap-1">
                                   <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded">
-                                    Services:
+                                    <b>Services: </b>
                                   </span>
-                                  {services.map((srv, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="bg-slate-100 text-slate-800 text-xs px-2 py-0.5 rounded border border-slate-200"
-                                    >
-                                      {srv}
-                                    </span>
-                                  ))}
+                                  <span className="text-xs text-slate-800">
+                                    {services.join(", ")}
+                                  </span>
                                 </div>
                               )}
 
                               {labs.length > 0 && (
                                 <div className="flex flex-wrap items-center gap-1">
                                   <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
-                                    Labs:
+                                    <b>Laboratory: </b>
                                   </span>
-                                  {labs.map((lb, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="bg-amber-50/50 text-amber-900 text-xs px-2 py-0.5 rounded border border-amber-200"
-                                    >
-                                      {lb}
-                                    </span>
-                                  ))}
+                                  <span className="text-xs text-amber-900">
+                                    {labs.join(", ")}
+                                  </span>
                                 </div>
                               )}
 
                               {medicines.length > 0 && (
                                 <div className="flex flex-wrap items-center gap-1">
                                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-                                    Pharmacy:
+                                    <b>Pharmacy: </b>
                                   </span>
-                                  {medicines.map((med, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="bg-emerald-50/50 text-emerald-900 text-xs px-2 py-0.5 rounded border border-emerald-200"
-                                    >
-                                      {med}
-                                    </span>
-                                  ))}
+                                  <span className="text-xs text-emerald-900">
+                                    {medicines.join(", ")}
+                                  </span>
                                 </div>
                               )}
                             </>

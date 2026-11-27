@@ -3,10 +3,14 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AppLayout } from "../../components/layout/AppLayout";
 import {
   type Product,
+  type PharmacyBatch,
   getPharmacyProductsApi,
   createPharmacyProductApi,
   updatePharmacyProductApi,
   createPharmacyBatchApi,
+  updatePharmacyBatchApi,
+  type ProductCategory,
+  PRODUCT_CATEGORIES,
 } from "../../api/inventory/phamarcy";
 import axios from "axios";
 
@@ -21,13 +25,14 @@ export const PharmacyManagementPage: React.FC = () => {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState<boolean>(false);
   const [isEditProductModalOpen, setIsEditProductModalOpen] =
     useState<boolean>(false);
+  const [isEditBatchModalOpen, setIsEditBatchModalOpen] =
+    useState<boolean>(false);
 
   const [productName, setProductName] = useState<string>("");
   const [productCode, setProductCode] = useState<string>("");
   const [productDesc, setProductDesc] = useState<string>("");
-  const [productCategory, setProductCategory] = useState<
-    "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP"
-  >("PILLS");
+  const [productCategory, setProductCategory] =
+    useState<ProductCategory>("PILLS");
   const [unitPrice, setUnitPrice] = useState<string | "">("");
   const [reorderLevel, setReorderLevel] = useState<string | number>("10");
 
@@ -36,19 +41,27 @@ export const PharmacyManagementPage: React.FC = () => {
   const [editProductName, setEditProductName] = useState<string>("");
   const [editProductCode, setEditProductCode] = useState<string>("");
   const [editProductDesc, setEditProductDesc] = useState<string>("");
-  const [editProductCategory, setEditProductCategory] = useState<
-    "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP"
-  >("PILLS");
+  const [editProductCategory, setEditProductCategory] =
+    useState<ProductCategory>("PILLS");
   const [editUnitPrice, setEditUnitPrice] = useState<string | "">("");
   const [editReorderLevel, setEditReorderLevel] = useState<string | number>(
     "10",
   );
 
+  // Add Batch State
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [batchNumber, setBatchNumber] = useState<string>("");
   const [batchQty, setBatchQty] = useState<string | "">("");
   const [costPrice, setCostPrice] = useState<string | "">("");
   const [expiryDate, setExpiryDate] = useState<string>("");
+
+  // Edit Batch State
+  const [editingBatchId, setEditingBatchId] = useState<string>("");
+  const [editingBatchProductName, setEditingBatchProductName] =
+    useState<string>("");
+  const [editBatchNumber, setEditBatchNumber] = useState<string>("");
+  const [editBatchQty, setEditBatchQty] = useState<string | "">("");
+  const [editBatchExpiryDate, setEditBatchExpiryDate] = useState<string>("");
 
   const loadProducts = useCallback(async () => {
     try {
@@ -130,10 +143,7 @@ export const PharmacyManagementPage: React.FC = () => {
     setEditProductName(product.name);
     setEditProductCode(product.code || "");
     setEditProductDesc(product.description || "");
-    setEditProductCategory(
-      (product.category as "PILLS" | "SYRINGES" | "CAPSULE" | "SYRUP") ||
-        "PILLS",
-    );
+    setEditProductCategory((product.category as ProductCategory) || "PILLS");
     setEditUnitPrice(String(product.unitPrice));
     setEditReorderLevel(String(product.reorderLevel));
     setErrorMsg(null);
@@ -224,6 +234,61 @@ export const PharmacyManagementPage: React.FC = () => {
     }
   };
 
+  // ---------------- Edit Batch ----------------
+  const handleOpenEditBatchModal = (
+    batch: PharmacyBatch,
+    productName: string,
+  ) => {
+    setEditingBatchId(batch.id);
+    setEditingBatchProductName(productName);
+    setEditBatchNumber(batch.batchNumber);
+    setEditBatchQty(String(batch.quantity));
+    setEditBatchExpiryDate(
+      batch.expiryDate ? batch.expiryDate.split("T")[0] : "",
+    );
+    setErrorMsg(null);
+    setIsEditBatchModalOpen(true);
+  };
+
+  const handleUpdateBatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    const facilityId = localStorage.getItem("facilityId");
+    if (!facilityId) {
+      setErrorMsg(
+        "Active facility context missing from local storage. Please re-select your facility.",
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await updatePharmacyBatchApi(editingBatchId, {
+        batchNumber: editBatchNumber,
+        quantity: Number(editBatchQty),
+        expiryDate: new Date(editBatchExpiryDate).toISOString(),
+      });
+      setSuccessMsg("Stock batch updated successfully.");
+      setIsEditBatchModalOpen(false);
+      setEditingBatchId("");
+      loadProducts();
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setErrorMsg(
+          err.response?.data?.message || "Failed to update stock batch.",
+        );
+      } else if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else {
+        setErrorMsg("Failed to update stock batch.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AppLayout pageTitle="Pharmacy Administration & Inventory">
       <div className="p-6 max-w-6xl mx-auto">
@@ -268,7 +333,8 @@ export const PharmacyManagementPage: React.FC = () => {
         {errorMsg &&
           !isProductModalOpen &&
           !isEditProductModalOpen &&
-          !isBatchModalOpen && (
+          !isBatchModalOpen &&
+          !isEditBatchModalOpen && (
             <div
               className="alert-danger mb-4"
               style={{ color: "#ef4444", marginBottom: "15px" }}
@@ -364,6 +430,7 @@ export const PharmacyManagementPage: React.FC = () => {
                                 style={{
                                   display: "flex",
                                   justifyContent: "space-between",
+                                  alignItems: "center",
                                   gap: "12px",
                                   background: "#f8fafc",
                                   padding: "4px 8px",
@@ -384,6 +451,16 @@ export const PharmacyManagementPage: React.FC = () => {
                                   Exp:{" "}
                                   {new Date(b.expiryDate).toLocaleDateString()}
                                 </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleOpenEditBatchModal(b, p.name)
+                                  }
+                                  className="btn-logout"
+                                  style={{ fontSize: 11, padding: "2px 6px" }}
+                                >
+                                  Edit Batch
+                                </button>
                               </div>
                             ))
                           ) : (
@@ -479,22 +556,18 @@ export const PharmacyManagementPage: React.FC = () => {
                   <select
                     value={productCategory}
                     onChange={(e) =>
-                      setProductCategory(
-                        e.target.value as
-                          | "PILLS"
-                          | "SYRINGES"
-                          | "CAPSULE"
-                          | "SYRUP",
-                      )
+                      setProductCategory(e.target.value as ProductCategory)
                     }
                     className="form-input"
                   >
-                    <option value="PILLS">PILLS</option>
-                    <option value="SYRINGES">SYRINGES</option>
-                    <option value="CAPSULE">CAPSULE</option>
-                    <option value="SYRUP">SYRUP</option>
+                    {PRODUCT_CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category.replace(/_/g, " ")}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
                 <div className="form-group">
                   <label className="form-label">Unit Price ($)</label>
                   <input
@@ -593,22 +666,18 @@ export const PharmacyManagementPage: React.FC = () => {
                   <select
                     value={editProductCategory}
                     onChange={(e) =>
-                      setEditProductCategory(
-                        e.target.value as
-                          | "PILLS"
-                          | "SYRINGES"
-                          | "CAPSULE"
-                          | "SYRUP",
-                      )
+                      setEditProductCategory(e.target.value as ProductCategory)
                     }
                     className="form-input"
                   >
-                    <option value="PILLS">PILLS</option>
-                    <option value="SYRINGES">SYRINGES</option>
-                    <option value="CAPSULE">CAPSULE</option>
-                    <option value="SYRUP">SYRUP</option>
+                    {PRODUCT_CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category.replace(/_/g, " ")}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
                 <div className="form-group">
                   <label className="form-label">Unit Price ($)</label>
                   <input
@@ -719,18 +788,6 @@ export const PharmacyManagementPage: React.FC = () => {
                     required
                   />
                 </div>
-                {/* <div className="form-group">
-                  <label className="form-label">
-                    Cost Price ($) (Optional)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={costPrice}
-                    onChange={(e) => setCostPrice(e.target.value)}
-                    className="form-input"
-                  />
-                </div> */}
                 <div className="form-group">
                   <label className="form-label">Expiry Date</label>
                   <input
@@ -759,6 +816,100 @@ export const PharmacyManagementPage: React.FC = () => {
                     style={{ flex: 1 }}
                   >
                     {loading ? "Saving..." : "Save Batch"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Batch Modal */}
+        {isEditBatchModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-card">
+              <div className="modal-header">
+                <h3 style={{ margin: 0 }}>Edit Stock Batch</h3>
+                <button
+                  type="button"
+                  onClick={() => setIsEditBatchModalOpen(false)}
+                  className="modal-close-btn"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {errorMsg && (
+                <div
+                  style={{
+                    color: "#ef4444",
+                    fontSize: "13px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {errorMsg}
+                </div>
+              )}
+
+              <form onSubmit={handleUpdateBatchSubmit} className="auth-form">
+                <div className="form-group">
+                  <label className="form-label">Product</label>
+                  <input
+                    type="text"
+                    value={editingBatchProductName}
+                    className="form-input"
+                    disabled
+                    readOnly
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Batch Number</label>
+                  <input
+                    type="text"
+                    value={editBatchNumber}
+                    onChange={(e) => setEditBatchNumber(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Quantity</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editBatchQty}
+                    onChange={(e) => setEditBatchQty(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Expiry Date</label>
+                  <input
+                    type="date"
+                    value={editBatchExpiryDate}
+                    onChange={(e) => setEditBatchExpiryDate(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div
+                  style={{ display: "flex", gap: "10px", marginTop: "15px" }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setIsEditBatchModalOpen(false)}
+                    className="btn-logout"
+                    style={{ flex: 1 }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-primary"
+                    style={{ flex: 1 }}
+                  >
+                    {loading ? "Updating..." : "Update Batch"}
                   </button>
                 </div>
               </form>
